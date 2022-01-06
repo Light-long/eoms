@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tx.eoms.dao.UserDao">
+    <select id="searchUserPermissions" parameterType="Integer" resultType="String">
+        SELECT DISTINCT p.permission_name
+        FROM tb_user u
+        JOIN tb_role r ON JSON_CONTAINS(u.role, CAST(r.id AS CHAR))
+        JOIN tb_permission p ON JSON_CONTAINS(r.permissions, CAST(p.id AS CHAR))
+        WHERE u.id = #{userId}
+        AND u.status = 1
+    </select>
+</mapper>
