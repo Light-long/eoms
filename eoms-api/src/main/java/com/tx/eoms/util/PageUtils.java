@@ -33,9 +33,9 @@ public class PageUtils implements Serializable {
     /**
      * 列表数据
      */
-    private List<Object> list;
+    private List list;
 
-    public PageUtils(List<Object> list, long totalCount, int pageIndex, int pageSize) {
+    public PageUtils(List list, long totalCount, int pageIndex, int pageSize) {
         this.list = list;
         this.totalCount = totalCount;
         this.pageSize = pageSize;

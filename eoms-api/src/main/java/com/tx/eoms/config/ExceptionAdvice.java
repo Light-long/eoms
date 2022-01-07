@@ -32,6 +32,7 @@ public class ExceptionAdvice {
         if (e instanceof MethodArgumentNotValidException) {
             MethodArgumentNotValidException exception = (MethodArgumentNotValidException) e;
             json.set("error", Objects.requireNonNull(exception.getBindingResult().getFieldError()).getDefaultMessage());
+            log.error("执行异常", e);
         }
         // 处理业务异常
         else if (e instanceof EomsException) {

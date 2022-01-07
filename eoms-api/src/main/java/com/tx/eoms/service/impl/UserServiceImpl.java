@@ -1,0 +1,81 @@
+package com.tx.eoms.service.impl;
+
+import com.tx.eoms.dao.UserDao;
+import com.tx.eoms.pojo.User;
+import com.tx.eoms.service.UserService;
+import com.tx.eoms.util.PageUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+@Service
+@Slf4j
+public class UserServiceImpl implements UserService {
+
+    @Resource
+    private UserDao userDao;
+
+    /**
+     * 根据用户id查询权限列表
+     * @param userId 用户id
+     * @return 权限名集合
+     */
+    @Override
+    public Set<String> searchUserPermissions(Integer userId) {
+        return userDao.searchUserPermissions(userId);
+    }
+
+    /**
+     * 添加用户
+     * @param user 用户信息
+     */
+    @Override
+    public int addUser(User user) {
+        return userDao.addUser(user);
+    }
+
+    /**
+     * 根据用户id查询用户信息
+     */
+    @Override
+    public Map<String, Object> searchUserSummary(Integer userId) {
+        return userDao.searchUserSummary(userId);
+    }
+
+    /**
+     * 修改密码
+     * @param params 用户id，密码
+     */
+    @Override
+    public int updatePassword(Map<String, Object> params) {
+        return userDao.updatePassword(params);
+    }
+
+    /**
+     * 根据条件分页查询
+     * @param condition 查询条件
+     */
+    @Override
+    public PageUtils searchUserByPage(Map<String, Object> condition) {
+        List<Map<String, Object>> userList = userDao.searchUserByPage(condition);
+        long count = userDao.searchUserCount(condition);
+        int start = (int) condition.get("start");
+        int length = (int) condition.get("length");
+        return new PageUtils(userList, count, start, length);
+    }
+
+
+    /**
+     * 登录
+     * @param params 用户名，密码
+     * @return 用户id
+     */
+    @Override
+    public Integer login(Map<String, Object> params) {
+        return userDao.login(params);
+    }
+}

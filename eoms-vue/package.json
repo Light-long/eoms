@@ -1,0 +1,32 @@
+{
+  "name": "emos-vue",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "dayjs": "1.10.4",
+    "echarts": "5.1.1",
+    "element-plus": "1.0.2-beta.42",
+    "jquery": "3.6.0",
+    "jspdf": "2.3.1",
+    "screenfull": "5.1.0",
+    "tim-upload-plugin": "1.0.1",
+    "trtc-js-sdk": "4.10.2",
+    "vue": "3.0.3",
+    "vue-native-websocket-vue3": "3.1.0",
+    "vue3-cookies": "1.0.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "1.2.1",
+    "@vue/compiler-sfc": "3.0.11",
+    "less": "4.1.1",
+    "less-loader": "8.0.0",
+    "sass": "1.32.8",
+    "sass-loader": "11.0.1",
+    "vite": "2.1.5",
+    "vite-plugin-svg-icons": "0.4.1",
+    "vue-router": "4.0.5"
+  }
+}

@@ -1,0 +1,55 @@
+.mold {
+	float: right;
+	margin-right: 0 !important;
+}
+
+.content-container {
+	display: flex;
+	.content-table {
+		border: none !important;
+		border-spacing: 0;
+		width: 400px;
+		max-width: 400px;
+		tr {
+			border: none;
+			
+		}
+		th {
+			border: none;
+			width: 100px;
+			&::before {
+				display: inline-block;
+				content: '【';
+			}
+			&::after {
+				display: inline-block;
+				content: '】';
+			}
+			span {
+				display: inline-block;
+				width: 70px;
+				text-align: center;
+			}
+		}
+		td {
+			border: none;
+			padding-left: 10px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			width: 300px;
+			max-width: 300px;
+			cursor: default;
+		}
+	}
+	.bpmn {
+		margin-left: 20px;
+		height: 240px;
+		width: auto;
+	}
+	.archive {
+		margin-left: 20px;
+		height: 240px;
+		width: auto;
+	}
+}
