@@ -4,11 +4,9 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.json.JSONUtil;
-import com.tx.eoms.controller.user.AddUserForm;
-import com.tx.eoms.controller.user.LoginForm;
-import com.tx.eoms.controller.user.SearchUserByPageForm;
-import com.tx.eoms.controller.user.UpdatePasswordForm;
+import com.tx.eoms.controller.user.*;
 import com.tx.eoms.pojo.User;
 import com.tx.eoms.service.UserService;
 import com.tx.eoms.util.CommonResult;
@@ -95,9 +93,8 @@ public class UserController {
         return CommonResult.ok().put("page", pageUtils);
     }
 
-
     @PostMapping("/addUser")
-    @SaCheckPermission(value = {"ROOT", "USER:INSERT"}, mode = SaMode.OR)
+//    @SaCheckPermission(value = {"ROOT", "USER:INSERT"}, mode = SaMode.OR)
     @Operation(summary = "添加用户")
     public CommonResult addUser(@Valid @RequestBody AddUserForm form) {
         // 将表单转换为user对象
@@ -106,6 +103,44 @@ public class UserController {
         user.setRole(JSONUtil.parseArray(form.getRole()).toString());
         user.setCreateTime(new Date());
         int rows = userService.addUser(user);
+        return CommonResult.ok().put("rows", rows);
+    }
+
+    @PostMapping("/searchUserById")
+    @SaCheckPermission(value = {"ROOT", "USER:INSERT", "USER:UPDATE"}, mode = SaMode.OR)
+    @Operation(summary = "更新用户时数据回显")
+    public CommonResult searchUserById(@Valid @RequestBody SearchUserByIdForm form) {
+        Map<String, Object> userInfo = userService.searchUserById(form.getUserId());
+        return CommonResult.ok().put("user", userInfo);
+    }
+
+    @PostMapping("/update")
+    @SaCheckPermission(value = {"ROOT", "USER:UPDATE"}, mode = SaMode.OR)
+    @Operation(summary = "更新用户信息")
+    public CommonResult updateUser(@Valid @RequestBody UpdateUserForm form) {
+        Map<String, Object> params = JSONUtil.parse(form).toBean(Map.class);
+        params.replace("role", JSONUtil.parseArray(form.getRole()).toString());
+        int rows = userService.updateUser(params);
+        if (rows == 1) {
+            StpUtil.logoutByLoginId(form.getUserId());
+        }
+        return CommonResult.ok().put("rows", rows);
+    }
+
+    @PostMapping("/deleteUserByIds")
+    @SaCheckPermission(value = {"ROOT", "USER:DELETE"}, mode = SaMode.OR)
+    @Operation(summary = "删除用户信息")
+    public CommonResult deleteUserByIds(@Valid @RequestBody DeleteUserByIdsForm form) {
+        int userId = StpUtil.getLoginIdAsInt();
+        if (ArrayUtil.contains(form.getIds(), userId)) {
+            return CommonResult.error("不能删除自己的账号");
+        }
+        int rows = userService.deleteUserByIds(form.getIds());
+        if (rows > 0) {
+            for (Integer id : form.getIds()) {
+                StpUtil.logoutByLoginId(id);
+            }
+        }
         return CommonResult.ok().put("rows", rows);
     }
 }

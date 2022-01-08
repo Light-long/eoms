@@ -68,6 +68,34 @@ public class UserServiceImpl implements UserService {
         return new PageUtils(userList, count, start, length);
     }
 
+    /**
+     * 根据id查询用户信息
+     * @param userId 用户id
+     * @return 用户信息
+     */
+    @Override
+    public Map<String, Object> searchUserById(Integer userId) {
+        return userDao.searchUserById(userId);
+    }
+
+    /**
+     * 更新用户信息
+     */
+    @Override
+    public int updateUser(Map<String, Object> params) {
+        return userDao.updateUser(params);
+    }
+
+    /**
+     * 根据id删除用户
+     * @param ids 用户id集合
+     * @return 删除用户记录数
+     */
+    @Override
+    public int deleteUserByIds(Integer[] ids) {
+        return userDao.deleteUserByIds(ids);
+    }
+
 
     /**
      * 登录

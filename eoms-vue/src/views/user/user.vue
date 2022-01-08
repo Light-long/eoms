@@ -257,9 +257,59 @@ export default {
 				}
 			});
 		},
+		// 重置表单
 		resetForm: function () {
 			this.dataForm = {}
 			this.loadDataList()
+		},
+		// 添加用户
+		addHandle: function () {
+			this.addOrUpdateVisible = true
+			this.$nextTick(() => {
+				this.$refs.addOrUpdate.init();
+			});
+		},
+		// 更新
+		updateHandle: function (id) {
+			this.addOrUpdateVisible = true
+			this.$nextTick(() => {
+				this.$refs.addOrUpdate.init(id);
+			})
+		},
+		// 删除
+		deleteHandle: function (id) {
+			let that = this
+			let ids = id ? [id] : that.dataListSelections.map(item => item.id)
+			if (ids.length == 0) {
+				that.$message({
+					message: '没有选中记录',
+					type: 'warning',
+					duration: 1200
+				});
+			} else {
+				that.$confirm(`确定要删除选中的记录？`, '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					that.$http("/user/deleteUserByIds", "POST", {ids: ids}, true, function (resp) {
+						if (resp.rows > 0) {
+							that.$message({
+								message: '删除成功',
+								type: 'success',
+								duration: 1200
+							});
+							that.loadDataList();
+						} else {
+							that.$message({
+								message: '删除失败',
+								type: 'error',
+								duration: 1200
+							});
+						}
+					})
+				})
+			}
 		}
 	},
 	created: function() {

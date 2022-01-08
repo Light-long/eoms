@@ -65,6 +65,7 @@
             <if test="status!=null">
                 AND u.status =#{status}
             </if>
+            order by u.id desc
             limit #{start}, #{length}
     </select>
     
@@ -88,6 +89,69 @@
             AND u.status=#{status}
         </if>
     </select>
+
+    <select id="searchUserById" parameterType="int" resultType="HashMap">
+        select
+            username,
+            name,
+            sex,
+            tel,
+            email,
+            hiredate,
+            role,
+            dept_id as deptId,
+            status,
+            CAST(AES_DECRYPT( UNHEX( password ), username ) as char) AS password
+        from tb_user
+        where id = #{userId}
+    </select>
+
+    <delete id="deleteUserByIds">
+        delete from tb_user
+        where id in
+        <foreach collection="array" open="(" separator="," close=")" item="one">
+            #{one}
+        </foreach>
+        and root = false
+    </delete>
+
+    <update id="updateUser" parameterType="HashMap">
+        update tb_user
+        set
+        <if test="username != null and password != null">
+            username = #{username},
+            password = HEX(AES_ENCRYPT(#{password}, #{username})),
+        </if>
+        <if test="name!=null">
+            name = #{name},
+        </if>
+        <if test="sex!=null">
+            sex = #{sex},
+        </if>
+        <if test="tel!=null">
+            tel = #{tel},
+        </if>
+        <if test="email!=null">
+            email = #{email},
+        </if>
+        <if test="hiredate!=null">
+            hiredate = #{hiredate},
+        </if>
+        <if test="role!=null">
+            role = #{role},
+        </if>
+        <if test="root!=null">
+            root = #{root},
+        </if>
+        <if test="deptId!=null">
+            dept_id = #{deptId},
+        </if>
+        <if test="status!=null">
+            status = #{status},
+        </if>
+        id=id
+        WHERE id= #{userId}
+    </update>
 
     <insert id="addUser" parameterType="com.tx.eoms.pojo.User">
         insert into tb_user

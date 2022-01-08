@@ -52,4 +52,23 @@ public interface UserDao {
      * @param condition 查询条件
      */
     long searchUserCount (Map<String, Object> condition);
+
+    /**
+     * 根据id查询用户信息
+     * @param userId 用户id
+     * @return 用户信息
+     */
+    Map<String, Object> searchUserById(Integer userId);
+
+    /**
+     * 更新用户信息
+     */
+    int updateUser(Map<String, Object> params);
+
+    /**
+     * 根据id删除用户
+     * @param ids 用户id集合
+     * @return 删除用户记录数
+     */
+    int deleteUserByIds(Integer[] ids);
 }
