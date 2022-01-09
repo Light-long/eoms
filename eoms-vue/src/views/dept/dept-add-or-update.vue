@@ -71,16 +71,42 @@ export default {
 			that.$nextTick(() => {
 				that.$refs['dataForm'].resetFields();
 				if (id) {
-					that.$http('dept/searchById', 'POST', { id: id },true, function(resp) {
-						that.dataForm.deptName = resp.deptName;
-						that.dataForm.tel = resp.tel;
-						that.dataForm.email = resp.email;
-						that.dataForm.desc = resp.desc;
+					that.$http('/dept/searchDeptById', 'POST', { id: id },true, function(resp) {
+						let dept = resp.dept
+						that.dataForm.deptName = dept.deptName;
+						that.dataForm.tel = dept.tel;
+						that.dataForm.email = dept.email;
+						that.dataForm.desc = dept.desc;
 					});
 				}
 			});
 		},
-		
+		dataFormSubmit: function () {
+			let that = this
+			that.$refs['dataForm'].validate( valid => {
+				if (valid) {
+					that.$http(`/dept/${!that.dataForm.id ? 'addDept' : 'updateDept'}`, "POST", that.dataForm, true, function (resp) {
+						if (resp.rows == 1) {
+							that.$message({
+								message: '操作成功',
+								type: 'success',
+								duration: 1200
+							});
+							that.visible = false;
+							that.$emit('refreshDataList');
+						} else {
+							that.$message({
+								message: '操作失败',
+								type: 'error',
+								duration: 1200
+							});
+						}
+					})
+				} else {
+					return false
+				}
+			})
+		}
 	}
 };
 </script>

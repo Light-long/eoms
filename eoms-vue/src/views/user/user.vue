@@ -77,7 +77,7 @@
 			size="medium"
 		>
 			<el-table-column type="selection" header-align="center" align="center" width="50"/>
-			<el-table-column type="index" header-align="center" align="center" width="100" label="序号">
+			<el-table-column type="index" header-align="center" align="center" width="80" label="序号">
 				<template #default="scope">
 					<span>{{ (pageIndex - 1) * pageSize + scope.$index + 1 }}</span>
 				</template>
@@ -85,26 +85,26 @@
 			<el-table-column prop="name" header-align="center" align="center" min-width="100" label="姓名" />
 			<el-table-column prop="sex" header-align="center" align="center" min-width="60" label="性别" />
 			<el-table-column prop="tel" header-align="center" align="center" min-width="130" label="电话" />
-			<el-table-column
-				prop="email"
-				header-align="center"
-				align="center"
-				min-width="240"
-				label="邮箱"
-				:show-overflow-tooltip="true"
-			/>
-			<el-table-column prop="hiredate" header-align="center" align="center" min-width="130" label="入职日期" />
+<!--			<el-table-column-->
+<!--				prop="email"-->
+<!--				header-align="center"-->
+<!--				align="center"-->
+<!--				min-width="240"-->
+<!--				label="邮箱"-->
+<!--				:show-overflow-tooltip="true"-->
+<!--			/>-->
+			<el-table-column prop="hiredate" header-align="center" align="center" min-width="110" label="入职日期" />
 			<el-table-column
 				prop="roles"
 				header-align="center"
 				align="center"
-				min-width="150"
+				min-width="180"
 				label="角色"
 				:show-overflow-tooltip="true"
 			/>
 			<el-table-column prop="deptName" header-align="center" align="center" min-width="120" label="部门" />
-			<el-table-column prop="status" header-align="center" align="center" min-width="100" label="状态" />
-			<el-table-column header-align="center" align="center" width="150" label="操作">
+			<el-table-column prop="status" header-align="center" align="center" min-width="80" label="状态" />
+			<el-table-column header-align="center" align="center" width="180" label="操作">
 				<template #default="scope">
 					<el-button
 						type="text"

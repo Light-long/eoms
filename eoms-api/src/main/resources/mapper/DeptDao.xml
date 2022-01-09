@@ -6,4 +6,97 @@
         from tb_dept
         order by id
     </select>
+
+    <select id="searchDeptByPage" parameterType="HashMap" resultType="HashMap">
+        select
+            d.id,
+            d.dept_name as deptName,
+            d.tel,
+            d.email,
+            d.desc,
+            count(u.id) as emps
+        from tb_dept as d left join tb_user as u
+        on d.id = u.dept_id and u.status = 1
+        where 1=1
+        <if test="deptName != null">
+            and d.dept_name like "%${deptName}%"
+        </if>
+        group by d.id
+        limit #{start}, #{length}
+    </select>
+
+    <select id="searchDeptCount" parameterType="HashMap" resultType="long">
+        select count(*) from (
+            select d.id
+            from tb_dept as d left join tb_user as u
+            on d.id = u.dept_id and u.status = 1
+            where 1=1
+            <if test="deptName != null">
+                and dept_name like "%${deptName}%"
+            </if>
+            group by d.id
+        ) as temp
+    </select>
+
+    <insert id="addDept" parameterType="com.tx.eoms.pojo.Dept">
+        insert into tb_dept
+        set
+            dept_name = #{deptName}
+            <if test="tel!=null">
+                ,tel=#{tel}
+            </if>
+            <if test="email!=null">
+                ,email=#{email}
+            </if>
+            <if test="desc!=null">
+                ,`desc`=#{desc}
+            </if>
+    </insert>
+
+    <select id="searchDeptById" parameterType="int" resultType="HashMap">
+        select
+            id,
+            dept_name as deptName,
+            tel,
+            email,
+            `desc`
+        from tb_dept
+        where id = #{id}
+    </select>
+
+    <update id="updateDept" parameterType="com.tx.eoms.pojo.Dept">
+        update tb_dept
+        set
+            dept_name = #{deptName}
+            <if test="tel!=null">
+                ,tel=#{tel}
+            </if>
+            <if test="email!=null">
+                ,email=#{email}
+            </if>
+            <if test="desc!=null">
+                ,`desc`=#{desc}
+            </if>
+        where id = #{id}
+    </update>
+
+    <select id="searchCanDelete" resultType="boolean">
+        select if( sum(temp.users) > 0, false, true) as result from (
+            select count(u.id) as users
+            from tb_dept as d left join tb_user as u on d.id = u.dept_id
+            where d.id in
+            <foreach collection="array" open="(" separator="," close=")" item="one">
+                #{one}
+            </foreach>
+            group by d.id
+        ) as temp
+    </select>
+
+    <delete id="deleteDeptByIds">
+        delete from tb_dept
+        where id in
+        <foreach collection="array" open="(" separator="," close=")" item="one">
+            #{one}
+        </foreach>
+    </delete>
 </mapper>

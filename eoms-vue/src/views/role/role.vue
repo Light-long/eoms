@@ -49,7 +49,7 @@
                 align="center"
                 width="50"
             />
-            <el-table-column type="index" header-align="center" align="center" width="100" label="序号">
+            <el-table-column type="index" header-align="center" align="center" width="80" label="序号">
                 <template #default="scope">
                     <span>{{ (pageIndex - 1) * pageSize + scope.$index + 1 }}</span>
                 </template>
@@ -60,12 +60,12 @@
                     <span>{{ scope.row.permissions }}个</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="users" header-align="center" align="center" label="关联用户" min-width="140">
+            <el-table-column prop="users" header-align="center" align="center" label="关联用户" min-width="120">
                 <template #default="scope">
                     <span>{{ scope.row.users }}人</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="desc" header-align="center" align="center" label="备注" min-width="450" />
+            <el-table-column prop="desc" header-align="center" align="center" label="备注" min-width="250" />
             <el-table-column prop="systemic" header-align="center" align="center" label="内置角色" min-width="100">
                 <template #default="scope">
                     <span>{{ scope.row.systemic ? '是' : '否' }}</span>
