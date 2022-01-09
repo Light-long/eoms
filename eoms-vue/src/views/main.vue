@@ -8,8 +8,8 @@
 		<nav class="site-navbar" :class="'site-navbar--' + navbarLayoutType">
 			<div class="site-navbar__header">
 				<h1 class="site-navbar__brand">
-					<a class="site-navbar__brand-lg">Emos在线办公系统</a>
-					<a class="site-navbar__brand-mini">OA</a>
+					<a class="site-navbar__brand-lg">EOMS办公管理系统</a>
+					<a class="site-navbar__brand-mini">EOMS</a>
 				</h1>
 			</div>
 			<div class="site-navbar__body clearfix">
@@ -67,13 +67,12 @@
 							<span slot="title">组织管理</span>
 						</template>
 						<el-menu-item
-							index="dept"
-							v-if="isAuth(['ROOT', 'DEPT:SELECT'])"
-							@click="$router.push({ name: 'Dept' })"
-							ref="ABC"
+								index="user"
+								v-if="isAuth(['ROOT', 'USER:SELECT'])"
+								@click="$router.push({ name: 'User' })"
 						>
-							<SvgIcon name="company_fill" class="icon-svg" />
-							<span slot="title">部门管理</span>
+							<SvgIcon name="user_fill" class="icon-svg" />
+							<span slot="title">用户管理</span>
 						</el-menu-item>
 						<el-menu-item
 							index="role"
@@ -84,12 +83,13 @@
 							<span slot="title">角色管理</span>
 						</el-menu-item>
 						<el-menu-item
-							index="user"
-							v-if="isAuth(['ROOT', 'USER:SELECT'])"
-							@click="$router.push({ name: 'User' })"
+								index="dept"
+								v-if="isAuth(['ROOT', 'DEPT:SELECT'])"
+								@click="$router.push({ name: 'Dept' })"
+								ref="ABC"
 						>
-							<SvgIcon name="user_fill" class="icon-svg" />
-							<span slot="title">用户管理</span>
+							<SvgIcon name="company_fill" class="icon-svg" />
+							<span slot="title">部门管理</span>
 						</el-menu-item>
 					</el-submenu>
 					<el-submenu

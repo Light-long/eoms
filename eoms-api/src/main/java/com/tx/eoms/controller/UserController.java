@@ -94,7 +94,7 @@ public class UserController {
     }
 
     @PostMapping("/addUser")
-//    @SaCheckPermission(value = {"ROOT", "USER:INSERT"}, mode = SaMode.OR)
+    @SaCheckPermission(value = {"ROOT", "USER:INSERT"}, mode = SaMode.OR)
     @Operation(summary = "添加用户")
     public CommonResult addUser(@Valid @RequestBody AddUserForm form) {
         // 将表单转换为user对象

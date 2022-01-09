@@ -1,12 +1,9 @@
-package com.tx.eoms.dao;
-
-import org.apache.ibatis.annotations.Mapper;
+package com.tx.eoms.service;
 
 import java.util.List;
 import java.util.Map;
 
-@Mapper
-public interface PermissionDao {
+public interface PermissionService {
 
     /**
      * 查询所有权限

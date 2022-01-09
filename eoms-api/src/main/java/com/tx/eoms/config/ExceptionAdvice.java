@@ -1,6 +1,7 @@
 package com.tx.eoms.config;
 
 import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
 import cn.hutool.json.JSONObject;
 import com.tx.eoms.exception.EomsException;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,10 @@ public class ExceptionAdvice {
             log.error("执行异常", e);
             EomsException exception = (EomsException) e;
             json.set("error", exception.getMsg());
+        } else if (e instanceof NotPermissionException) {
+            log.error("执行异常", e);
+            NotPermissionException exception = (NotPermissionException) e;
+            json.set("error", exception.getMessage());
         }
         // 处理其余的异常
         else {

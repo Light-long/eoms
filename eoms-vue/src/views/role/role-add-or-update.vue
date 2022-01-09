@@ -19,7 +19,7 @@
 			<el-form-item label="权限" prop="permissions">
 				<el-transfer
 					v-model="dataForm.permissions"
-					:data="permisionList"
+					:data="permissionList"
 					size="medium"
 					:titles="['权限列表', '具备权限']"
 					filterable
@@ -45,11 +45,14 @@ export default {
 			dataForm: {
 				id: null,
 				roleName: null,
+				// 用户选中权限
 				permissions: [],
 				desc: null,
 				changed: false
 			},
-			permisionList: [],
+			// 所有权限
+			permissionList: [],
+			// 该用户已有权限
 			oldPermissions: [],
 			dataRule: {
 				roleName: [
@@ -71,31 +74,69 @@ export default {
 			that.visible = true;
 			that.$nextTick(() => {
 				that.$refs['dataForm'].resetFields();
+				// 内置用户的默认权限
 				let defaultPermissions = [];
+				// 更新是回显角色信息
 				if (id) {
-					that.$http('role/searchById', 'POST', { id: id }, false, function(resp) {
-						that.dataForm.roleName = resp.roleName;
-						that.dataForm.desc = resp.desc;
-						that.dataForm.permissions = JSON.parse(resp.permissions);
-						//保存原始权限数据
-						that.oldPermissions = JSON.parse(resp.permissions);
-						defaultPermissions = resp.defaultPermissions;
+					that.$http('/role/searchRoleById', 'POST', { id: id }, true, function(resp) {
+						let role = resp.role
+						that.dataForm.roleName = role.roleName;
+						that.dataForm.desc = role.desc;
+						that.dataForm.permissions = JSON.parse(role.permissions);
+						// 保存原始权限数据
+						that.oldPermissions = JSON.parse(role.permissions);
+						defaultPermissions = role.defaultPermissions;
 					});
 				}
-				that.$http('permission/searchAllPermission', 'GET', null, true, function(resp) {
+				that.$http('/permission/searchAllPermissions', 'GET', null, true, function(resp) {
 					let temp = [];
-					for (let one of resp.list) {
+					for (let one of resp.permissions) {
 						let disabled = false;
 						if (that.systemic) {
 							disabled = defaultPermissions.includes(one.id);
 						}
 						temp.push({ key: one.id, label: `${one.moduleName}（${one.actionName}）`, disabled: disabled });
 					}
-					that.permisionList = temp;
+					that.permissionList = temp;
 				});
 			});
 		},
-		
+		dataFormSubmit: function () {
+			let that = this
+			that.$refs['dataForm'].validate(valid => {
+				if (valid) {
+					//因为用户是随机选择权限，所以对选中的权限排序
+					that.dataForm.permissions.sort(function(a, b) {
+						return a - b;
+					});
+					//判断用户选择的权限和原来的权限是否一致？把数组转换成字符串，简化比较两个数组是否一致
+					// 如果只是修改角色名字或者备注，是不需要把该角色关联的所有用户都踢下线的，毕竟角色的权限没有改变。
+					// 只有角色权限改变的时候，才需要后端程序把角色关联的所有用户都踢下线
+					if (that.dataForm.permissions.join() != that.oldPermissions.join()) {
+						that.dataForm.changed = true;
+					} else {
+						that.dataForm.changed = false;
+					}
+					that.$http(`/role/${!that.dataForm.id ? 'addRole' : 'updateRole'}`, 'POST', that.dataForm, true, function(resp) {
+						if (resp.rows == 1) {
+							that.$message({
+								message: '操作成功',
+								type: 'success',
+								duration: 1200
+							});
+							that.visible = false;
+							that.$emit('refreshDataList');
+						} else {
+							that.$message({
+								message: '操作失败',
+								type: 'error',
+								duration: 1200
+							});
+						}
+					});
+				}
+			})
+		}
 	}
 };
 </script>

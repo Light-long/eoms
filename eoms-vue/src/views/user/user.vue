@@ -1,70 +1,72 @@
 <template>
 	<div v-if="isAuth(['ROOT', 'USER:SELECT'])">
-		<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
-			<el-form-item prop="name">
-				<el-input
-					v-model="dataForm.name"
-					placeholder="姓名"
-					size="medium"
-					class="input"
-					clearable="clearable"
-				/>
-			</el-form-item>
-			<el-form-item>
-				<el-select v-model="dataForm.sex" class="input" placeholder="性别" size="medium" clearable="clearable">
-					<el-option label="男" value="男" />
-					<el-option label="女" value="女" />
-				</el-select>
-			</el-form-item>
-			<el-form-item>
-				<el-select v-model="dataForm.role" class="input" placeholder="角色" size="medium" clearable="clearable">
-					<el-option v-for="one in roleList" :label="one.roleName" :value="one.roleName" />
-				</el-select>
-			</el-form-item>
-			<el-form-item>
-				<el-select
-					v-model="dataForm.deptId"
-					class="input"
-					placeholder="部门"
-					size="medium"
-					clearable="clearable"
-				>
-					<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
-				</el-select>
-			</el-form-item>
-			<el-form-item>
-				<el-select
-					v-model="dataForm.status"
-					class="input"
-					placeholder="状态"
-					size="medium"
-					clearable="clearable"
-				>
-					<el-option label="在职" value="1" />
-					<el-option label="离职" value="2" />
-				</el-select>
-			</el-form-item>
-			<el-form-item>
-				<el-button size="medium" type="primary" @click="searchHandle()">查询</el-button>
-				<el-button size="medium" type="warn" @click="resetForm()">清空</el-button>
-				<el-button
-					size="medium"
-					type="primary"
-					:disabled="!isAuth(['ROOT', 'USER:INSERT'])"
-					@click="addHandle()"
-				>
-					新增
-				</el-button>
-				<el-button
-					size="medium"
-					type="danger"
-					:disabled="!isAuth(['ROOT', 'USER:DELETE'])"
-					@click="deleteHandle()"
-				>
-					批量删除
-				</el-button>
-			</el-form-item>
-		</el-form>
+		<div align="center">
+			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
+				<el-form-item prop="name">
+					<el-input
+							v-model="dataForm.name"
+							placeholder="姓名"
+							size="medium"
+							class="input"
+							clearable="clearable"
+					/>
+				</el-form-item>
+				<el-form-item>
+					<el-select v-model="dataForm.sex" class="input" placeholder="性别" size="medium" clearable="clearable">
+						<el-option label="男" value="男" />
+						<el-option label="女" value="女" />
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-select v-model="dataForm.role" class="input" placeholder="角色" size="medium" clearable="clearable">
+						<el-option v-for="one in roleList" :label="one.roleName" :value="one.roleName" />
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-select
+							v-model="dataForm.deptId"
+							class="input"
+							placeholder="部门"
+							size="medium"
+							clearable="clearable"
+					>
+						<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-select
+							v-model="dataForm.status"
+							class="input"
+							placeholder="状态"
+							size="medium"
+							clearable="clearable"
+					>
+						<el-option label="在职" value="1" />
+						<el-option label="离职" value="2" />
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-button size="medium" type="primary" @click="searchHandle()">查询</el-button>
+					<el-button size="medium" type="warn" @click="resetForm()">清空</el-button>
+					<el-button
+							size="medium"
+							type="primary"
+							:disabled="!isAuth(['ROOT', 'USER:INSERT'])"
+							@click="addHandle()"
+					>
+						新增
+					</el-button>
+					<el-button
+							size="medium"
+							type="danger"
+							:disabled="!isAuth(['ROOT', 'USER:DELETE'])"
+							@click="deleteHandle()"
+					>
+						批量删除
+					</el-button>
+				</el-form-item>
+			</el-form>
+		</div>
 		<el-table
 			:data="dataList"
 			border

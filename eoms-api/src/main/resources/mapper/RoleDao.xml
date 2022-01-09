@@ -6,4 +6,97 @@
         from tb_role
         order by id
     </select>
+
+    <select id="searchRolesByPage" parameterType="HashMap" resultType="HashMap">
+        select
+            r.id,
+            r.role_name as roleName,
+            count(u.id) as users,
+            JSON_LENGTH(r.permissions) as permissions,
+            r.`desc`,
+            r.systemic
+        from tb_role as r
+        left join tb_user as u
+        on JSON_CONTAINS(u.role, cast(r.id as char))
+        where 1 = 1
+        <if test="roleName != null">
+            and r.role_name like "%${roleName}%"
+        </if>
+        group by r.id
+        order by r.id
+        limit #{start}, #{length}
+    </select>
+    
+    <select id="searchRolesCount" parameterType="HashMap" resultType="long">
+        select count(*)
+        from (
+            select distinct r.id
+            from tb_role r left join tb_user u on JSON_CONTAINS(u.role, cast(r.id as char))
+            where 1 = 1
+            <if test="roleName != null">
+                and r.role_name like "%${roleName}%"
+            </if>
+            group by r.id
+        ) as temp
+    </select>
+    
+    <insert id="addRole" parameterType="com.tx.eoms.pojo.Role">
+        insert into tb_role
+        set
+            role_name = #{roleName},
+            permissions = #{permissions}
+            <if test="desc != null">
+                , `desc` = #{desc}
+            </if>
+    </insert>
+
+    <select id="searchRoleById" parameterType="int" resultType="HashMap">
+        select
+            id,
+            role_name as roleName,
+            permissions,
+            `desc`,
+            default_permissions as defaultPermissions
+        from tb_role
+        where id = #{id}
+    </select>
+
+    <select id="searchUserIdsByRoleId" parameterType="int" resultType="int">
+        select
+            u.id
+        from tb_role as r
+        left join tb_user as u on JSON_CONTAINS(u.role, cast(r.id as char))
+        where r.id = #{id}
+    </select>
+
+    <update id="updateRole" parameterType="com.tx.eoms.pojo.Role">
+        update tb_role
+        set
+            role_name = #{roleName},
+            `desc` = #{desc},
+            permissions = #{permissions}
+        where id = #{id} and id != 0
+    </update>
+
+    <select id="searchCanDelete" resultType="boolean">
+        select if( sum(temp.users) > 0, false , true) as result
+        from (
+            select count(u.id) as users
+            from tb_role as r join tb_user as u on JSON_CONTAINS(u.role, cast(r.id as char))
+            where r.id in
+            <foreach collection="array" open="(" separator="," close=")" item="one">
+                #{one}
+            </foreach>
+            group by r.id
+        ) as temp
+    </select>
+
+    <delete id="deleteRoleByIds">
+        delete from tb_role
+        where id in
+        <foreach collection="array" open="(" separator="," close=")" item="one">
+            #{one}
+        </foreach>
+        and systemic = false
+    </delete>
 </mapper>

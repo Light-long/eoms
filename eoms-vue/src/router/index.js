@@ -6,7 +6,7 @@ from 'vue-router'
 import Login from '../views/login/login.vue'
 import Main from "../views/main.vue"
 import Home from "../views/home.vue"
-import Role from "../views/role.vue"
+import Role from "../views/role/role.vue"
 import User from "../views/user/user.vue"
 import Dept from "../views/dept.vue"
 import MeetingRoom from '../views/meeting_room.vue'
