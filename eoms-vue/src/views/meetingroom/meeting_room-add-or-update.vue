@@ -59,18 +59,75 @@ export default {
 			that.$nextTick(() => {
 				that.$refs['dataForm'].resetFields();
 				if (id) {
-					that.$http('meeting_room/searchById', 'POST', { id: id }, true,function(resp) {
-						that.dataForm.name = resp.name;
-						that.dataForm.max = resp.max+"";
-						that.dataForm.desc = resp.desc;
-						that.dataForm.status=resp.status+"";
+					that.$http('/meetingRoom/searchById', 'POST', { id: id }, true,function(resp) {
+						let meetingRoom = resp.meetingRoom
+						that.dataForm.name = meetingRoom.name;
+						that.dataForm.max = meetingRoom.max+"";
+						that.dataForm.desc = meetingRoom.desc;
+						that.dataForm.status= meetingRoom.status+"";
 					});
 				}
 			});
-
-			
 		},
-		
+		dataFormSubmit: function () {
+			let that = this
+			that.$refs["dataForm"].validate( valid => {
+				if (valid) {
+					// 修改
+					if (that.dataForm.id) {
+						let data = {
+							id: that.dataForm.id,
+							name: that.dataForm.name,
+							max: that.dataForm.max,
+							desc: that.dataForm.desc,
+							status: parseInt(that.dataForm.status)
+						}
+						that.$http(`/meetingRoom/updateMeetingRoom`, "POST", data, true, function (resp) {
+							if (resp.rows === 1) {
+								that.$message({
+									message: '操作成功',
+									type: 'success',
+									duration: 1200
+								});
+								that.visible = false;
+								that.$emit('refreshDataList');
+							} else {
+								that.$message({
+									message: '操作失败',
+									type: 'error',
+									duration: 1200
+								});
+							}
+						})
+					} else {
+						let data = {
+							id: that.dataForm.id,
+							name: that.dataForm.name,
+							max: that.dataForm.max,
+							desc: that.dataForm.desc,
+							status: 1
+						}
+						that.$http(`/meetingRoom/addMeetingRoom`, "POST", data, true, function (resp) {
+							if (resp.rows === 1) {
+								that.$message({
+									message: '操作成功',
+									type: 'success',
+									duration: 1200
+								});
+								that.visible = false;
+								that.$emit('refreshDataList');
+							} else {
+								that.$message({
+									message: '操作失败',
+									type: 'error',
+									duration: 1200
+								});
+							}
+						})
+					}
+				}
+			})
+		}
 	}
 };
 </script>

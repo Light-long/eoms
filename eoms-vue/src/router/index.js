@@ -5,11 +5,11 @@ import {
 from 'vue-router'
 import Login from '../views/login/login.vue'
 import Main from "../views/main.vue"
-import Home from "../views/home.vue"
+import Home from "../views/home/home.vue"
 import Role from "../views/role/role.vue"
 import User from "../views/user/user.vue"
 import Dept from "../views/dept/dept.vue"
-import MeetingRoom from '../views/meeting_room.vue'
+import MeetingRoom from '../views/meetingroom/meeting_room.vue'
 import OfflineMeeting from "../views/offline_meeting.vue"
 import OnlineMeeting from "../views/online_meeting.vue"
 import MeetingVideo from "../views/meeting_video.vue"

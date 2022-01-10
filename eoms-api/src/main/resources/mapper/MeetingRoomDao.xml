@@ -2,4 +2,116 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tx.eoms.dao.MeetingRoomDao">
 
+    <select id="searchAllMeetingRoom" resultType="HashMap">
+        select
+            id, `name`
+        from tb_meeting_room
+        where status = 1
+    </select>
+
+    <select id="searchMeetingRoomByPage" parameterType="HashMap" resultType="HashMap">
+        select
+            mr.id,
+            mr.`name`,
+            mr.max,
+            mr.`desc`,
+            mr.`status`,
+            count(m.id) as meetings
+        from tb_meeting_room as mr
+        left join tb_meeting as m on m.status = 2 and mr.`name` = m.place
+        <if test="name != null">
+            where mr.name like "%${name}%"
+        </if>
+        group by mr.id
+        <if test="canDelete == false">
+            having count(m.id) > 0
+        </if>
+        <if test="canDelete == true">
+            having count(m.id) = 0
+        </if>
+        limit #{start}, #{length}
+    </select>
+
+    <select id="searchMeetingRoomCount" parameterType="HashMap" resultType="long">
+        select count(*) from (
+            select mr.id
+            from tb_meeting_room as mr left join tb_meeting as m
+            on m.status = 2 and m.place = mr.`name`
+            <if test="name != null">
+                where mr.name like "%${name}%"
+            </if>
+            <if test="canDelete == false">
+                having count(m.id) > 0
+            </if>
+            <if test="canDelete == true">
+                having count(m.id) = 0
+            </if>
+        ) as temp
+    </select>
+
+    <insert id="addMeetingRoom" parameterType="com.tx.eoms.pojo.MeetingRoom">
+        insert into tb_meeting_room
+        set name = #{name}, max = #{max}
+        <if test="desc != null">
+            , `desc` = #{desc}
+        </if>
+        <if test="status != null">
+            , status = #{status}
+        </if>
+    </insert>
+
+    <select id="searchById" parameterType="int" resultType="HashMap">
+        select
+            id,
+            `name`,
+            max,
+            `desc`,
+            status
+        from tb_meeting_room
+        where id = #{id}
+    </select>
+
+    <update id="updateMeetingRoom" parameterType="com.tx.eoms.pojo.MeetingRoom">
+         UPDATE tb_meeting_room
+         SET name = #{name},
+             max = #{max},
+             `desc`= #{desc},
+             status = #{status}
+         WHERE id = #{id}
+    </update>
+
+    <select id="searchFreeMeetingRoom" parameterType="HashMap" resultType="String">
+        select temp.name from (
+            select
+            mr.`name`, m.id
+            from tb_meeting_room as mr left join tb_meeting as m
+            on mr.name = m.place
+            and m.date = #{date}
+            and (
+                (#{start} between m.start and m.end) or (#{end} between m.start and m.end)
+            )
+        ) as temp
+        where temp.id is null
+    </select>
+
+    <select id="searchCanDelete" resultType="boolean">
+        select if(sum(temp.meetings) > 0, false, true) as result from (
+            select count(m.id) as meetings
+            from tb_meeting_room as mr join tb_meeting as m
+            on m.status = 2 and m.place = mr.name
+            where mr.id in
+            <foreach collection="array" open="(" separator="," close=")" item="one">
+                #{one}
+            </foreach>
+            group by mr.id
+        ) as temp
+    </select>
+
+    <delete id="deleteMeetingRoomByIds">
+        delete from tb_meeting_room
+        where id in
+        <foreach collection="array" open="(" separator="," close=")" item="one">
+            #{one}
+        </foreach>
+    </delete>
 </mapper>

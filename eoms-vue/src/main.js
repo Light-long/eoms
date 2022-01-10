@@ -108,7 +108,7 @@ app.config.globalProperties.$http = function(url, method, data, async, fun) {
 		async: async,
 		data: JSON.stringify(data),
 		success: function(resp) {
-			if (resp.code == 200) {
+			if (resp.code === 200) {
 				fun(resp)
 			} else {
 				ElMessage.error({

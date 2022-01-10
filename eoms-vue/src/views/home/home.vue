@@ -23,7 +23,7 @@
 				</div>
 			</el-col>
 			<el-col :span="11" class="right">
-				<img src="../assets/home/banner.png" class="banner" /></el-col>
+				<img src="src/assets/home/banner.png" class="banner" /></el-col>
 		</el-row>
 	</div>
 </template>
@@ -31,5 +31,5 @@
 <script></script>
 
 <style lang="less" scoped="scoped">
-	@import url('home.less');
+	@import url('./home.less');
 </style>
