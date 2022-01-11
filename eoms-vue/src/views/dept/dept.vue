@@ -13,7 +13,7 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button size="medium" type="primary" @click="searchHandle()">查询</el-button>
-					<el-button size="medium" type="common" @click="resetForm()">清空</el-button>
+					<el-button size="medium" type="common" @click="resetForm()">重置</el-button>
 					<el-button
 							size="medium"
 							type="primary"
