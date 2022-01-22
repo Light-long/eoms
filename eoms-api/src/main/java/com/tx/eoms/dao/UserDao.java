@@ -71,4 +71,24 @@ public interface UserDao {
      * @return 删除用户记录数
      */
     int deleteUserByIds(Integer[] ids);
+
+    /**
+     * 根据userId查找用户信息
+     */
+    Map<String, Object> searchUserInfo(int userId);
+
+    /**
+     * 根据用户id查询所在部门的部门经理id
+     */
+    Integer searchDeptManagerId(int userId);
+
+    /**
+     * 查询总经理id
+     */
+    Integer searchGmId();
+
+    /**
+     * 查询所有用户
+     */
+    List<Map<String, Object>> searchAllUser();
 }

@@ -64,4 +64,9 @@ public interface UserService {
      * @return 删除用户记录数
      */
     int deleteUserByIds(Integer[] ids);
+
+    /**
+     * 查询所有用户
+     */
+    List<Map<String, Object>> searchAllUser();
 }

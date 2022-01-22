@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -100,6 +97,7 @@ public class UserController {
         // 将表单转换为user对象
         User user = JSONUtil.parse(form).toBean(User.class);
         user.setStatus((byte) 1);
+        user.setPhoto("https://online-office-1257796177.cos.ap-beijing.myqcloud.com/img/avatar/user.jpg");
         user.setRole(JSONUtil.parseArray(form.getRole()).toString());
         user.setCreateTime(new Date());
         int rows = userService.addUser(user);
@@ -142,5 +140,13 @@ public class UserController {
             }
         }
         return CommonResult.ok().put("rows", rows);
+    }
+
+    @GetMapping("/searchAllUser")
+    @Operation(summary = "查询所有用户")
+    @SaCheckLogin
+    public CommonResult searchAllUser() {
+        List<Map<String, Object>> list = userService.searchAllUser();
+        return CommonResult.ok().put("list", list);
     }
 }

@@ -112,11 +112,9 @@ export default {
 				members: [],
 				type: 2
 			},
-
 			disabledDate(date) {
 				return date.getTime() < Date.now() - 24 * 60 * 60 * 1000;
 			},
-
 			placeList: [],
 			users: [],
 			dataRule: {
@@ -140,7 +138,7 @@ export default {
 			that.visible = true;
 			that.$nextTick(() => {
 				that.$refs['dataForm'].resetFields();
-				that.$http('user/searchAllUser', 'GET', null, true, function(resp) {
+				that.$http('/user/searchAllUser', 'GET', null, true, function(resp) {
 					let temp = [];
 					for (let one of resp.list) {
 						temp.push({ key: one.id, label: one.name });
@@ -149,7 +147,57 @@ export default {
 				});
 			});
 		},
-		
+		loadPlaceList: function () {
+			let that = this
+			that.dataForm.place = null
+			that.placeList = []
+			if (that.dataForm.date == null ||
+				that.dataForm.date === '' ||
+				that.dataForm.start == null ||
+				that.dataForm.start === '' ||
+				that.dataForm.end == null ||
+				that.dataForm.end === '') {
+				return
+			}
+			let data = {
+				date: dayjs(that.dataForm.date).format("YYYY-MM-DD"),
+				start: that.dataForm.start,
+				end: that.dataForm.end
+			}
+			that.$http("/meetingRoom/searchFreeMeetingRoom", "POST", data, true, function (resp) {
+				that.placeList = resp.list
+			})
+		},
+		dataFormSubmit: function () {
+			let that = this
+			let data = that.dataForm
+			data.date = dayjs(that.dataForm.date).format("YYYY-MM-DD")
+			data.members = JSON.stringify(that.dataForm.members)
+			that.$refs['dataForm'].validate(valid => {
+				if (valid) {
+					that.$http("/meeting/addMeeting", "POST", data, true, function(resp) {
+						if (resp.rows === 1) {
+							that.visible = false;
+							that.$message({
+								message: '操作成功',
+								type: 'success',
+								duration: 1200
+							});
+							setTimeout(function() {
+								//加载最新数据
+								that.$emit('refresh');
+							}, 1200);
+						} else {
+							that.$message({
+								message: '操作失败',
+								type: 'error',
+								duration: 1200
+							});
+						}
+					})
+				}
+			})
+		}
 	}
 };
 </script>

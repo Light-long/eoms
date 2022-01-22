@@ -196,4 +196,50 @@
         status = #{status},
         create_time = #{createTime}
     </insert>
+
+    <select id="searchUserInfo" parameterType="int" resultType="HashMap">
+        select
+            u.open_id AS openId,
+            u.nickname,
+            u.name,
+            u.photo,
+            u.sex,
+            u.tel,
+            u.email,
+            d.dept_name AS deptName,
+            u.hiredate,
+            u.status,
+            ( SELECT GROUP_CONCAT( role_name separator "," ) FROM tb_role WHERE JSON_CONTAINS ( u.role, CONVERT ( id, CHAR ) ) ) AS roles
+        from tb_user as u
+        left join tb_dept as d on u.dept_id = d.id
+        where u.id = #{userId} and u.status = 1
+    </select>
+
+    <select id="searchDeptManagerId" parameterType="int" resultType="Integer">
+        select
+            u2.id
+        from tb_user as u1
+        join tb_user as u2 on u1.dept_id = u2.dept_id
+        join tb_role as r on JSON_CONTAINS(u2.role, cast(r.id as char))
+        where u1.id = #{id} and r.id = 2 and u1.status = 1 and u2.status = 1
+        order by u2.create_time desc
+        limit 1
+    </select>
+
+    <select id="searchGmId" resultType="Integer">
+        select
+            u.id
+        from tb_user as u join tb_role as r
+        on JSON_CONTAINS(u.role, cast(r.id as char))
+        where r.id = 1 and u.status = 1
+        limit 1
+    </select>
+
+    <select id="searchAllUser" resultType="HashMap">
+        select
+            id,
+            `name`
+        from tb_user
+        where status = 1
+    </select>
 </mapper>

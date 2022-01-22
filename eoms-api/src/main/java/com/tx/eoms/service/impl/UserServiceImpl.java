@@ -96,6 +96,14 @@ public class UserServiceImpl implements UserService {
         return userDao.deleteUserByIds(ids);
     }
 
+    /**
+     * 查询所有用户
+     */
+    @Override
+    public List<Map<String, Object>> searchAllUser() {
+        return userDao.searchAllUser();
+    }
+
 
     /**
      * 登录

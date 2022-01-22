@@ -24,12 +24,12 @@ public class Meeting implements Serializable {
     /**
      * 创建人ID
      */
-    private Long creatorId;
+    private Integer creatorId;
 
     /**
      * 日期
      */
-    private Date date;
+    private String date;
 
     /**
      * 开会地点
@@ -39,12 +39,12 @@ public class Meeting implements Serializable {
     /**
      * 开始时间
      */
-    private Date start;
+    private String start;
 
     /**
      * 结束时间
      */
-    private Date end;
+    private String end;
 
     /**
      * 会议类型（1在线会议，2线下会议）

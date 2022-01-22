@@ -10,7 +10,7 @@ import Role from "../views/role/role.vue"
 import User from "../views/user/user.vue"
 import Dept from "../views/dept/dept.vue"
 import MeetingRoom from '../views/meetingroom/meeting_room.vue'
-import OfflineMeeting from "../views/offline_meeting.vue"
+import OfflineMeeting from "../views/offline_meeting/offline_meeting.vue"
 import OnlineMeeting from "../views/online_meeting.vue"
 import MeetingVideo from "../views/meeting_video.vue"
 import Approval from "../views/approval.vue"
