@@ -48,7 +48,7 @@ public class MeetingWorkFlowTask {
      * @param start 会议开始时间
      * @param meetingType 会议类型
      */
-    @Async("AsyncTaskExecutor")
+    @Async
     public void startMeetingWorkFlow(String uuid, int creatorId, String title, String date, String start, String meetingType) {
         // 查询会议申请人的基本信息
         Map<String, Object> userInfo = userDao.searchUserInfo(creatorId);
@@ -91,6 +91,31 @@ public class MeetingWorkFlowTask {
             if (rows != 1) {
                 throw new EomsException("保存会议工作流实例ID失败");
             }
+        } else {
+            log.error(response.body());
+        }
+    }
+
+    /**
+     * 删除会议申请工作流
+     * @param uuid 会议uuid
+     * @param instanceId 会议的工作流id
+     * @param reason 删除原因
+     */
+    @Async
+    public void deleteMeetingApplication(String uuid, String instanceId, String reason) {
+        JSONObject json = new JSONObject();
+        json.set("uuid", uuid);
+        json.set("instanceId", instanceId);
+        json.set("code", code);
+        json.set("tcode", tcode);
+        json.set("type", "会议申请");
+        json.set("reason", reason);
+        String url = workflowUrl + "/workflow/deleteProcessById";
+        HttpResponse response = HttpRequest.post(url).header("Content-Type", "application/json")
+                .body(json.toString()).execute();
+        if (response.getStatus() == 200) {
+            log.info("删除了会议申请");
         } else {
             log.error(response.body());
         }

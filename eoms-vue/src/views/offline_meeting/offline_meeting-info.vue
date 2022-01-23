@@ -20,7 +20,7 @@
 				<el-col :span="3" class="label">状态：</el-col>
 				<el-col :span="9" class="value">{{ status }}</el-col>
 			</el-row>
-			<el-row class="info member" v-if="['待审批', '未开始'].includes(status)">
+			<el-row class="info member">
 				<el-col :span="3" class="label">人员：</el-col>
 				<el-col :span="21" class="value">
 					<ul class="list">
@@ -85,31 +85,30 @@ export default {
 					id: id,
 					status: status
 				};
-				that.$http('meeting/searchMeetingInfo', 'POST', data, true, function(resp) {
-					console.log(resp.data);
-					that.title = resp.title;
-					that.date = resp.date;
-					that.place = resp.place;
-					that.start = resp.start;
-					that.end = resp.end;
-
-					if (resp.status == 1) {
+				that.$http('/meeting/searchMeetingInfo', 'POST', data, true, function(resp) {
+					let meetingInfo = resp.meetingInfo
+					that.title = meetingInfo.title;
+					that.date = meetingInfo.date;
+					that.place = meetingInfo.place;
+					that.start = meetingInfo.start;
+					that.end = meetingInfo.end;
+					if (meetingInfo.status === 1) {
 						that.status = '待审批';
-					} else if (resp.status == 3) {
+					} else if (meetingInfo.status === 3) {
 						that.status = '未开始';
-					} else if (resp.status == 4) {
+					} else if (meetingInfo.status === 4) {
 						that.status = '进行中';
-					} else if (resp.status == 5) {
+					} else if (meetingInfo.status === 5) {
 						that.status = '已结束';
 					}
-					if (resp.hasOwnProperty('members')) {
-						that.members = JSON.parse(resp.members);
+					if (meetingInfo.hasOwnProperty('members')) {
+						that.members = JSON.parse(meetingInfo.members);
 					}
-					if (resp.hasOwnProperty('present')) {
-						that.present = JSON.parse(resp.present);
+					if (meetingInfo.hasOwnProperty('present')) {
+						that.present = JSON.parse(meetingInfo.present);
 					}
-					if (resp.hasOwnProperty('unpresent')) {
-						that.unpresent = JSON.parse(resp.unpresent);
+					if (meetingInfo.hasOwnProperty('unpresent')) {
+						that.unpresent = JSON.parse(meetingInfo.unpresent);
 					}
 				});
 			});
@@ -119,5 +118,5 @@ export default {
 </script>
 
 <style lang="less" scoped="scoped">
-@import url('offline_meeting-info.less');
+	@import url('offline_meeting-info.less');
 </style>

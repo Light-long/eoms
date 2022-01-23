@@ -24,6 +24,7 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button size="medium" type="common" @click="searchHandle()">查询</el-button>
+					<el-button size="medium" type="common" @click="reset">重置</el-button>
 					<el-button size="medium" type="primary" @click="addHandle()">会议申请</el-button>
 				</el-form-item>
 				<el-form-item class="mold">
@@ -90,10 +91,7 @@
 						<SvgIcon
 							name="close"
 							class="icon-svg-close"
-							v-if="
-								calendar.map[`${day.date}#${one}`].isCreator == 'true' &&
-									[1, 3].includes(calendar.map[`${day.date}#${one}`].status)
-							"
+							v-if="calendar.map[`${day.date}#${one}`].isCreator === 'true' && [1, 3].includes(calendar.map[`${day.date}#${one}`].status)"
 							@click.stop="deleteHandle(`${day.date}#${one}`)"
 						/>
 						{{ calendar.map[`${day.date}#${one}`].title }}
@@ -228,7 +226,37 @@ export default {
 							that.pageIndex = 1
 						}
 						that.loadDataList()
-						that.mold = 'gantt'
+						that.mode = 'gantt'
+					} else {
+						return false
+					}
+				})
+				// 数据以-周日历展示
+			} else {
+				that.$refs['dataForm'].validate(valid => {
+					if (valid) {
+						that.$refs['dataForm'].clearValidate()
+						let data = {
+							name: that.dataForm.name,
+							mold: that.dataForm.mold
+						}
+						if (that.dataForm.date != null && that.dataForm.date !== '') {
+							data.date = dayjs(that.dataForm.date).format("YYYY-MM-DD")
+						}
+						that.$http("/meeting/searchOfflineMeetingInWeek", "POST", data, true, function (resp) {
+							// {
+							// 	"07/31#09:00": {title:"测试会议1", date:"2021-07-31", start:"09:00", time:2, ……} ,
+							// 	"07/31#15:30": {title:"测试会议2", date:"2021-07-31", start:"15:30", time:2, ……} ,
+							// }
+							let meetingList = {}
+							for (let one of resp.list) {
+								meetingList[`${one.date}#${one.start}`] = one
+							}
+							that.calendar.map = meetingList
+							// 周日历表头标题
+							that.calendar.days = resp.days
+							that.mode = 'calendar'
+						})
 					} else {
 						return false
 					}
@@ -237,7 +265,7 @@ export default {
 		},
 		// 切换 我的会议|全部会议
 		changeHandle: function() {
-			this.loadDataList()
+			this.searchHandle()
 		},
 		sizeChangeHandle: function(val) {
 			this.pageSize = val
@@ -262,6 +290,49 @@ export default {
 			this.mold = 'gantt'
 			this.$refs['dataForm'].resetFields()
 			this.loadDataList()
+		},
+		infoHandle: function (id, status) {
+			this.infoVisible = true
+			this.$nextTick(() => {
+				this.$refs.info.init(id, status)
+			})
+		},
+		deleteHandle: function (key) {
+			let that = this;
+			that.$confirm('是否删除该会议?', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				type: 'warning'
+			}).then(() => {
+				let json = that.calendar.map[key]
+				let data = {
+					id: json.id,
+					uuid: json.uuid,
+					instanceId: json.instanceId,
+					reason: "删除会议申请"
+				}
+				that.$http("/meeting/deleteMeetingApplication", "POST", data, true, function (resp) {
+					if (resp.rows === 1) {
+						that.$message({
+							message: '删除成功',
+							type: 'success',
+							duration: 1200
+						});
+						that.searchHandle()
+					} else {
+						that.$message({
+							message: '删除失败',
+							type: 'error',
+							duration: 1200
+						});
+					}
+				})
+			})
+		},
+		reset: function () {
+			this.dataForm = []
+			this.dataForm.mold = '全部会议'
+			this.searchHandle()
 		}
 	},
 	mounted: function() {

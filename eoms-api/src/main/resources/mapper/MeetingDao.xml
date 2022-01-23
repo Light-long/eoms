@@ -11,7 +11,7 @@
 
     </select>
 
-    <select id="searchMeetingById" parameterType="long" resultType="HashMap">
+    <select id="searchMeetingById" parameterType="HashMap" resultType="HashMap">
         SELECT
             m.uuid,
             m.creator_id AS creatorId,
@@ -94,4 +94,92 @@
         status = #{status},
         create_time = NOW()
     </insert>
+
+    <select id="searchOfflineMeetingInWeek" parameterType="HashMap" resultType="HashMap">
+        select
+            id,
+            title,
+            DATE_FORMAT(`date`, '%m/%d') as `date`,
+            DATE_FORMAT(`start`, '%H:%i') as `start`,
+            round(timestampdiff(MINUTE, concat(`date`, " ", `start`), concat(`date`, " ", `end`)) / 30) as time,
+            uuid,
+            instance_id as instanceId,
+            if(creator_id = #{userId}, "true", "false") as isCreator,
+            `status`
+        from tb_meeting
+        where type = 2 and place = #{place} and `status` != 2
+        and date between #{startDate} and #{endDate}
+        <if test="mold == '我的会议'">
+            and JSON_CONTAINS(members, cast(#{userId} as char))
+        </if>
+    </select>
+
+    <select id="searchMeetingInfo" parameterType="long" resultType="HashMap">
+        select
+            m.title,
+            m.date,
+            m.place,
+            DATE_FORMAT(m.`start`, '%H:%i') as start,
+            DATE_FORMAT(m.`end`, '%H:%i') as end,
+            m.status,
+            CONCAT(
+                "[",
+                GROUP_CONCAT(
+                    JSON_OBJECT(
+                        "name", u.name,
+                        "photo", u.photo
+                    )
+                    SEPARATOR ","
+                ),
+                "]"
+            ) as members
+        from tb_meeting as m left join tb_user as u
+        on JSON_CONTAINS(m.members, cast(u.id as char))
+        where m.id = #{id} and u.status = 1
+    </select>
+
+    <select id="searchCurrentMeetingInfo" parameterType="long" resultType="HashMap">
+        select
+            m.title,
+            m.date,
+            m.place,
+            DATE_FORMAT(m.`start`,'%H:%i') AS `start`,
+            DATE_FORMAT(m.`end`,'%H:%i') AS `end`,
+            m.status,
+            (
+                select concat(
+                    "[",
+                    GROUP_CONCAT(
+                        JSON_OBJECT(
+                            "name", u.name,
+                            "photo", u.photo
+                        )
+                        SEPARATOR ","
+                    ),
+                    "]"
+                )
+                from tb_user as u where JSON_CONTAINS(m.present, cast(u.id as char))
+            ) as present,
+            (
+                select concat(
+                    "[",
+                    GROUP_CONCAT(
+                        JSON_OBJECT(
+                            "name", u.name,
+                            "photo", u.photo
+                        )
+                        SEPARATOR ","
+                    ),
+                    "]"
+                )
+                from tb_user as u where JSON_CONTAINS(m.unpresent, cast(u.id as char))
+            ) as unpresent
+        from tb_meeting as m
+        where m.id = #{id}
+    </select>
+    
+    <delete id="deleteMeetingApplication" parameterType="HashMap">
+        delete from tb_meeting
+        where id = #{id} and creator_id = #{creatorId}
+    </delete>
 </mapper>
