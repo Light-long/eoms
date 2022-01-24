@@ -34,4 +34,9 @@ public interface MeetingService {
      * 删除会议申请
      */
     int deleteMeetingApplication(Map<String, Object> params);
+
+    /**
+     * 查询线上会议列表
+     */
+    PageUtils searchOnlineMeetingByPage(Map<String, Object> params);
 }

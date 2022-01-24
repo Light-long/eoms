@@ -50,7 +50,7 @@ public class MeetingServiceImpl implements MeetingService {
             throw new EomsException("会议添加失败");
         }
         meetingWorkFlowTask.startMeetingWorkFlow(meeting.getUuid(), meeting.getCreatorId(), meeting.getTitle(),
-                meeting.getDate(), meeting.getStart() + ":00", "线下会议");
+                meeting.getDate(), meeting.getStart() + ":00", meeting.getType() == 1 ? "线上会议" : "线下会议");
         return rows;
     }
 
@@ -119,6 +119,18 @@ public class MeetingServiceImpl implements MeetingService {
         } else {
             throw new EomsException("只能删除待审批和未开始的会议");
         }
+    }
+
+    /**
+     * 查询线上会议列表
+     */
+    @Override
+    public PageUtils searchOnlineMeetingByPage(Map<String, Object> params) {
+        List<Map<String, Object>> onlineMeetingList = meetingDao.searchOnlineMeetingByPage(params);
+        long onlineMeetingCount = meetingDao.searchOnlineMeetingCount(params);
+        int start = (int) params.get("start");
+        int length = (int) params.get("length");
+        return new PageUtils(onlineMeetingList, onlineMeetingCount, start, length);
     }
 
 }

@@ -125,6 +125,18 @@ public class MeetingController {
         return CommonResult.ok().put("rows", rows);
     }
 
+    @PostMapping("/searchOnlineMeetingByPage")
+    @Operation(summary = "查询线上会议分页数据")
+    @SaCheckLogin
+    public CommonResult searchOnlineMeetingByPage(@Valid @RequestBody SearchOnlineMeetingByPageForm form) {
+        int start = (form.getPage() - 1) * form.getLength();
+        Map<String, Object> params = JSONUtil.parse(form).toBean(Map.class);
+        params.put("start", start);
+        params.put("userId", StpUtil.getLoginIdAsInt());
+        PageUtils onlineMeetingPage = meetingService.searchOnlineMeetingByPage(params);
+        return CommonResult.ok().put("page", onlineMeetingPage);
+    }
+
     @PostMapping("/receiveNotify")
     @Operation(summary = "接收工作流通知")
     public CommonResult receiveNotify(@Valid @RequestBody ReceiveNotifyForm form) {

@@ -23,9 +23,9 @@
 					></el-date-picker>
 				</el-form-item>
 				<el-form-item>
-					<el-button size="medium" type="common" @click="searchHandle()">查询</el-button>
+					<el-button size="medium" type="primary" @click="searchHandle()">查询</el-button>
 					<el-button size="medium" type="common" @click="reset">重置</el-button>
-					<el-button size="medium" type="primary" @click="addHandle()">会议申请</el-button>
+					<el-button size="medium" type="success" @click="addHandle()">会议申请</el-button>
 				</el-form-item>
 				<el-form-item class="mold">
 					<el-radio-group v-model="dataForm.mold" size="medium" @change="changeHandle">

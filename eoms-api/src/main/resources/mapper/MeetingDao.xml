@@ -182,4 +182,44 @@
         delete from tb_meeting
         where id = #{id} and creator_id = #{creatorId}
     </delete>
+
+    <select id="searchOnlineMeetingByPage" parameterType="HashMap" resultType="HashMap">
+        select
+            m.id,
+            m.title,
+            u.`name` AS creatorName,
+            IF( creator_id = #{userId}, "true", "false" ) AS isCreator,
+            IF(JSON_CONTAINS(m.members, CAST(#{userId} AS CHAR))=1,"true","false") AS mine,
+            m.date,
+            DATE_FORMAT(m.`start`, '%H:%i') AS `start`,
+            DATE_FORMAT(m.`end`, '%H:%i') AS `end`,
+            JSON_LENGTH ( m.members ) AS num,
+            m.`status`,
+            m.`desc`,
+            m.uuid,
+            m.instance_id AS instanceId
+        from tb_meeting as m
+        join tb_user as u on m.creator_id = u.id
+        where m.type = 1 and m.`status` != 2
+        <if test="date != null">
+            and m.date = #{date}
+        </if>
+        <if test="mold == '我的会议'">
+            and JSON_CONTAINS(m.members, cast(#{userId} as char))
+        </if>
+        order by m.id desc
+        limit #{start}, #{length}
+    </select>
+
+    <select id="searchOnlineMeetingCount" parameterType="HashMap" resultType="long">
+        select count(*)
+        from tb_meeting
+        where type = 1 and status != 2
+        <if test="date != null">
+            and date = #{date}
+        </if>
+        <if test="mold == '我的会议'">
+            and JSON_CONTAINS(members, cast(#{userId} as char))
+        </if>
+    </select>
 </mapper>

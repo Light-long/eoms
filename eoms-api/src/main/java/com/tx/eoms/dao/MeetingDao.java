@@ -63,4 +63,14 @@ public interface MeetingDao {
      * 删除会议申请
      */
     int deleteMeetingApplication(Map<String, Object> params);
+
+    /**
+     * 查询线上会议列表
+     */
+    List<Map<String, Object>> searchOnlineMeetingByPage(Map<String, Object> params);
+
+    /**
+     * 查询会议数量
+     */
+    long searchOnlineMeetingCount(Map<String, Object> params);
 }
