@@ -104,6 +104,14 @@ public class UserServiceImpl implements UserService {
         return userDao.searchAllUser();
     }
 
+    /**
+     * 根据userId查询用户所有角色
+     */
+    @Override
+    public List<String> searchUserRoles(int userId) {
+        return userDao.searchUserRoles(userId);
+    }
+
 
     /**
      * 登录

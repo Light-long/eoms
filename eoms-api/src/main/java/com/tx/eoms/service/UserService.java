@@ -69,4 +69,9 @@ public interface UserService {
      * 查询所有用户
      */
     List<Map<String, Object>> searchAllUser();
+
+    /**
+     * 根据userId查询用户所有角色
+     */
+    List<String> searchUserRoles(int userId);
 }

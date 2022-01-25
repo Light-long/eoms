@@ -242,4 +242,12 @@
         from tb_user
         where status = 1
     </select>
+
+    <select id="searchUserRoles" parameterType="int" resultType="String">
+        select
+            r.role_name as roleName
+        from tb_user as u join tb_role as r
+        on JSON_CONTAINS(u.role, cast(r.id as char))
+        where u.id = #{userId}
+    </select>
 </mapper>
