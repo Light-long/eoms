@@ -52,7 +52,14 @@
                 </template>
             </el-table-column>
             <el-table-column prop="num" header-align="center" align="center" min-width="100"  label="人数" />
-            <el-table-column prop="status" header-align="center" align="center" min-width="100" label="状态" />
+            <el-table-column prop="status" header-align="center" align="center" min-width="100" label="状态">
+                <template #default="scope">
+                    <span v-if="scope.row.status === '待审批'" style="color: orange;">待审批</span>
+                    <span v-if="scope.row.status === '未开始'" style="color: #17B3A3;">未开始</span>
+                    <span v-if="scope.row.status === '进行中'" style="color: #f56c6c;">进行中</span>
+                    <span v-if="scope.row.status === '已结束'" style="color: grey;">已结束</span>
+                </template>
+            </el-table-column>
             <el-table-column header-align="center" align="center" width="150" label="操作">
                 <template #default="scope">
                     <el-button
