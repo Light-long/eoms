@@ -55,6 +55,8 @@
 			</el-row>
 		</div>
 		<template #footer>
+			<span class="dialog-footer"><el-button :disabled="!btnDisable" type="primary" size="medium" @click="checkinIn">签到</el-button></span>
+			&nbsp;
 			<span class="dialog-footer"><el-button size="medium" @click="visible = false">关闭</el-button></span>
 		</template>
 	</el-dialog>
@@ -64,6 +66,7 @@
 export default {
 	data: function() {
 		return {
+			id: null,
 			visible: false,
 			title: null,
 			date: null,
@@ -73,13 +76,15 @@ export default {
 			members: [],
 			present: [],
 			unpresent: [],
-			status: null
+			status: null,
+			btnDisable: false
 		};
 	},
 	methods: {
 		init: function(id, status) {
 			let that = this;
 			that.visible = true;
+			that.id = id
 			that.$nextTick(() => {
 				let data = {
 					id: id,
@@ -111,7 +116,40 @@ export default {
 						that.unpresent = JSON.parse(meetingInfo.unpresent);
 					}
 				});
+				that.canCheckin()
 			});
+		},
+		canCheckin: function() {
+			let that = this
+			let data = {
+				meetingId: that.id
+			}
+			that.$http('/meeting/searchCanCheckin', "POST", data, true, function (resp) {
+				that.btnDisable = resp.flag
+			})
+		},
+		checkinIn: function () {
+			let that = this
+			let data = {
+				meetingId: that.id
+			}
+			that.$http('/meeting/updateMeetingPresent', "POST", data, true, function (resp) {
+				if (resp.rows === 1) {
+					that.$message({
+						message: '签到成功',
+						type: 'success',
+						duration: 1200
+					});
+					that.visible = false
+				} else {
+					that.$message({
+						message: '签到失败，请在规定时间内签到',
+						type: 'error',
+						duration: 1200
+					});
+					that.visible = false
+				}
+			})
 		}
 	}
 };

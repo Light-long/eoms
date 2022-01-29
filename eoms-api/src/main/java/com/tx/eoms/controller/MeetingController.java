@@ -168,6 +168,18 @@ public class MeetingController {
         return CommonResult.ok().put("list", membersInfo);
     }
 
+    @PostMapping("/searchCanCheckin")
+    @Operation(summary = "判断是否能签到")
+    @SaCheckLogin
+    public CommonResult searchCanCheckin(@Valid @RequestBody UpdateMeetingPresentForm form) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("meetingId", form.getMeetingId());
+        params.put("userId", StpUtil.getLoginIdAsInt());
+        // 判断能不能签到
+        boolean flag = meetingService.searchCanCheckinMeeting(params);
+        return CommonResult.ok().put("flag", flag);
+    }
+
     @PostMapping("/updateMeetingPresent")
     @Operation(summary = "执行会议签到")
     @SaCheckLogin
