@@ -158,6 +158,20 @@
                     ),
                     "]"
                 )
+                from tb_user as u where JSON_CONTAINS(m.members, cast(u.id as char))
+            ) as members,
+            (
+                select concat(
+                    "[",
+                    GROUP_CONCAT(
+                        JSON_OBJECT(
+                            "name", u.name,
+                            "photo", u.photo
+                        )
+                        SEPARATOR ","
+                    ),
+                    "]"
+                )
                 from tb_user as u where JSON_CONTAINS(m.present, cast(u.id as char))
             ) as present,
             (
@@ -222,4 +236,36 @@
             and JSON_CONTAINS(members, cast(#{userId} as char))
         </if>
     </select>
+
+    <select id="searchOnlineMeetingMembers" parameterType="HashMap" resultType="HashMap">
+        select
+            u.id,
+            u.name,
+            u.photo,
+            if (u.id = #{userId}, 1, 0) as mine
+        from tb_meeting as m join tb_user as u
+        on JSON_CONTAINS(m.members, cast(u.id as char))
+        where m.id = #{meetingId} and u.`status` = 1
+        order by mine desc
+    </select>
+
+    <select id="searchCanCheckinMeeting" parameterType="HashMap" resultType="long">
+        select count(*)
+        from tb_meeting
+        where id = #{meetingId}
+        and status in (3, 4)
+        and NOW() between DATE_SUB(concat(date, " ", start), interval 15 minute) and DATE_ADD(concat(date, " ", start), interval 15 minute)
+        and JSON_CONTAINS( ifnull(members, JSON_ARRAY()), cast(#{userId} as char))
+        and not JSON_CONTAINS( ifnull(present, JSON_ARRAY()), cast(#{userId} as char))
+    </select>
+
+    <update id="updateMeetingPresent" parameterType="HashMap">
+        update tb_meeting
+        set present = JSON_ARRAY_APPEND( ifnull(present, JSON_ARRAY()), '$', #{userId})
+        where id = #{meetingId}
+        and NOW() >= DATE_SUB(CONCAT(date," ",`start`), INTERVAL 15 MINUTE)
+        and NOW() &lt; DATE_SUB(CONCAT(date," ",`end`),INTERVAL 15 MINUTE)
+        and JSON_CONTAINS( ifnull(members, JSON_ARRAY()), cast(#{userId} as char))
+        and not JSON_CONTAINS( ifnull(present, JSON_ARRAY()), cast(#{userId} as char))
+    </update>
 </mapper>

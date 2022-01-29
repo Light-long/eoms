@@ -250,4 +250,13 @@
         on JSON_CONTAINS(u.role, cast(r.id as char))
         where u.id = #{userId}
     </select>
+
+    <select id="searchNameAndDept" parameterType="int" resultType="HashMap">
+        select
+            u.name,
+            d.dept_name as deptName
+        from tb_user as u left join tb_dept as d
+        on u.dept_id = d.id
+        where u.id = #{userId} and u.status = 1
+    </select>
 </mapper>

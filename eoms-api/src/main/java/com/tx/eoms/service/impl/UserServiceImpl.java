@@ -112,6 +112,14 @@ public class UserServiceImpl implements UserService {
         return userDao.searchUserRoles(userId);
     }
 
+    /**
+     * 查询用户名和对应部门名
+     * meeting-video显示
+     */
+    @Override
+    public Map<String, Object> searchNameAndDept(int userId) {
+        return userDao.searchNameAndDept(userId);
+    }
 
     /**
      * 登录

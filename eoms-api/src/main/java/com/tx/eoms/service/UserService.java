@@ -74,4 +74,10 @@ public interface UserService {
      * 根据userId查询用户所有角色
      */
     List<String> searchUserRoles(int userId);
+
+    /**
+     * 查询用户名和对应部门名
+     * meeting-video显示
+     */
+    Map<String, Object> searchNameAndDept(int userId);
 }

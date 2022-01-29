@@ -12,7 +12,7 @@ import Dept from "../views/dept/dept.vue"
 import MeetingRoom from '../views/meetingroom/meeting_room.vue'
 import OfflineMeeting from "../views/offline_meeting/offline_meeting.vue"
 import OnlineMeeting from "../views/online_meeting/online_meeting.vue"
-import MeetingVideo from "../views/meeting_video.vue"
+import MeetingVideo from "../views/meeting_video/meeting_video.vue"
 import Approval from "../views/approval/approval.vue"
 import Leave from "../views/leave.vue"
 import Amect from "../views/amect.vue"

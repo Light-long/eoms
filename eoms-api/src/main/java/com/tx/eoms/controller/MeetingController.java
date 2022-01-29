@@ -7,9 +7,9 @@ import cn.hutool.core.date.DateRange;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.UUID;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.tx.eoms.config.tencent.TrtcUtil;
 import com.tx.eoms.controller.meeting.*;
 import com.tx.eoms.controller.workflow.ReceiveNotifyForm;
 import com.tx.eoms.pojo.Meeting;
@@ -19,14 +19,12 @@ import com.tx.eoms.util.PageUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import java.util.*;
 
 @RestController
@@ -34,6 +32,12 @@ import java.util.*;
 @Tag(name = "MeetingController", description = "会议Web接口")
 @Slf4j
 public class MeetingController {
+
+    @Value("${tencent.trtc.appId}")
+    private int appId;
+
+    @Resource
+    private TrtcUtil trtcUtil;
 
     @Resource
     private MeetingService meetingService;
@@ -135,6 +139,49 @@ public class MeetingController {
         params.put("userId", StpUtil.getLoginIdAsInt());
         PageUtils onlineMeetingPage = meetingService.searchOnlineMeetingByPage(params);
         return CommonResult.ok().put("page", onlineMeetingPage);
+    }
+
+    @GetMapping("/searchMyUserSig")
+    @Operation(summary = "获取用户签名")
+    @SaCheckLogin
+    public CommonResult searchMyUserSig() {
+        int userId = StpUtil.getLoginIdAsInt();
+        String userSig = trtcUtil.getUserSig(userId + "");
+        return CommonResult.ok().put("userSig", userSig).put("userId", userId).put("appId", appId);
+    }
+
+    @PostMapping("/searchRoomIdByUUID")
+    @Operation(summary = "查询会议房间RoomID")
+    @SaCheckLogin
+    public CommonResult searchRoomIdByUUID(@Valid @RequestBody SearchRoomIdByUUIDForm form) {
+        Long roomId = meetingService.searchRoomIdByUuid(form.getUuid());
+        return CommonResult.ok().put("roomId", roomId);
+    }
+
+    @PostMapping("/searchOnlineMeetingMembers")
+    @Operation(summary = "查询参加线上会议人员信息-照片墙")
+    @SaCheckLogin
+    public CommonResult searchOnlineMeetingMembers(@Valid @RequestBody SearchOnlineMeetingMembersForm form) {
+        Map<String, Object> params = JSONUtil.parse(form).toBean(Map.class);
+        params.put("userId", StpUtil.getLoginIdAsInt());
+        List<Map<String, Object>> membersInfo = meetingService.searchOnlineMeetingMembers(params);
+        return CommonResult.ok().put("list", membersInfo);
+    }
+
+    @PostMapping("/updateMeetingPresent")
+    @Operation(summary = "执行会议签到")
+    @SaCheckLogin
+    public CommonResult updateMeetingPresent(@Valid @RequestBody UpdateMeetingPresentForm form) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("meetingId", form.getMeetingId());
+        params.put("userId", StpUtil.getLoginIdAsInt());
+        // 判断能不能签到
+        boolean canCheckin = meetingService.searchCanCheckinMeeting(params);
+        if (canCheckin) {
+            int rows = meetingService.updateMeetingPresent(params);
+            return CommonResult.ok().put("rows", rows);
+        }
+        return CommonResult.ok().put("rows", 0);
     }
 
     @PostMapping("/receiveNotify")

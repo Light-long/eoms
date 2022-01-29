@@ -224,6 +224,9 @@ export default {
                     }
                 })
             })
+        },
+        enterHandle: function (meetingId, uuid) {
+            this.$router.push({name: 'MeetingVideo', params: {meetingId: meetingId, uuid: uuid}})
         }
     }
 };

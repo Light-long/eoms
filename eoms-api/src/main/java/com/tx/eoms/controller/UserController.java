@@ -149,4 +149,12 @@ public class UserController {
         List<Map<String, Object>> list = userService.searchAllUser();
         return CommonResult.ok().put("list", list);
     }
+
+    @PostMapping("/searchNameAndDept")
+    @Operation(summary = "查找员工姓名和部门")
+    @SaCheckLogin
+    public CommonResult searchNameAndDept(@Valid @RequestBody SearchNameAndDeptForm form) {
+        Map<String, Object> userInfo = userService.searchNameAndDept(form.getId());
+        return CommonResult.ok(userInfo);
+    }
 }

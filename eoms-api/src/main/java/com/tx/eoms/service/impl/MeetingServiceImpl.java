@@ -11,6 +11,7 @@ import com.tx.eoms.pojo.Meeting;
 import com.tx.eoms.service.MeetingService;
 import com.tx.eoms.task.MeetingWorkFlowTask;
 import com.tx.eoms.util.PageUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,6 +27,9 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Resource
     private MeetingWorkFlowTask meetingWorkFlowTask;
+
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public PageUtils searchOfflineMeetingByPage(Map<String, Object> condition) {
@@ -131,6 +135,47 @@ public class MeetingServiceImpl implements MeetingService {
         int start = (int) params.get("start");
         int length = (int) params.get("length");
         return new PageUtils(onlineMeetingList, onlineMeetingCount, start, length);
+    }
+
+    /**
+     * 根据uuid获取在线会议roomId
+     * 工作流项目会在会议开始前15min生成roomId，缓存在redis
+     */
+    @Override
+    public Long searchRoomIdByUuid(String uuid) {
+        if (redisTemplate.hasKey(uuid)) {
+            Object roomId = redisTemplate.opsForValue().get(uuid);
+            assert roomId != null;
+            return Long.parseLong(roomId.toString());
+        }
+        return null;
+    }
+
+    /**
+     * 查询在线会议参会人员信息
+     * @param params meetingId|userId
+     */
+    @Override
+    public List<Map<String, Object>> searchOnlineMeetingMembers(Map<String, Object> params) {
+        return meetingDao.searchOnlineMeetingMembers(params);
+    }
+
+    /**
+     * 判断是否能签到
+     * 会议开始前15min，会议开始后15min之间
+     */
+    @Override
+    public boolean searchCanCheckinMeeting(Map<String, Object> params) {
+        long count = meetingDao.searchCanCheckinMeeting(params);
+        return count == 1;
+    }
+
+    /**
+     * 更新参会人--签到
+     */
+    @Override
+    public int updateMeetingPresent(Map<String, Object> params) {
+        return meetingDao.updateMeetingPresent(params);
     }
 
 }

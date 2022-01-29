@@ -73,4 +73,21 @@ public interface MeetingDao {
      * 查询会议数量
      */
     long searchOnlineMeetingCount(Map<String, Object> params);
+
+    /**
+     * 查询在线会议参会人员信息
+     * @param params meetingId|userId
+     */
+    List<Map<String, Object>> searchOnlineMeetingMembers(Map<String, Object> params);
+
+    /**
+     * 判断是否能签到
+     * 会议开始前15min，会议开始后15min之间
+     */
+    long searchCanCheckinMeeting(Map<String, Object> params);
+
+    /**
+     * 更新参会人--签到
+     */
+    int updateMeetingPresent(Map<String, Object> params);
 }

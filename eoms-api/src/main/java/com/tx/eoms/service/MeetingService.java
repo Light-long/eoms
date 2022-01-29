@@ -39,4 +39,27 @@ public interface MeetingService {
      * 查询线上会议列表
      */
     PageUtils searchOnlineMeetingByPage(Map<String, Object> params);
+
+    /**
+     * 根据uuid获取在线会议roomId
+     * 工作流项目会在会议开始前15min生成roomId，缓存在redis
+     */
+    Long searchRoomIdByUuid(String uuid);
+
+    /**
+     * 查询在线会议参会人员信息
+     * @param params meetingId|userId
+     */
+    List<Map<String, Object>> searchOnlineMeetingMembers(Map<String, Object> params);
+
+    /**
+     * 判断是否能签到
+     * 会议开始前15min，会议开始后15min之间
+     */
+    boolean searchCanCheckinMeeting(Map<String, Object> params);
+
+    /**
+     * 更新参会人--签到
+     */
+    int updateMeetingPresent(Map<String, Object> params);
 }
