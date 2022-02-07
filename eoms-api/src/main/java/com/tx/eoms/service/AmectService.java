@@ -1,32 +1,26 @@
-package com.tx.eoms.dao;
+package com.tx.eoms.service;
 
 import com.tx.eoms.pojo.Amect;
-import org.apache.ibatis.annotations.Mapper;
+import com.tx.eoms.util.PageUtils;
 
 import java.util.List;
 import java.util.Map;
 
-@Mapper
-public interface AmectDao {
+public interface AmectService {
 
     /**
      * 查询罚款记录
      * @param condition 分页条件|查询条件
      * @return 该用户能查询的罚款记录
      */
-    List<Map<String, Object>> searchAmectByPage(Map<String, Object> condition);
-
-    /**
-     * 罚款记录数
-     */
-    long searchAmectCount(Map<String, Object> condition);
+    PageUtils searchAmectByPage(Map<String, Object> condition);
 
     /**
      * 添加罚款记录
-     * @param amect 罚款记录
+     * @param amectList 罚款记录列表
      * @return 添加成功的罚款记录数
      */
-    int addAmect(Amect amect);
+    int addAmect(List<Amect> amectList);
 
     /**
      * 根据id查询罚款记录（回显）

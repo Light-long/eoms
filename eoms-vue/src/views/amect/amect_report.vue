@@ -361,5 +361,5 @@ export default {
 </script>
 
 <style lang="less" scoped="scoped">
-@import url('amect_report.less');
+	@import url('amect_report.less');
 </style>

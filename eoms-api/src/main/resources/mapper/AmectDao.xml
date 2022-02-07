@@ -1,5 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tx.eoms.dao.AmectDao">
+    
+    <select id="searchAmectByPage" parameterType="HashMap" resultType="HashMap">
+        select
+            a.id,
+            a.uuid,
+            u.name,
+            d.dept_name AS deptName,
+            a.amount,
+            a.reason,
+            `at`.type,
+            a.`status`,
+            DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i') AS createTime,
+            IF(a.user_id = #{currentUserId}, "true", "false") AS mine
+        from tb_amect as a
+        join tb_amect_type as `at` on a.type_id = `at`.id
+        join tb_user as u on a.user_id = u.id
+        join tb_dept as d on u.dept_id = d.id
+        where 1 = 1
+        <if test="userId != null">
+            and u.id = #{userId}
+        </if>
+        <if test="name != null">
+            and u.name like '%${name}%'
+        </if>
+        <if test="deptId != null">
+            AND u.dept_id = #{deptId}
+        </if>
+        <if test="typeId != null">
+            AND at.id = #{typeId}
+        </if>
+        <if test="startDate != null &amp; endDate != null">
+            AND a.create_time BETWEEN #{startDate} AND #{endDate}
+        </if>
+        <if test="status != null">
+            AND a.`status` = #{status}
+        </if>
+        ORDER BY a.id DESC
+        LIMIT #{start}, #{length}
+    </select>
 
+    <select id="searchAmectCount" parameterType="HashMap" resultType="long">
+        SELECT COUNT(*)
+        FROM tb_amect a
+        JOIN tb_amect_type `at` ON a.type_id = `at`.id
+        JOIN tb_user u ON u.id = a.user_id
+        JOIN tb_dept d ON u.dept_id = d.id
+        WHERE 1=1
+        <if test="userId != null">
+            AND u.id = #{userId}
+        </if>
+        <if test="name != null">
+            AND u.name LIKE '%${name}%'
+        </if>
+        <if test="deptId != null">
+            AND u.dept_id = #{deptId}
+        </if>
+        <if test="typeId != null">
+            AND at.id = #{typeId}
+        </if>
+        <if test="startDate != null &amp; endDate != null">
+            AND a.create_time BETWEEN #{startDate} AND #{endDate}
+        </if>
+        <if test="status!=null">
+            AND a.`status` = #{status}
+        </if>
+    </select>
+
+    <insert id="addAmect" parameterType="com.tx.eoms.pojo.Amect">
+        insert into tb_amect
+        set
+            uuid = #{uuid},
+            user_id = #{userId},
+            amount = #{amount},
+            type_id = #{typeId},
+            reason = #{reason},
+            status = 1
+    </insert>
+
+    <select id="searchAmectById" parameterType="Integer" resultType="HashMap">
+        select
+            uuid,
+            user_id as userId,
+            amount,
+            type_id as typeId,
+            reason
+        from tb_amect
+        where id = #{id}
+    </select>
+    
+    <update id="updateAmect" parameterType="HashMap">
+        update tb_amect
+        set
+            amount = #{amount},
+            type_id = #{typeId},
+            reason = #{reason}
+        where id = #{id} and status != 2
+    </update>
+
+    <delete id="deleteAmectByIds">
+        delete from tb_amect
+        where status != 2 and id in
+        <foreach collection="array" item="one" open="(" separator="," close=")">
+            #{one}
+        </foreach>
+    </delete>
 </mapper>

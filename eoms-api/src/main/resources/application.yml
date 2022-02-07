@@ -94,8 +94,8 @@ wx:
   app-secret: 0773f6572371e5c53d19cee88374a748
 
 eoms:
-  code: 725D8C526032DAE4
-  tcode: "372450"
+  code: 786923A734B2E1C9
+  tcode: "212807"
   receiveNotify: http://localhost:8090/eoms-api/meeting/receiveNotify
 
 workflow:

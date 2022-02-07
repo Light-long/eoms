@@ -1,12 +1,10 @@
-package com.tx.eoms.dao;
+package com.tx.eoms.service;
 
 import com.tx.eoms.pojo.AmectType;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-@Mapper
-public interface AmectTypeDao {
+public interface AmectTypeService {
 
     /**
      * 查询所有的罚款类型

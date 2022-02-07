@@ -151,7 +151,7 @@ export default {
                     //1.开会前15分钟可以进入会议室
                     //2.会议状态必须是未开始或者进行中
                     let minute = dayjs(new Date()).diff(dayjs(`${one.date} ${one.start}`), 'minute')
-                    one.canEnterMeeting = one.mine === 'true' && (minute >= -15 && minute <= 0 && one.status === '未开始' || one.status === '进行中');
+                    one.canEnterMeeting = one.mine === 'true' && (minute >= -12 && minute <= 0 && one.status === '未开始' || one.status === '进行中');
                     that.dataList = page.list
                     that.totalCount = page.totalCount
                     that.dataListLoading = false
