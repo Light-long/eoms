@@ -42,4 +42,44 @@ public interface AmectDao {
      * 删除罚款记录
      */
     int deleteAmectByIds(Integer[] ids);
+
+    /**
+     * 根据条件查询罚款单信息
+     */
+    Map<String, Object> searchAmectByCondition(Map<String, Object> condition);
+
+    /**
+     * 更新支付订单id
+     */
+    int updatePrepayId(Map<String, Object> params);
+
+    /**
+     * 更新支付状态
+     */
+    int updatePayStatus(Map<String, Object> params);
+
+    /**
+     * 根据uuid查询用户罚款订单用户id
+     */
+    Integer searchUserIdByUUID(String uuid);
+
+    /**
+     * 查询 罚款种类 比例图
+     */
+    List<Map<String, Object>> searchAmectTypePerChart(Map<String, Object> params);
+
+    /**
+     * 查询 罚款金额 比例图
+     */
+    List<Map<String, Object>> searchMoneyPerChart(Map<String, Object> params);
+
+    /**
+     * 查询罚款缴纳比例图
+     */
+    List<Map<String, Object>> searchAmectResultPerChart(Map<String, Object> params);
+
+    /**
+     * 查询 罚款缴纳统计图
+     */
+    List<Map<String, Object>> searchAmectResultStatisChart(Map<String, Object> params);
 }

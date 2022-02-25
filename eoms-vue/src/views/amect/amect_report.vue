@@ -1,49 +1,51 @@
 <template>
 	<div>
-		<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
-			<el-form-item>
-				<el-select
-					v-model="dataForm.deptId"
-					class="input"
-					placeholder="部门"
-					size="medium"
-					clearable="clearable"
-				>
-					<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
-				</el-select>
-			</el-form-item>
-			<el-form-item>
-				<el-select
-					v-model="dataForm.typeId"
-					class="input"
-					placeholder="罚款类型"
-					size="medium"
-					clearable="clearable"
-				>
-					<el-option v-for="one in amectTypeList" :label="one.type" :value="one.id" />
-				</el-select>
-			</el-form-item>
-			<el-form-item>
-				<el-date-picker
-					v-model="dataForm.date"
-					type="daterange"
-					range-separator="~"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-					size="medium"
-				></el-date-picker>
-			</el-form-item>
-			<el-form-item>
-				<el-button size="medium" type="primary" @click="searchHandle()">生成报表</el-button>
-			</el-form-item>
-		</el-form>
+		<div align="center">
+			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
+				<el-form-item>
+					<el-select
+							v-model="dataForm.deptId"
+							class="input"
+							placeholder="部门"
+							size="medium"
+							clearable="clearable"
+					>
+						<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-select
+							v-model="dataForm.typeId"
+							class="input"
+							placeholder="罚款类型"
+							size="medium"
+							clearable="clearable"
+					>
+						<el-option v-for="one in amectTypeList" :label="one.type" :value="one.id" />
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-date-picker
+							v-model="dataForm.date"
+							type="daterange"
+							range-separator="~"
+							start-placeholder="开始日期"
+							end-placeholder="结束日期"
+							size="medium"
+					></el-date-picker>
+				</el-form-item>
+				<el-form-item>
+					<el-button size="medium" type="primary" @click="searchHandle()">生成报表</el-button>
+				</el-form-item>
+			</el-form>
+		</div>
 		<div id="chart-container">
 			<el-row :gutter="100">
 				<el-col :span="8"><div class="chart" id="chart-1"></div></el-col>
 				<el-col :span="8"><div class="chart" id="chart-2"></div></el-col>
 				<el-col :span="8"><div class="chart" id="chart-3"></div></el-col>
 			</el-row>
-			<el-row>
+			<el-row style="margin-top: 50px">
 				<el-col :span="24"><div id="chart-4"></div></el-col>
 			</el-row>
 		</div>
@@ -69,13 +71,13 @@ export default {
 	methods: {
 		loadDeptList: function() {
 			let that = this;
-			that.$http('dept/searchAllDept', 'GET', null, true, function(resp) {
-				that.deptList = resp.list;
+			that.$http('/dept/searchAllDept', 'GET', null, true, function(resp) {
+				that.deptList = resp.deptList;
 			});
 		},
 		loadAmectTypeList: function() {
 			let that = this;
-			that.$http('amect_type/searchAllAmectType', 'GET', {}, true, function(resp) {
+			that.$http('/amectType/searchAllAmectType', 'GET', {}, true, function(resp) {
 				that.amectTypeList = resp.list;
 			});
 		},
@@ -88,15 +90,15 @@ export default {
 				typeId: that.dataForm.typeId
 			};
 
-			if (that.dataForm.date != null && that.dataForm.date.length == 2) {
+			if (that.dataForm.date != null && that.dataForm.date.length === 2) {
 				let startDate = that.dataForm.date[0];
 				let endDate = that.dataForm.date[1];
 				data.startDate = dayjs(startDate).format('YYYY-MM-DD');
 				data.endDate = dayjs(endDate).format('YYYY-MM-DD');
 			}
 
-			that.$http('amect/searchChart', 'POST', data, true, function(resp) {
-				let chart_1 = resp.chart_1;
+			that.$http('/amect/searchChart', 'POST', data, true, function(resp) {
+				let chart_1 = resp.chart1;
 				let temp = [];
 				for (let one of chart_1) {
 					temp.push({ name: one.type, value: one.ct });
@@ -137,17 +139,18 @@ export default {
 					]
 				};
 				let myChart = null;
-				if (temp == null || temp.length == 0) {
+				if (temp.length === 0) {
 					option_1.title.show = true;
-
 					myChart = that.$echarts.init($('#chart-1')[0]);
 					myChart.setOption(option_1);
 				} else {
+					option_1.title.show = true;
+					option_1.title.text = '罚款类型'
 					myChart = that.$echarts.init($('#chart-1')[0]);
 					myChart.setOption(option_1);
 				}
 
-				let chart_2 = resp.chart_2;
+				let chart_2 = resp.chart2;
 				temp = [];
 				for (let one of chart_2) {
 					if (one.ct > 0) {
@@ -189,16 +192,18 @@ export default {
 					]
 				};
 
-				if (temp == null || temp.length == 0) {
+				if (temp == null || temp.length === 0) {
 					option_2.title.show = true;
 					myChart = that.$echarts.init($('#chart-2')[0]);
 					myChart.setOption(option_2);
 				} else {
+					option_2.title.show = true;
+					option_2.title.text = '罚款金额'
 					myChart = that.$echarts.init($('#chart-2')[0]);
 					myChart.setOption(option_2);
 				}
 
-				let chart_3 = resp.chart_3;
+				let chart_3 = resp.chart3;
 				temp = [];
 				for (let one of chart_3) {
 					if (one.ct > 0) {
@@ -239,22 +244,24 @@ export default {
 						}
 					]
 				};
-				if (temp == null || temp.length == 0) {
+				if (temp == null || temp.length === 0) {
 					option_3.title.show = true;
 					myChart = that.$echarts.init($('#chart-3')[0]);
 					myChart.setOption(option_3);
 				} else {
+					option_3.title.show = true;
+					option_3.title.text = '罚款缴纳情况'
 					myChart = that.$echarts.init($('#chart-3')[0]);
 					myChart.setOption(option_3);
 				}
 
 				console.log(resp);
-				let chart_4_1 = resp.chart_4_1;
+				let chart_4_1 = resp.chart4_1;
 				let data_1 = [];
 				for (let one of chart_4_1) {
 					data_1.push(one.ct);
 				}
-				let chart_4_2 = resp.chart_4_2;
+				let chart_4_2 = resp.chart4_2;
 				let data_2 = [];
 				for (let one of chart_4_2) {
 					data_2.push(one.ct);
@@ -262,7 +269,7 @@ export default {
 
 				let option_4 = {
 					title: {
-						text: '全年违纪统计图'
+						text: '全年违纪统计图',
 					},
 					tooltip: {
 						trigger: 'axis',
@@ -314,7 +321,7 @@ export default {
 					],
 					series: [
 						{
-							name: '已交费',
+							name: '未交费',
 							type: 'line',
 							stack: '总量',
 							areaStyle: {},
@@ -325,7 +332,7 @@ export default {
 							data: data_1
 						},
 						{
-							name: '未交费',
+							name: '已交费',
 							type: 'line',
 							stack: '总量',
 							areaStyle: {},

@@ -89,9 +89,15 @@ tencent:
     appId: 1400619052
     secretKey: bec4f5fca6bbe56d3e2b16c904d067223c015a2b399e9e2f15976b859f9fd3f1
     expire: 86400
+#wx:
+#  app-id: wxe56256fbeac6398f
+#  app-secret: 0773f6572371e5c53d19cee88374a748
 wx:
-  app-id: wxe56256fbeac6398f
-  app-secret: 0773f6572371e5c53d19cee88374a748
+  app-id: wx4cb8e9621950da45
+  app-secret: 9d80f4125c50e1cf8bc6031c9319b2df
+  mch-id: 1526972031
+  key: qv9Kihy5TOJxGySzFO8pd4wCMg3tn6YK
+  cert-path: E:/apiclient_cert.p12
 
 eoms:
   code: 786923A734B2E1C9
@@ -100,3 +106,6 @@ eoms:
 
 workflow:
   url: http://localhost:9090/emos-workflow
+
+pay:
+  receive-url: http://7t96zi.natappfree.cc

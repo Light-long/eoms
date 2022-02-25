@@ -106,4 +106,133 @@
             #{one}
         </foreach>
     </delete>
+
+    <select id="searchAmectByCondition" parameterType="HashMap" resultType="HashMap">
+        select
+            uuid,
+            amount,
+            prepay_id as prepayId,
+            `status`
+        from tb_amect
+        where id = #{amectId} and user_id = #{userId}
+        <if test="status != null">
+            and `status` = #{status}
+        </if>
+    </select>
+    
+    <update id="updatePrepayId" parameterType="HashMap">
+        update tb_amect
+        set prepay_id = #{prepayId}
+        where id = #{amectId} and status = 1
+    </update>
+
+    <update id="updatePayStatus" parameterType="HashMap">
+        update tb_amect
+        set `status` = #{status}
+        where uuid = #{uuid}
+    </update>
+
+    <select id="searchUserIdByUUID" parameterType="String" resultType="Integer">
+        SELECT
+            user_id AS userId
+        FROM tb_amect
+        WHERE uuid = #{uuid}
+    </select>
+
+    <!--echarts-->
+    <sql id="view_1">
+        where 1 = 1
+        <if test="deptId != null">
+            and u.dept_id = #{deptId}
+        </if>
+        <if test="typeId != null">
+            and a.type_id = #{typeId}
+        </if>
+        <if test="startDate != null &amp; endDate != null">
+            and a.create_time BETWEEN #{startDate} AND #{endDate}
+        </if>
+    </sql>
+
+    <sql id="view_2">
+        FROM tb_amect as a JOIN tb_amect_type as `at`
+        ON a.type_id = `at`.id
+        JOIN tb_user as u ON a.user_id = u.id
+    </sql>
+
+    <sql id="view_3">
+        <if test="deptId != null">
+            AND u.dept_id = #{deptId}
+        </if>
+        <if test="typeId != null">
+            AND a.type_id = #{typeId}
+        </if>
+        <if test="startDate!=null &amp; endDate!=null">
+            AND a.create_time BETWEEN #{startDate} AND #{endDate}
+        </if>
+    </sql>
+
+    <select id="searchAmectTypePerChart" parameterType="HashMap" resultType="HashMap">
+        SELECT
+            COUNT(`at`.id) AS ct,
+            `at`.type
+        FROM tb_amect a
+        JOIN tb_amect_type `at` ON a.type_id = `at`.id
+        JOIN tb_user u ON a.user_id = u.id
+        <include refid="view_1"/>
+        GROUP BY `at`.id
+    </select>
+
+    <select id="searchMoneyPerChart" parameterType="HashMap" resultType="HashMap">
+        SELECT "20元以内" AS title,
+        COUNT(*) AS ct
+        <include refid="view_2"/>
+        WHERE a.amount >= 0 AND a.amount &lt; 20
+        <include refid="view_3"/>
+        UNION
+        SELECT "20-50元" AS title,
+        COUNT(*) AS ct
+        <include refid="view_2"/>
+        WHERE a.amount >=20 AND a.amount &lt; 50
+        <include refid="view_3"/>
+        UNION
+        SELECT "50-100元" AS title,
+        COUNT(*) AS ct
+        <include refid="view_2"/>
+        WHERE a.amount >=50 AND a.amount &lt; 100
+        <include refid="view_3"/>
+        UNION
+        SELECT "100-200元" AS title,
+        COUNT(*) AS ct
+        <include refid="view_2"/>
+        WHERE a.amount >=100 AND a.amount &lt; 200
+        <include refid="view_3"/>
+        UNION
+        SELECT "其他" AS title,
+        COUNT(*) AS ct
+        <include refid="view_2"/>
+        WHERE a.amount >=200
+        <include refid="view_3"/>
+    </select>
+
+    <select id="searchAmectResultPerChart" parameterType="HashMap" resultType="HashMap">
+        SELECT "未付款" AS title,
+        COUNT(*) AS ct
+        <include refid="view_2"/>
+        WHERE a.`status`=1
+        <include refid="view_3"/>
+        UNION
+        SELECT "已付款" AS title,
+        COUNT(*) AS ct
+        <include refid="view_2"/>
+        WHERE a.`status`=2
+        <include refid="view_3"/>
+    </select>
+
+    <select id="searchAmectResultStatisChart" parameterType="HashMap" resultType="HashMap">
+        SELECT
+            MONTH(create_time) AS month,
+            COUNT(*) AS ct FROM tb_amect
+        WHERE YEAR(create_time) = #{year} AND `status`= #{status}
+        GROUP BY MONTH(create_time)
+    </select>
 </mapper>

@@ -249,12 +249,12 @@ export default {
 	created() {
 		let that = this;
 		that.routeHandle(that.$route);
-		// that.$options.sockets.onopen = function(resp) {
-		// 	//发送心跳检测，避免超时后服务端切断连接
-		// 	setInterval(function() {
-		// 		that.$socket.sendObj({ opt: 'ping' });
-		// 	}, 60 * 1000);
-		// };
+		that.$options.sockets.onopen = function(resp) {
+			//发送心跳检测，避免超时后服务端切断连接
+			setInterval(function() {
+				that.$socket.sendObj({ opt: 'ping' });
+			}, 60 * 1000);
+		};
 	},
 	watch: {
 		$route: {

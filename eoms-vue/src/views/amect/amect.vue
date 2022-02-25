@@ -79,8 +79,8 @@
 					<el-button
 							size="medium"
 							type="warning"
-							:disabled="!isAuth(['ROOT', 'AMECT:SELECT'])"
 							@click="reportHandle()"
+							v-if="isAuth(['ROOT', 'AMECT:SELECT'])"
 					>
 						查看报告
 					</el-button>
@@ -327,6 +327,15 @@ export default {
 					})
 				})
 			}
+		},
+		payHandle: function (id) {
+			this.payVisible = true
+			this.$nextTick(() => {
+				this.$refs.pay.init(id)
+			})
+		},
+		reportHandle: function () {
+			this.$router.push({name: 'AmectReport'})
 		}
 	},
 	created: function() {
