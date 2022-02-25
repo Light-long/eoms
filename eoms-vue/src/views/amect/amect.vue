@@ -6,6 +6,7 @@
 					<el-input
 							v-model="dataForm.name"
 							placeholder="姓名"
+							:disabled="!isAuth(['ROOT', 'AMECT:SELECT'])"
 							size="medium"
 							class="input"
 							clearable="clearable"
@@ -16,6 +17,7 @@
 							v-model="dataForm.deptId"
 							class="input"
 							placeholder="部门"
+							:disabled="!isAuth(['ROOT', 'AMECT:SELECT'])"
 							size="medium"
 							clearable="clearable"
 					>
