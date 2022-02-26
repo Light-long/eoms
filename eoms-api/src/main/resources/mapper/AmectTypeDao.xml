@@ -10,4 +10,69 @@
             systemic
         from tb_amect_type
     </select>
+
+    <select id="searchAmectTypeByPage" parameterType="HashMap" resultType="HashMap">
+        select
+            `at`.id,
+            `at`.type,
+            `at`.money,
+            `at`.systemic,
+            COUNT( a.type_id ) AS notPay,
+            IF(COUNT(a.id) = 0 AND systemic = false ,"true","false") AS canDelete
+        from tb_amect_type as `at`
+        left join tb_amect as a
+        on `at`.id = a.type_id and a.status = 1
+        where 1 = 1
+        <if test="type != null">
+            and `at`.type like '%${type}%'
+        </if>
+        group by `at`.id
+        limit #{start}, #{length}
+    </select>
+
+    <select id="searchAmectTypeCount" parameterType="HashMap" resultType="long">
+        SELECT COUNT(temp.ct)
+        FROM (
+            SELECT COUNT(*) AS ct
+            FROM tb_amect_type `at`
+            LEFT JOIN tb_amect a ON `at`.id = a.type_id AND a.`status` = 1
+            WHERE 1=1
+            <if test="type!=null">
+                AND `at`.type LIKE '%${type}%'
+            </if>
+            GROUP BY `at`.id
+        ) temp
+    </select>
+
+    <insert id="addAmectType" parameterType="com.tx.eoms.pojo.AmectType">
+        insert into tb_amect_type
+        set
+            type = #{type},
+            money = #{money},
+            systemic = false
+    </insert>
+
+    <select id="searchAmectTypeById" parameterType="int" resultType="HashMap">
+        select
+            `type`,
+            money,
+            systemic
+        from tb_amect_type
+        where id = #{id}
+    </select>
+
+    <update id="updateAmectType" parameterType="HashMap">
+        UPDATE tb_amect_type
+        SET type = #{type},
+            money = #{money}
+        WHERE id = #{id}
+    </update>
+    
+    <delete id="deleteAmectTypeByIds">
+        delete from tb_amect_type
+        where systemic = false and id in
+        <foreach collection="array" item="one" open="(" separator="," close=")">
+            #{one}
+        </foreach>
+    </delete>
 </mapper>

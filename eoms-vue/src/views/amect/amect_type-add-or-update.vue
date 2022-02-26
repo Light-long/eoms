@@ -53,14 +53,48 @@ export default {
 			that.$nextTick(() => {
 				that.$refs['dataForm'].resetFields();
 				if (id) {
-					that.$http('amect_type/searchById', 'POST', { id: id }, true, function(resp) {
-						that.dataForm.type = resp.type;
-						that.dataForm.money = resp.money+"";
+					that.$http('/amectType/searchAmectTypeById', 'POST', { id: id }, true, function(resp) {
+						let amectType = resp.amectType
+						that.dataForm.type = amectType.type;
+						that.dataForm.money = amectType.money + "";
 					});
 				}
 			});
 		},
-		
+		dataFormSubmit: function () {
+			let that = this
+			let data = {
+				type: that.dataForm.type,
+				money: that.dataForm.money
+			}
+			if (that.dataForm.id) {
+				data.id = that.dataForm.id
+			}
+			this.$refs['dataForm'].validate(valid => {
+				if (valid) {
+					that.$http(`/amectType/${!that.dataForm.id ? 'addAmectType' : 'updateAmectType'}`,
+							'POST', data, true, function (resp) {
+								if (resp.rows > 0) {
+									that.visible = false
+									that.$emit('refreshDataList')
+									that.$message({
+										message: '操作成功',
+										type: 'success',
+										duration: 1200
+									});
+								} else {
+									that.$message({
+										message: '操作失败',
+										type: 'error',
+										duration: 1200
+									});
+								}
+							})
+				} else {
+					return false
+				}
+			})
+		}
 	}
 };
 </script>
