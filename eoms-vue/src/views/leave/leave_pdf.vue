@@ -65,5 +65,5 @@ export default {
 </script>
 
 <style lang="less" scoped="scoped">
-@import url('leave_pdf.less');
+	@import url('leave_pdf.less');
 </style>

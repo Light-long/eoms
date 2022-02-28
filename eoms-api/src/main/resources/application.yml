@@ -101,7 +101,7 @@ wx:
 
 eoms:
   code: 786923A734B2E1C9
-  tcode: "212807"
+  tcode: "140204"
   receiveNotify: http://localhost:8090/eoms-api/meeting/receiveNotify
 
 workflow:
