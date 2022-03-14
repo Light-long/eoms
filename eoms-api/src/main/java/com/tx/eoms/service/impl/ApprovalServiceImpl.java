@@ -86,4 +86,21 @@ public class ApprovalServiceImpl implements ApprovalService {
             throw new EomsException("调用工作流异常");
         }
     }
+
+    /**
+     * 归档任务
+     */
+    @Override
+    public void archiveTask(Map<String, Object> params) {
+        params.put("code", code);
+        params.put("tcode", tcode);
+
+        String url = workflowUrl + "/workflow/archiveTask";
+        HttpResponse result = HttpRequest.post(url).header("Content-Type", "application/json")
+                .body(JSONUtil.toJsonStr(params)).execute();
+        if (result.getStatus() != 200) {
+            log.error(result.body());
+            throw new EomsException("调用工作流异常");
+        }
+    }
 }

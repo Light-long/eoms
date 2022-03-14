@@ -8,6 +8,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
 import com.tx.eoms.controller.approval.ApprovalTaskForm;
+import com.tx.eoms.controller.approval.ArchiveTaskForm;
 import com.tx.eoms.controller.approval.SearchApprovalContentForm;
 import com.tx.eoms.controller.approval.SearchTaskByPageForm;
 import com.tx.eoms.exception.EomsException;
@@ -117,4 +118,21 @@ public class ApprovalController {
         approvalService.approvalTask(params);
         return CommonResult.ok();
     }
+
+    @PostMapping("/archiveTask")
+    @Operation(summary = "归档任务")
+    @SaCheckPermission(value = {"FILE:ARCHIVE"})
+    public CommonResult archiveTask(@Valid @RequestBody ArchiveTaskForm form) {
+        if (!JSONUtil.isJsonArray(form.getFiles())) {
+            return CommonResult.error("files不是json数组");
+        }
+        String files = form.getFiles().replaceAll("&quot;", "\"");
+        Map<String, Object> params = new HashMap<>();
+        params.put("taskId", form.getTaskId());
+        params.put("files", files);
+        params.put("userId", StpUtil.getLoginIdAsInt());
+        approvalService.archiveTask(params);
+        return CommonResult.ok();
+    }
+
 }

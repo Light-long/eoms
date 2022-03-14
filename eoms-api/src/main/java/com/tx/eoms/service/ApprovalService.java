@@ -20,4 +20,9 @@ public interface ApprovalService {
      * 审批任务
      */
     void approvalTask(Map<String, Object> params);
+
+    /**
+     * 归档任务
+     */
+    void archiveTask(Map<String, Object> params);
 }

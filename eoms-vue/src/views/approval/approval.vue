@@ -37,6 +37,8 @@
 			size="medium"
 			style="width: 100%;"
 			@expand-change="expand"
+			:row-key="getRowKeys"
+			:expand-row-keys="expands"
 		>
 			<el-table-column prop="remark" header-align="center" align="center" type="expand">
 				<template #default="scope">
@@ -183,7 +185,7 @@
 						type="text"
 						size="medium"
 						v-if="
-							isAuth(['ROOT', 'FILE:ARCHIVE']) &&
+							isAuth(['FILE:ARCHIVE']) &&
 								scope.row.filing
 						"
 						@click="archive(scope.row.taskId)"
@@ -207,7 +209,7 @@
 </template>
 
 <script>
-	import Archive from '../archive.vue';
+	import Archive from '../archive/archive.vue';
 
 	export default {
 	components: {
@@ -234,6 +236,11 @@
 			dataRule: {
 				creatorName: [{ required: false, pattern: '^[\u4e00-\u9fa5]{2,20}$', message: '姓名格式错误' }],
 				instanceId: [{ required: false, pattern: '^[0-9A-Za-z\\-]{36}$', message: '实例编号格式错误' }]
+			},
+			expands: [],
+			//如果数组中保存了某行记录的唯一值，那么这行的折叠面板展开
+			getRowKeys(row) {
+				return row.taskId
 			}
 		};
 	},
@@ -294,20 +301,37 @@
 		},
 		// 点击展开按钮，查询
 		expand: function (row, expandedRows) {
+			let that = this
+			// 判断是否展开了折叠面板
 			if (expandedRows.length > 0) {
-				let that = this
-				let data = {
-					instanceId: row.processId,
-					type: row.type,
-					status: row.status
+				// 关闭所有的折叠面板
+				that.expands = []
+				if (row) {
+					// 展开你想展开的面板
+					that.expands.push(row.taskId)
+					let data = {
+						instanceId: row.processId,
+						type: row.type,
+						status: row.status
+					}
+					that.bpmnUrl = this.$baseUrl + 'approval/searchApprovalBPMN'
+							+ '?instanceId=' + row.processId
+							+ '&time=' + new Date().getTime()
+					that.bpmnList = [that.bpmnUrl]
+					that.$http('/approval/searchApprovalContent', "POST", data, true, function (resp) {
+						let content = resp.content
+						that.content = content
+						//如果返回工作流实例存在files，说明工作流实例绑定了归档文件
+						if (content.hasOwnProperty('files')) {
+							for (let one of content.files) {
+								that.archiveList.push(one.url)
+							}
+						}
+						console.log(that.archiveList)
+					})
 				}
-				that.bpmnUrl = this.$baseUrl + 'approval/searchApprovalBPMN'
-											 + '?instanceId=' + row.processId
-										     + '&time=' + new Date().getTime()
-				that.bpmnList = [that.bpmnUrl]
-				that.$http('/approval/searchApprovalContent', "POST", data, true, function (resp) {
-					that.content = resp.content
-				})
+			} else {
+				that.expands = []
 			}
 		},
 		approval: function (taskId, approval) {
@@ -343,9 +367,15 @@
 		// 和点击展开一样效果
 		viewHandle: function (row) {
 			this.$refs.approvalTable.toggleRowExpansion(row, true)
+		},
+		// 归档
+		archive: function (taskId) {
+			this.archiveVisible = true
+			this.$nextTick(() => {
+				this.$refs.archive.init(taskId)
+			})
 		}
-	},
-	
+	}
 };
 </script>
 
