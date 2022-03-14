@@ -268,6 +268,12 @@ export default {
 					}
 				})
 			})
+		},
+		pdfHandle: function (id) {
+			this.pdfVisible = true
+			this.$nextTick(() => {
+				this.$refs.pdf.init(id)
+			})
 		}
 	},
 	created: function() {

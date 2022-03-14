@@ -40,4 +40,9 @@ public interface LeaveDao {
      * 删除会议记录
      */
     int deleteLeaveById(Map<String, Object> params);
+
+    /**
+     * 根据id查询请假记录信息
+     */
+    Map<String, Object> searchLeaveInfoById(Map<String, Object> params);
 }

@@ -100,8 +100,8 @@ wx:
   cert-path: E:/apiclient_cert.p12
 
 eoms:
-  code: 786923A734B2E1C9
-  tcode: "140204"
+  code: 62338DECF3CA18B0
+  tcode: "508158"
   receiveNotify: http://localhost:8090/eoms-api/meeting/receiveNotify
 
 workflow:

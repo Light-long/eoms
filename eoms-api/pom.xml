@@ -133,6 +133,7 @@
             <artifactId>sa-token-spring-aop</artifactId>
             <version>1.20.0</version>
         </dependency>
+        <!--腾讯云存储COs-->
         <dependency>
             <groupId>com.qcloud</groupId>
             <artifactId>cos_api</artifactId>

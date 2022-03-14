@@ -74,4 +74,12 @@ public class LeaveServiceImpl implements LeaveService {
         }
         return rows;
     }
+
+    /**
+     * 根据id查询请假记录信息
+     */
+    @Override
+    public Map<String, Object> searchLeaveInfoById(Map<String, Object> params) {
+        return leaveDao.searchLeaveInfoById(params);
+    }
 }

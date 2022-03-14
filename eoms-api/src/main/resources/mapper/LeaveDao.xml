@@ -103,4 +103,22 @@
         delete from tb_leave
         where id = #{id} and user_id = #{userId} and status in (1, 2)
     </delete>
+
+    <select id="searchLeaveInfoById" parameterType="HashMap" resultType="HashMap">
+        select
+            u.name,
+            u.sex,
+            d.dept_name AS deptName,
+            l.type,
+            DATE_FORMAT(l.`start`, '%Y-%m-%d %H:%i') as `start`,
+            DATE_FORMAT(l.`end`, '%Y-%m-%d %H:%i') as `end`,
+            l.reason
+        from tb_leave as l
+        join tb_user as u on l.user_id = u.id
+        join tb_dept as d on u.dept_id = d.id
+        where l.id = #{id}
+        <if test="userId != null">
+            and u.id = #{userId}
+        </if>
+    </select>
 </mapper>

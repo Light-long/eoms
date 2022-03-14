@@ -59,7 +59,34 @@ export default {
 		};
 	},
 	methods: {
-		
+		init: function (id) {
+			let that = this
+			that.visible = true;
+			that.name = null;
+			that.sex = null;
+			that.dept = null;
+			that.reason = null;
+			that.start = null;
+			that.end = null;
+			that.type = null;
+			that.$http('/leave/searchLeaveInfoById', 'POST', {id: id}, true, function (resp) {
+				let leaveInfo = resp.leaveInfo
+				that.name = leaveInfo.name;
+				that.sex = leaveInfo.sex;
+				that.dept = leaveInfo.deptName;
+				that.reason = leaveInfo.reason;
+				if (leaveInfo.type === 1) {
+					that.type = '病假';
+				} else if (leaveInfo.type === 2) {
+					that.type = '事假';
+				}
+				that.start = leaveInfo.start;
+				that.end = leaveInfo.end;
+			})
+		},
+		cancel: function () {
+			this.visible = false
+		}
 	}
 };
 </script>

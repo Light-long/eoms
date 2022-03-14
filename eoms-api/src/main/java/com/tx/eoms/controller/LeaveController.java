@@ -9,6 +9,7 @@ import cn.hutool.json.JSONUtil;
 import com.tx.eoms.controller.leave.AddLeaveForm;
 import com.tx.eoms.controller.leave.DeleteLeaveByIdForm;
 import com.tx.eoms.controller.leave.SearchLeaveByPageForm;
+import com.tx.eoms.controller.leave.SearchLeaveInfoByIdForm;
 import com.tx.eoms.exception.EomsException;
 import com.tx.eoms.pojo.Leave;
 import com.tx.eoms.service.LeaveService;
@@ -97,5 +98,19 @@ public class LeaveController {
         params.put("userId", StpUtil.getLoginIdAsInt());
         int rows = leaveService.deleteLeaveById(params);
         return CommonResult.ok().put("rows", rows);
+    }
+
+    @PostMapping("/searchLeaveInfoById")
+    @Operation(summary = "根据id查询请假详细信息（生成请假单）")
+    @SaCheckLogin
+    public CommonResult searchLeaveInfoById(@Valid @RequestBody SearchLeaveInfoByIdForm form) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", form.getId());
+        // 只能查看自己的请假记录
+        if (!(StpUtil.hasPermission("ROOT") || StpUtil.hasPermission("LEAVE:SELECT"))) {
+            params.put("userId", StpUtil.getLoginIdAsInt());
+        }
+        Map<String, Object> leaveInfo = leaveService.searchLeaveInfoById(params);
+        return CommonResult.ok().put("leaveInfo", leaveInfo);
     }
 }
