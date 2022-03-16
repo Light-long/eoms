@@ -115,5 +115,5 @@ export default {
 </script>
 
 <style lang="less" scoped="scoped">
-@import url('reim_pdf.less');
+	@import url('reim_pdf.less');
 </style>

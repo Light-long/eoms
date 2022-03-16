@@ -1,6 +1,6 @@
 <template>
 	<el-dialog title="报销申请" :close-on-click-modal="false" v-model="visible" width="550px">
-		<el-scrollbar height="470px">
+		<el-scrollbar height="500px">
 			<el-form :model="dataForm" ref="dataForm" :rules="dataRule" label-width="100px">
 				<el-form-item label="报销种类" prop="type">
 					<el-radio-group v-model="dataForm.type" size="medium">
@@ -17,7 +17,7 @@
 						clearable="clearable"
 						prop="anleihen"
 					/>
-					<span class="note">请如实填写借款金额</span>
+					<span class="note">如果没有借款，请填写0</span>
 				</el-form-item>
 				<div v-for="(one, $index) in dataForm.project" class="project">
 					<h3>【 报销项目 】</h3>
@@ -93,7 +93,7 @@
 		</el-scrollbar>
 		<template #footer>
 			<span class="dialog-footer">
-				<el-button type="danger" size="medium" @click="addHandle">添加项目</el-button>
+				<el-button type="success" size="medium" @click="addHandle">添加项目</el-button>
 				<el-button size="medium" @click="visible = false">取消</el-button>
 				<el-button type="primary" size="medium" @click="dataFormSubmit">确定</el-button>
 			</span>
@@ -131,11 +131,96 @@ export default {
 				that.$refs['dataForm'].resetFields();
 				that.dataForm.type = '普通报销';
 				that.dataForm.anleihen = null;
-				that.dataForm.project = [{ title: null, type: null, desc: null, money: null }];
+				// 初始化第一个报销项
+				that.dataForm.project = [
+						{
+							title: null,
+							type: null,
+							desc: null,
+							money: null
+						}
+				];
 			});
 		},
-		
-		
+		addHandle: function () {
+			let that = this
+			if (that.dataForm.project.length === 5) {
+				that.$message({
+					message: '这笔报销不能超过5个报销项目',
+					type: 'warning',
+					duration: 1200
+				});
+				return
+			}
+			// 添加一个报销项
+			that.dataForm.project.push({
+				title: null,
+				type: null,
+				desc: null,
+				money: null
+			})
+			that.$message({
+				message: '添加报销项成功',
+				type: 'success',
+				duration: 1200
+			});
+		},
+		deleteProjectHandle: function (index) {
+			let that = this
+			if (that.dataForm.project.length === 1) {
+				that.$message({
+					message: '报销至少有1个报销项目',
+					type: 'warning',
+					duration: 1200
+				});
+			} else {
+				// 删除该索引的报销项
+				that.dataForm.project.splice(index, 1)
+				that.$message({
+					message: '删除成功',
+					type: 'success',
+					duration: 1200
+				})
+			}
+		},
+		dataFormSubmit: function () {
+			let that = this
+			that.$refs['dataForm'].validate(valid => {
+				if (valid) {
+					// 总金额
+					let amount = 0
+					for (let one of that.dataForm.project) {
+						amount += Number(one.money)
+					}
+					let data = {
+						typeId: that.dataForm.type === '普通报销' ? 1 : 2,
+						amount: amount,
+						anleihen: that.dataForm.anleihen,
+						balance: amount - Number(that.dataForm.anleihen),
+						content: JSON.stringify(that.dataForm.project)
+					}
+					that.$http('/reim/addReim', 'POST', data, true, function (resp) {
+						if (resp.rows === 1) {
+							that.$message({
+								message: '操作成功',
+								type: 'success',
+								duration: 1200
+							});
+							that.visible = false;
+							that.$emit('refreshDataList');
+						} else {
+							that.$message({
+								message: '操作失败',
+								type: 'error',
+								duration: 1200
+							});
+						}
+					})
+				} else {
+					return false
+				}
+			})
+		}
 	}
 };
 </script>

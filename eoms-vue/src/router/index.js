@@ -18,7 +18,7 @@ import Leave from "../views/leave/leave.vue"
 import Amect from "../views/amect/amect.vue"
 import AmectType from "../views/amect/amect_type.vue"
 import AmectReport from "../views/amect/amect_report.vue"
-import Reim from "../views/reim.vue"
+import Reim from "../views/reim/reim.vue"
 import NotFound from "../views/404.vue"
 
 
