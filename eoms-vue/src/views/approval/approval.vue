@@ -327,7 +327,13 @@
 								that.archiveList.push(one.url)
 							}
 						}
-						console.log(that.archiveList)
+						if (row.type === '报销申请') {
+							if (content.typeId === 1) {
+								content.type = '普通报销'
+							} else if (content.typeId === 2) {
+								content.type = '差旅报销'
+							}
+						}
 					})
 				}
 			} else {
@@ -344,6 +350,11 @@
 			that.$http('/approval/approvalTask', "POST", data, true, function (resp) {
 				that.pageIndex = 1
 				that.loadDataList()
+				that.$message({
+					message: '审批成功',
+					type: 'success',
+					duration: 1200
+				});
 			})
 		},
 		// 点击审批按钮

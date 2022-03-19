@@ -1,10 +1,10 @@
 <template>
 	<el-dialog width="800px" :close-on-click-modal="false" v-model="visible" :show-close="false" center>
 		<div id="pdfDom">
-			<img :src="qrCodeBase64" class="qrCode">
+			<img :src="qrCode" class="qrCode">
 			<h2 class="title">费&nbsp;&nbsp;&nbsp;用&nbsp;&nbsp;&nbsp;报&nbsp;&nbsp;&nbsp;销&nbsp;&nbsp;&nbsp;单</h2>
 			<div class="top-info-container">
-				<span class="info">报销部门：{{ dept }}</span>
+				<span class="info">报销部门：{{ deptName }}</span>
 				<span class="info">报销人：{{ name }}</span>
 				<span class="info">报销日期：{{ date }}</span>
 			</div>
@@ -20,7 +20,7 @@
 						<td align="left">{{one.title}}</td>
 						<td align="left">{{one.desc}}</td>
 						<td>{{one.type}}</td>
-						<td align="left">{{one.money!=""?one.money+"元":""}}</td>
+						<td align="left">{{one.money !== "" ? one.money + "元" : ""}}</td>
 					</tr>
 					<tr>
 						<th align="center">报销合计</th>
@@ -28,7 +28,7 @@
 					</tr>
 					<tr>
 						<th align="center">人民币大写</th>
-						<td colspan="3">{{ smalltoBIG(amount) }}</td>
+						<td colspan="3">{{ smallToBIG(amount) }}</td>
 					</tr>
 					<tr>
 						<td colspan="5">
@@ -64,7 +64,7 @@ export default {
 		return {
 			visible: false,
 			htmlTitle: '费用报销单',
-			dept: null,
+			deptName: null,
 			name: null,
 			date: null,
 			amount: null,
@@ -73,13 +73,11 @@ export default {
 			money_1: 0,
 			money_2: 0,
 			content:[],
-			qrCodeBase64:null
+			qrCode:null
 		};
 	},
 	methods: {
-		
-
-		smalltoBIG: function(n) {
+		smallToBIG: function(n) {
 			var fraction = ['角', '分'];
 			var digit = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];
 			var unit = [['元', '万', '亿'], ['', '拾', '佰', '仟']];
@@ -109,6 +107,52 @@ export default {
 					.replace(/(零.)+/g, '零')
 					.replace(/^整$/, '零元整')
 			);
+		},
+		init: function (id) {
+			let that = this
+			// 清空表单
+			that.visible = true
+			that.deptName = null
+			that.name = null
+			that.date = null
+			that.amount = null
+			that.balance = null
+			that.anleihen = null
+			that.money_1 = 0
+			that.money_2 = 0
+			that.content = []
+			that.$http('/reim/createReimReport', 'POST', {id: id}, true, function (resp) {
+				that.deptName = resp.deptName
+				that.name = resp.name
+				that.date = resp.date
+				that.amount = resp.amount
+				that.balance = resp.balance
+				that.anleihen = resp.anleihen
+				if (that.anleihen > that.amount) {
+					// 应退金额
+					that.money_1 = that.anleihen - that.amount
+				} else if (that.anleihen < that.amount) {
+					// 应补贴金额
+					that.money_2 = that.amount - that.anleihen
+				}
+				let content = JSON.parse(resp.content)
+				// 空行的数量
+				let blanks = 5 - content.length
+				// 增加空行
+				for (let i = 0; i < blanks; i++) {
+					content.push({
+						title: '',
+						desc: '',
+						type: '',
+						money: '',
+					})
+				}
+				that.content = content
+				that.qrCode = resp.qrCode
+			})
+		},
+		cancel: function () {
+			this.visible = false
 		}
 	}
 };

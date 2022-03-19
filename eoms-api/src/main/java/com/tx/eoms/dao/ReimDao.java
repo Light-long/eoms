@@ -27,4 +27,19 @@ public interface ReimDao {
      * 添加报销申请
      */
     int addReim(Reim reim);
+
+    /**
+     * 根据报销id查询整个报销信息
+     */
+    Map<String, Object> searchReimById(Map<String, Object> params);
+
+    /**
+     * 查询instanceId
+     */
+    String searchReimInstanceIdById(int id);
+
+    /**
+     * 删除报销记录
+     */
+    int deleteReimById(Map<String, Object> params);
 }

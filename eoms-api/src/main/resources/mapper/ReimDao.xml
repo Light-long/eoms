@@ -87,5 +87,33 @@
             create_time = NOW()
     </insert>
 
+    <select id="searchReimById" parameterType="HashMap" resultType="HashMap">
+        select
+            r.instance_id as instanceId,
+            d.dept_name AS deptName,
+            u.`name`,
+            DATE_FORMAT( r.create_time, '%Y-%m-%d' ) AS `date`,
+            r.content,
+            r.amount,
+            r.balance,
+            r.anleihen
+        from tb_reim as r
+        join tb_user as u on r.user_id = u.id
+        join tb_dept as d on u.dept_id = d.id
+        where r.id = #{id}
+        <if test="userId != null">
+            and r.user_id = #{userId}
+        </if>
+    </select>
     
+    <select id="searchReimInstanceIdById" parameterType="int" resultType="String">
+        select instance_id as instanceId
+        from tb_reim
+        where id = #{id}
+    </select>
+
+    <delete id="deleteReimById" parameterType="HashMap">
+        delete from tb_reim
+        where id = #{id} and user_id = #{userId} and status in (1, 2)
+    </delete>
 </mapper>

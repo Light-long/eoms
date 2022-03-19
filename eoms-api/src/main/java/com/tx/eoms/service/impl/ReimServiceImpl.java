@@ -1,5 +1,8 @@
 package com.tx.eoms.service.impl;
 
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.extra.qrcode.QrConfig;
 import com.tx.eoms.dao.ReimDao;
 import com.tx.eoms.exception.EomsException;
 import com.tx.eoms.pojo.Reim;
@@ -46,6 +49,39 @@ public class ReimServiceImpl implements ReimService {
             reimWorkFlowTask.startReimWorkFlow(reim.getId(), reim.getUserId());
         } else {
             throw new EomsException("添加报销申请失败");
+        }
+        return rows;
+    }
+
+    /**
+     * 根据报销id查询整个报销信息
+     * 生成报销单pdf
+     */
+    @Override
+    public Map<String, Object> searchReimById(Map<String, Object> params) {
+        Map<String, Object> reimInfo = reimDao.searchReimById(params);
+        String instanceId = MapUtil.getStr(reimInfo, "instanceId");
+        // 把支付订单的url生成二维码
+        QrConfig qrConfig = new QrConfig();
+        qrConfig.setWidth(70);
+        qrConfig.setHeight(70);
+        qrConfig.setMargin(2);
+        String qrCode = QrCodeUtil.generateAsBase64(instanceId, qrConfig, "jpg");
+        reimInfo.put("qrCode", qrCode);
+        return reimInfo;
+    }
+
+    /**
+     * 删除报销记录
+     */
+    @Override
+    public int deleteReimById(Map<String, Object> params) {
+        int id = MapUtil.getInt(params, "id");
+        String instanceId = reimDao.searchReimInstanceIdById(id);
+        int rows = reimDao.deleteReimById(params);
+        if (rows == 1) {
+            // 关闭工作流
+            reimWorkFlowTask.deleteReimWorkFlow(instanceId, "报销申请", "删除报销申请");
         }
         return rows;
     }

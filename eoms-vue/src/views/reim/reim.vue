@@ -60,7 +60,8 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button size="medium" type="primary" @click="searchHandle()">查询</el-button>
-					<el-button size="success" type="primary" @click="addHandle()">新增</el-button>
+					<el-button size="medium" type="common" @click="reset()">重置</el-button>
+					<el-button size="medium" type="success" @click="addHandle()">新增</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -171,7 +172,7 @@
 					<el-button
 						type="text"
 						size="medium"
-						:disabled="!(['待审批', '已否决'].includes(scope.row.status) && scope.row.mine == 'true')"
+						:disabled="!(['待审批', '已否决'].includes(scope.row.status) && scope.row.mine === 'true')"
 						@click="deleteHandle(scope.row.id)"
 					>
 						删除
@@ -294,10 +295,46 @@ export default {
 				}
 			})
 		},
+		reset: function() {
+			this.dataForm = {}
+			this.loadDataList()
+
+		},
 		addHandle: function () {
 			this.addVisible = true
 			this.$nextTick(() => {
 				this.$refs.add.init()
+			})
+		},
+		pdfHandle: function (id) {
+			this.pdfVisible = true
+			this.$nextTick(() => {
+				this.$refs.pdf.init(id)
+			})
+		},
+		deleteHandle: function (id) {
+			let that = this
+			that.$confirm(`确定要删除选中的记录？`, '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				type: 'warning'
+			}).then(() => {
+				that.$http('/reim/deleteReimById', 'POST', {id: id}, true, function (resp) {
+					if (resp.rows > 0) {
+						that.$message({
+							message: '操作成功',
+							type: 'success',
+							duration: 1200,
+						});
+						that.loadDataList()
+					} else {
+						that.$message({
+							message: '未能删除记录',
+							type: 'warning',
+							duration: 1200
+						});
+					}
+				})
 			})
 		}
 	},

@@ -76,4 +76,21 @@ public class ReimWorkFlowTask {
             throw new EomsException("【报销申请】工作流调用异常");
         }
     }
+
+    @Async
+    public void deleteReimWorkFlow(String instanceId, String type, String reason) {
+        JSONObject json = new JSONObject();
+        json.set("instanceId", instanceId);
+        json.set("type", type);
+        json.set("reason", reason);
+        json.set("code", code);
+        json.set("tcode", tcode);
+        String url = workflowUrl + "/workflow/deleteProcessById";
+        HttpResponse result = HttpRequest.post(url).header("Content-Type", "application/json")
+                .body(json.toString()).execute();
+        if (result.getStatus() != 200) {
+            log.error(result.body());
+            throw new EomsException("调用工作流出现异常");
+        }
+    }
 }

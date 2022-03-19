@@ -4,6 +4,8 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.json.JSONUtil;
 import com.tx.eoms.controller.reim.AddReimForm;
+import com.tx.eoms.controller.reim.CreateReimReportForm;
+import com.tx.eoms.controller.reim.DeleteReimByIdForm;
 import com.tx.eoms.controller.reim.SearchReimByPageForm;
 import com.tx.eoms.pojo.Reim;
 import com.tx.eoms.service.ReimService;
@@ -66,6 +68,28 @@ public class ReimController {
         reim.setUserId(StpUtil.getLoginIdAsInt());
         reim.setStatus((byte) 1);
         int rows = reimService.addReim(reim);
+        return CommonResult.ok().put("rows", rows);
+    }
+
+    @PostMapping("/createReimReport")
+    @Operation(summary = "生成报销单")
+    @SaCheckLogin
+    public CommonResult createReimReport(@Valid @RequestBody CreateReimReportForm form) {
+        Map<String, Object> params = JSONUtil.parse(form).toBean(Map.class);
+        if (!(StpUtil.hasPermission("ROOT") || StpUtil.hasPermission("REIM:SELECT"))) {
+            params.put("userId", StpUtil.getLoginIdAsInt());
+        }
+        Map<String, Object> reimInfo = reimService.searchReimById(params);
+        return CommonResult.ok(reimInfo);
+    }
+
+    @PostMapping("/deleteReimById")
+    @Operation(summary = "删除报销记录")
+    @SaCheckLogin
+    public CommonResult deleteReimById(@Valid @RequestBody DeleteReimByIdForm form) {
+        Map<String, Object> params = JSONUtil.parse(form).toBean(Map.class);
+        params.put("userId", StpUtil.getLoginIdAsInt());
+        int rows = reimService.deleteReimById(params);
         return CommonResult.ok().put("rows", rows);
     }
 }
