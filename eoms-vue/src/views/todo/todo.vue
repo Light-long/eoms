@@ -34,68 +34,90 @@
             </el-form>
         </div>
         <!--表格-->
-        <el-table
-            :data="dataList"
-            border="border"
-            v-loading="dataListLoading"
-            cell-style="padding: 4px 0"
-            style="width: 100%;"
-            size="medium"
-        >
-            <el-table-column type="index" header-align="center" align="center" width="60" label="序号">
-                <template #default="scope">
-                    <span>{{ (pageIndex - 1) * pageSize + scope.$index + 1 }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="title" header-align="center" align="center" label="待办事项名" min-width="120" ></el-table-column>
-            <el-table-column prop="desc" header-align="center" align="center" label="待办事项详情" min-width="250"></el-table-column>
-            <el-table-column prop="start" header-align="center" align="center" label="起始时间" min-width="150"></el-table-column>
-            <el-table-column prop="end" header-align="center" align="center" label="截止时间" min-width="150"></el-table-column>
-            <el-table-column prop="priority" header-align="center" align="center" label="优先级" min-width="100">
-                <template #default="scope">
-                    <span v-if="scope.row.priority === '低级'" style="color: #17B3A3;">{{ scope.row.priority }}</span>
-                    <span v-if="scope.row.priority === '中级'" style="color: orange;">{{ scope.row.priority }}</span>
-                    <span v-if="scope.row.priority === '高级'" style="color: #f56c6c;">{{ scope.row.priority }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="status" header-align="center" align="center" label="完成状态" min-width="100">
-                <template #default="scope">
-                    <span v-if="scope.row.status === '待完成'" style="color: orange;">{{ scope.row.status }}</span>
-                    <span v-if="scope.row.status === '已过期'" style="color: grey">{{ scope.row.status }}</span>
-                    <span v-if="scope.row.status === '已完成'" style="color: #17B3A3;">{{ scope.row.status }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column header-align="center" align="center" width="150" label="操作" min-width="120">
-                <template #default="scope">
-                    <el-button
-                        type="text"
-                        size="medium"
-                        :disabled=" !(new Date().getTime() > new Date(scope.row.start).getTime() && new Date().getTime() < new Date(scope.row.end).getTime())
+        <div v-show="mold === 'table'">
+            <el-table
+                    :data="dataList"
+                    border="border"
+                    v-loading="dataListLoading"
+                    cell-style="padding: 4px 0"
+                    style="width: 100%;"
+                    size="medium"
+            >
+                <el-table-column type="index" header-align="center" align="center" width="60" label="序号">
+                    <template #default="scope">
+                        <span>{{ (pageIndex - 1) * pageSize + scope.$index + 1 }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="title" header-align="center" align="center" label="待办事项名" min-width="120" ></el-table-column>
+                <el-table-column prop="desc" header-align="center" align="center" label="待办事项详情" min-width="250"></el-table-column>
+                <el-table-column prop="start" header-align="center" align="center" label="起始时间" min-width="150"></el-table-column>
+                <el-table-column prop="end" header-align="center" align="center" label="截止时间" min-width="150"></el-table-column>
+                <el-table-column prop="priority" header-align="center" align="center" label="优先级" min-width="100">
+                    <template #default="scope">
+                        <span v-if="scope.row.priority === '低级'" style="color: #17B3A3;">{{ scope.row.priority }}</span>
+                        <span v-if="scope.row.priority === '中级'" style="color: orange;">{{ scope.row.priority }}</span>
+                        <span v-if="scope.row.priority === '高级'" style="color: #f56c6c;">{{ scope.row.priority }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="status" header-align="center" align="center" label="完成状态" min-width="100">
+                    <template #default="scope">
+                        <span v-if="scope.row.status === '待完成'" style="color: orange;">{{ scope.row.status }}</span>
+                        <span v-if="scope.row.status === '已过期'" style="color: grey">{{ scope.row.status }}</span>
+                        <span v-if="scope.row.status === '已完成'" style="color: #17B3A3;">{{ scope.row.status }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column header-align="center" align="center" width="150" label="操作" min-width="120">
+                    <template #default="scope">
+                        <el-button
+                                type="text"
+                                size="medium"
+                                :disabled=" !(new Date().getTime() > new Date(scope.row.start).getTime() && new Date().getTime() < new Date(scope.row.end).getTime())
                                             || (scope.row.status === '已完成' || scope.row.status === '已过期')"
-                        @click="finishHandle(scope.row.id)"
-                    >
-                        完成
-                    </el-button>
-                    <el-button
-                            type="text"
-                            size="medium"
-                            :disabled="scope.row.status === '已完成' || scope.row.status === '已过期'"
-                            @click="deleteHandle(scope.row.id)"
-                    >
-                        删除
-                    </el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-pagination
-                @size-change="sizeChangeHandle"
-                @current-change="currentChangeHandle"
-                :current-page="pageIndex"
-                :page-sizes="[5, 10, 20]"
-                :page-size="pageSize"
-                :total="totalCount"
-                layout="total, sizes, prev, pager, next, jumper"
-        ></el-pagination>
+                                @click="finishHandle(scope.row.id)"
+                        >
+                            完成
+                        </el-button>
+                        <el-button
+                                type="text"
+                                size="medium"
+                                :disabled="scope.row.status === '已完成' || scope.row.status === '已过期'"
+                                @click="deleteHandle(scope.row.id)"
+                        >
+                            删除
+                        </el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <el-pagination
+                    @size-change="sizeChangeHandle"
+                    @current-change="currentChangeHandle"
+                    :current-page="pageIndex"
+                    :page-sizes="[5, 10, 20]"
+                    :page-size="pageSize"
+                    :total="totalCount"
+                    layout="total, sizes, prev, pager, next, jumper"
+            ></el-pagination>
+        </div>
+        <div v-show="mold === 'timeline'">
+            <el-timeline>
+                <el-timeline-item
+                        v-for="(data, index) in dataList"
+                        :key="index"
+                        :timestamp= "data.start"
+                        :type="data.status === '待完成' ? 'warning' : data.status === '已过期'
+                                                ? 'info' : 'success'"
+                        placement="top"
+                        size="large"
+                >
+                    <el-card>
+                        <h2>{{ data.title }}</h2>
+                        <h3>{{ data.desc }}</h3>
+                        <h4>截止时间：</h4> {{data.end}} &nbsp;
+                        <h4>优先级：</h4> {{data.priority}}
+                    </el-card>
+                </el-timeline-item>
+            </el-timeline>
+        </div>
         <todo-add v-if="addVisible" ref="add" @refreshDataList="loadDataList"></todo-add>
     </div>
 </template>
@@ -118,7 +140,8 @@
                     date: null
                 },
                 dataList: [],
-                addVisible: false
+                addVisible: false,
+                mold: 'table'
             }
         },
         created: function() {
@@ -173,20 +196,59 @@
                 this.loadDataList();
             },
             searchHandle: function() {
-                this.$refs['dataForm'].validate(valid => {
-                    if (valid) {
-                        this.$refs['dataForm'].clearValidate()
-                        if (this.pageIndex !== 1) {
-                            this.pageIndex = 1
+                let that = this
+                if (this.dataForm.date == null || this.dataForm.date === '') {
+                    this.$refs['dataForm'].validate(valid => {
+                        if (valid) {
+                            this.$refs['dataForm'].clearValidate()
+                            if (this.pageIndex !== 1) {
+                                this.pageIndex = 1
+                            }
+                            this.loadDataList()
+                            this.mold = 'table'
+                        } else {
+                            return false
                         }
-                        this.loadDataList()
-                    } else {
-                        return false
-                    }
-                })
+                    })
+                } else {
+                    this.$refs['dataForm'].validate(valid => {
+                        if (valid) {
+                            this.$refs['dataForm'].clearValidate()
+                            // 查询出这个日期的全部待办事项，以时间线表示
+                            let data = {
+                                date: dayjs(that.dataForm.date).format("YYYY-MM-DD"),
+                                status: that.dataForm.status
+                            }
+                            that.$http('/todo/searchTodoListByDate', 'POST', data, true, function (resp) {
+                                let todoList = resp.list
+                                for (let one of todoList) {
+                                    if (one.priority === 1) {
+                                        one.priority = '低级'
+                                    } else if (one.priority === 2) {
+                                        one.priority = '中级';
+                                    } else if (one.priority === 3) {
+                                        one.priority = '高级';
+                                    }
+                                    if (one.status === 1) {
+                                        one.status = '待完成';
+                                    } else if (one.status === 2) {
+                                        one.status = '已过期';
+                                    } else if (one.status === 3) {
+                                        one.status = '已完成';
+                                    }
+                                }
+                                that.dataList = todoList
+                                that.mold = 'timeline'
+                            })
+                        } else {
+                            return false
+                        }
+                    })
+                }
             },
             reset: function () {
                 this.dataForm = {}
+                this.mold = 'table'
                 this.loadDataList()
             },
             finishHandle: function (id) {

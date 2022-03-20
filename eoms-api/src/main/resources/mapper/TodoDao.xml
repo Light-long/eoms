@@ -20,7 +20,7 @@
             and t.status = #{status}
         </if>
         <if test="date != null">
-            and DATE_FORMAT(t.`start`,'%Y-%m-%d') = DATE_FORMAT(#{date},'%Y-%m-%d')
+            and DATE_FORMAT(#{date},'%Y-%m-%d') between DATE_FORMAT(t.`start`,'%Y-%m-%d') and DATE_FORMAT(t.`end`,'%Y-%m-%d')
         </if>
         order by t.priority desc, t.start asc
         limit #{start}, #{length}
@@ -35,8 +35,29 @@
             and t.status = #{status}
         </if>
         <if test="date != null">
-            and DATE_FORMAT(t.`start`,'%Y-%m-%d') = DATE_FORMAT(#{date},'%Y-%m-%d')
+            and DATE_FORMAT(#{date},'%Y-%m-%d') between DATE_FORMAT(t.`start`,'%Y-%m-%d') and DATE_FORMAT(t.`end`,'%Y-%m-%d')
         </if>
+    </select>
+    
+    <select id="searchTodoListByDate" parameterType="HashMap" resultType="HashMap">
+        select
+            t.id,
+            u.id as userId,
+            u.name,
+            t.title,
+            t.desc,
+            DATE_FORMAT(t.`start`,'%Y-%m-%d %H:%i') AS `start`,
+            DATE_FORMAT(t.`end`,'%Y-%m-%d %H:%i') AS `end`,
+            t.status,
+            t.priority
+        from tb_todo as t
+        join tb_user as u on t.user_id = u.id
+        where t.user_id = #{userId}
+        and DATE_FORMAT(#{date},'%Y-%m-%d') between DATE_FORMAT(t.`start`,'%Y-%m-%d') and DATE_FORMAT(t.`end`,'%Y-%m-%d')
+        <if test="status != null">
+            and t.status = #{status}
+        </if>
+        order by t.start asc
     </select>
 
     <update id="finishTask" parameterType="HashMap">
@@ -65,7 +86,7 @@
         where id = #{id} and user_id = #{userId}
     </delete>
 
-    <select id="searchAllEndTime" resultType="HashMap">
+    <select id="searchAllEndTime" resultType="java.util.Map">
         select
             id,
             DATE_FORMAT(`end`,'%Y-%m-%d %H:%i') AS `end`,

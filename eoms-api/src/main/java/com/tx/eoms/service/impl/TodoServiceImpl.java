@@ -26,6 +26,15 @@ public class TodoServiceImpl implements TodoService {
     }
 
     /**
+     * 按日期，查询当时待办事项
+     * 以 时间线形式表示
+     */
+    @Override
+    public List<Map<String, Object>> searchTodoListByDate(Map<String, Object> params) {
+        return todoDao.searchTodoListByDate(params);
+    }
+
+    /**
      * 完成待办
      */
     @Override

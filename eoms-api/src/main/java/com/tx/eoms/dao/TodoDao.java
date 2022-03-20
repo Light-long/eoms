@@ -19,6 +19,12 @@ public interface TodoDao {
     long searchTodoListCount(Map<String, Object> params);
 
     /**
+     * 按日期，查询当时待办事项
+     * 以 时间线形式表示
+     */
+    List<Map<String, Object>> searchTodoListByDate(Map<String, Object> params);
+
+    /**
      * 完成待办
      */
     int finishTask(Map<String, Object> params);

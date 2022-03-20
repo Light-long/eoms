@@ -5,10 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
-import com.tx.eoms.controller.todo.AddTodoListForm;
-import com.tx.eoms.controller.todo.DeleteTodoListForm;
-import com.tx.eoms.controller.todo.FinishTaskForm;
-import com.tx.eoms.controller.todo.SearchTodoListForm;
+import com.tx.eoms.controller.todo.*;
 import com.tx.eoms.service.TodoService;
 import com.tx.eoms.util.CommonResult;
 import com.tx.eoms.util.PageUtils;
@@ -23,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -45,6 +43,19 @@ public class TodoController {
         PageUtils todoList = todoService.searchTodoList(params);
         return CommonResult.ok().put("todoList", todoList);
     }
+
+    @PostMapping("/searchTodoListByDate")
+    @Operation(summary = "根据日期查询待办事项列表--时间线形式")
+    @SaCheckLogin
+    public CommonResult searchTodoListByDate(@Valid @RequestBody SearchTodoListByDateForm form) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", StpUtil.getLoginIdAsInt());
+        params.put("date", form.getDate());
+        params.put("status", form.getStatus());
+        List<Map<String, Object>> todoListByDate = todoService.searchTodoListByDate(params);
+        return CommonResult.ok().put("list", todoListByDate);
+    }
+
 
     @PostMapping("/finishTask")
     @Operation(summary = "完成待办")
