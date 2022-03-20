@@ -120,6 +120,10 @@
 							<SvgIcon name="assurance_fill" class="icon-svg" />
 							<span slot="title">报销管理</span>
 						</el-menu-item>
+						<el-menu-item index="todo" @click="$router.push({ name: 'Todo' })">
+							<SvgIcon name="assurance_fill" class="icon-svg" />
+							<span slot="title">我的待办</span>
+						</el-menu-item>
 					</el-submenu>
 
 					<el-submenu

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tx.eoms.dao.TodoDao">
+
+    <select id="searchTodoList" parameterType="HashMap" resultType="HashMap">
+        select
+            t.id,
+            u.id as userId,
+            u.name,
+            t.title,
+            t.desc,
+            DATE_FORMAT(t.`start`,'%Y-%m-%d %H:%i') AS `start`,
+            DATE_FORMAT(t.`end`,'%Y-%m-%d %H:%i') AS `end`,
+            t.status,
+            t.priority
+        from tb_todo as t
+        join tb_user as u on t.user_id = u.id
+        where t.user_id = #{userId}
+        <if test="status != null">
+            and t.status = #{status}
+        </if>
+        <if test="date != null">
+            and DATE_FORMAT(t.`start`,'%Y-%m-%d') = DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+        order by t.priority desc, t.start asc
+        limit #{start}, #{length}
+    </select>
+
+    <select id="searchTodoListCount" parameterType="HashMap" resultType="long">
+        select count(*)
+        from tb_todo as t
+        join tb_user as u on t.user_id = u.id
+        where t.user_id = #{userId}
+        <if test="status != null">
+            and t.status = #{status}
+        </if>
+        <if test="date != null">
+            and DATE_FORMAT(t.`start`,'%Y-%m-%d') = DATE_FORMAT(#{date},'%Y-%m-%d')
+        </if>
+    </select>
+
+    <update id="finishTask" parameterType="HashMap">
+        update tb_todo
+        set `status` = #{status}
+        where id = #{id} and user_id = #{userId}
+    </update>
+
+    <insert id="addTodoList" parameterType="HashMap">
+        insert into tb_todo
+        set
+            user_id = #{userId},
+            title = #{title},
+            <if test="desc != null">
+                `desc` = #{desc},
+            </if>
+            `start` = #{start},
+            `end` = #{end},
+            `status` = #{status},
+            priority = #{priority},
+            create_time = NOW()
+    </insert>
+
+    <delete id="deleteTodoList" parameterType="HashMap">
+        delete from tb_todo
+        where id = #{id} and user_id = #{userId}
+    </delete>
+
+    <select id="searchAllEndTime" resultType="HashMap">
+        select
+            id,
+            DATE_FORMAT(`end`,'%Y-%m-%d %H:%i') AS `end`,
+            status
+        from tb_todo
+    </select>
+
+    <update id="updateStatusById" parameterType="int">
+        update tb_todo
+        set `status` = 2
+        where id = #{id}
+    </update>
+</mapper>

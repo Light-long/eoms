@@ -20,6 +20,7 @@ import AmectType from "../views/amect/amect_type.vue"
 import AmectReport from "../views/amect/amect_report.vue"
 import Reim from "../views/reim/reim.vue"
 import NotFound from "../views/404.vue"
+import Todo from "../views/todo/todo.vue"
 
 
 const routes = [
@@ -153,6 +154,15 @@ const routes = [
 				component: Reim,
 				meta: {
 					title: '报销管理',
+					isTab: true
+				}
+			},
+			{
+				path: '/todo',
+				name: 'Todo',
+				component: Todo,
+				meta: {
+					title: '我的待办',
 					isTab: true
 				}
 			}
