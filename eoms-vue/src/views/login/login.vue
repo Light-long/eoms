@@ -112,12 +112,12 @@ export default {
 									let token = resp.token
 									localStorage.setItem("permissions", permissions)
 									localStorage.setItem("token", token)
-									router.push({name: 'Home'})
 									that.$message({
 										message: '登陆成功',
 										type: 'success',
 										duration: 1000
 									})
+									router.push({name: 'Home'})
 								} else {
 									that.$message({
 										message: '登陆失败',
