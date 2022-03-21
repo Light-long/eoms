@@ -259,4 +259,10 @@
         on u.dept_id = d.id
         where u.id = #{userId} and u.status = 1
     </select>
+
+    <select id="searchEmailById" parameterType="int" resultType="String">
+        select email
+        from tb_user
+        where id = #{id} and `status` = 1
+    </select>
 </mapper>

@@ -54,5 +54,10 @@ public class Todo implements Serializable {
      */
     private Date createTime;
 
+    /**
+     * 是否通知，0没有通知，1已经通知过
+     */
+    private Byte isNotify;
+
     private static final long serialVersionUID = 1L;
 }

@@ -102,4 +102,9 @@ public interface UserDao {
      * meeting-video显示
      */
     Map<String, Object> searchNameAndDept(int userId);
+
+    /**
+     * 根据id查询email
+     */
+    String searchEmailById(int id);
 }

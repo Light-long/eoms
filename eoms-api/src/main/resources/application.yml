@@ -57,6 +57,13 @@ spring:
     is-share: false
     # token风格
     token-style: uuid
+  # mail
+  mail:
+    default-encoding: UTF-8
+    host: smtp.qq.com
+    username: 2201673330@qq.com
+    password: cwaiymwngmzjdjji
+    protocol: smtp
 
 mybatis:
   mapper-locations: classpath*:mapper/*.xml
@@ -103,6 +110,8 @@ eoms:
   code: 62338DECF3CA18B0
   tcode: "285413"
   receiveNotify: http://localhost:8090/eoms-api/meeting/receiveNotify
+  email:
+    system: 2201673330@qq.com
 
 workflow:
   url: http://localhost:9090/emos-workflow

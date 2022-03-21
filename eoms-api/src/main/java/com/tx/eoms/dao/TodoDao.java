@@ -48,4 +48,14 @@ public interface TodoDao {
      * 过了截止时间的时间自动过期（状态值修改为2）
      */
     int updateStatusById(int id);
+
+    /**
+     * 查询所有的开始时间，如果开始了，那就发送邮件通知
+     */
+    List<Map<String, Object>> searchAllStartTime();
+
+    /**
+     * 发送完邮件后，修改通知状态
+     */
+    int updateNotifyStatus(int id);
 }

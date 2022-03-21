@@ -108,7 +108,7 @@ export default {
 				tel: [{ required: false, pattern: '^1\\d{10}$', message: '电话格式错误' }],
 				email: [
 					{
-						required: false,
+						required: true,
 						pattern: '^([a-zA-Z]|[0-9])(\\w|\\-)+@[a-zA-Z0-9]+\\.([a-zA-Z]{2,4})$',
 						message: '邮箱格式错误'
 					}

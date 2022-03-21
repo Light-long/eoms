@@ -78,7 +78,8 @@
             `end` = #{end},
             `status` = #{status},
             priority = #{priority},
-            create_time = NOW()
+            create_time = NOW(),
+            is_notify = 0
     </insert>
 
     <delete id="deleteTodoList" parameterType="HashMap">
@@ -97,6 +98,22 @@
     <update id="updateStatusById" parameterType="int">
         update tb_todo
         set `status` = 2
+        where id = #{id}
+    </update>
+
+    <select id="searchAllStartTime" resultType="java.util.Map">
+        select
+            id,
+            title,
+            DATE_FORMAT(`start`,'%Y-%m-%d %H:%i') AS `start`,
+            user_id as userId,
+            is_notify as isNotify
+        from tb_todo
+    </select>
+
+    <update id="updateNotifyStatus" parameterType="int">
+        update tb_todo
+        set is_notify = 1
         where id = #{id}
     </update>
 </mapper>
