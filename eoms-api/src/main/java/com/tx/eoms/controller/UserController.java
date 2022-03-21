@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.json.JSONUtil;
 import com.tx.eoms.controller.user.*;
@@ -11,13 +12,29 @@ import com.tx.eoms.pojo.User;
 import com.tx.eoms.service.UserService;
 import com.tx.eoms.util.CommonResult;
 import com.tx.eoms.util.PageUtils;
+import com.tx.eoms.util.VerifyUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.*;
+import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/user")
@@ -26,6 +43,9 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
 
     @PostMapping("/login")
     @Operation(summary = "登录")
@@ -43,6 +63,71 @@ public class UserController {
         StpUtil.setLoginId(userId);
         Set<String> permissions = userService.searchUserPermissions(userId);
         return CommonResult.ok().put("permissions", permissions);
+    }
+
+    @PostMapping("/getVerifyCode")
+    @Operation(summary = "生成验证码")
+    public CommonResult getVerifyCode(HttpServletResponse response, HttpServletRequest request) {
+        // 获取到session
+        HttpSession session = request.getSession();
+        // 取到 sessionId
+        String id = session.getId();
+        // 利用图片工具生成图片
+        // 返回的数组第一个参数是生成的验证码，第二个参数是生成的图片
+        Object[] objs = VerifyUtil.newBuilder()
+                .setWidth(120)   //设置图片的宽度
+                .setHeight(35)   //设置图片的高度
+                .setSize(4)      //设置字符的个数
+                .setLines(5)    //设置干扰线的条数
+                .setFontSize(25) //设置字体的大小
+                .setTilt(true)   //设置是否需要倾斜
+                .setBackgroundColor(Color.LIGHT_GRAY) //设置验证码的背景颜色
+                .build()         //构建VerifyUtil项目
+                .createImage();  //生成图片
+        // 将验证码存入Session
+        session.setAttribute("SESSION_VERIFY_CODE_" + id, objs[0]);
+        // 打印验证码
+        System.out.println(objs[0]);
+        // 设置redis值的序列化方式
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        // 在redis中保存一个验证码最多尝试次数
+        redisTemplate.opsForValue().set(("VERIFY_CODE_" + id), "3", 5 * 60, TimeUnit.SECONDS);
+        // 将图片输出给浏览器
+        BufferedImage image = (BufferedImage) objs[1];
+        String imageString = null;
+        FastByteArrayOutputStream os = new FastByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "jpg", os);
+            imageString = Base64.encode(os.toByteArray());
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return CommonResult.ok().put("code", imageString);
+    }
+
+    @PostMapping("/checkCode")
+    @Operation(summary = "校验验证码")
+    public CommonResult checkCode(@Valid @RequestBody CheckCodeForm form, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String id = session.getId();
+        // 将redis中的尝试次数减一
+        String verifyCodeKey = "VERIFY_CODE_" + id;
+        long num = redisTemplate.opsForValue().decrement(verifyCodeKey);
+        // 如果次数次数小于0 说明验证码已经失效
+        if (num < 0) {
+            return CommonResult.error("验证码失效");
+        }
+        String code = form.getCode();
+        // 将session中的取出对应session id生成的验证码
+        String serverCode = (String) session.getAttribute("SESSION_VERIFY_CODE_" + id);
+        // 校验验证码
+        if (null == serverCode || null == code || !serverCode.toUpperCase().equals(code.toUpperCase())) {
+            return CommonResult.error("验证码错误");
+        }
+        // 验证通过之后手动将验证码失效
+        redisTemplate.delete(verifyCodeKey);
+        return CommonResult.ok();
     }
 
     @GetMapping("/loadUserInfo")
