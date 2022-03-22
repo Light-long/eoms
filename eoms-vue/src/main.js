@@ -17,6 +17,10 @@ const app = createApp(App) //创建VUE对象
 import router from './router'
 app.use(router) //挂载路由插件
 
+// 自定义表格工具组件
+import RightToolbar from "./components/RightToolbar/index.vue"
+app.component('RightToolbar', RightToolbar)
+
 //使用WebSocket，后端项目给前端页面推送通知更
 import VueNativeSock from "vue-native-websocket-vue3";
 app.use(VueNativeSock,"ws://localhost:8090/eoms-api/socket",{

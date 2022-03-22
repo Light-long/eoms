@@ -115,7 +115,7 @@
                     return dayjs(date.toLocaleDateString()).isBefore(new Date().toLocaleDateString());
                 },
                 dataRule: {
-                    title: [{ required: true, message: '请假原因不能为空' }],
+                    title: [{ required: true, message: '待办事项名称不能为空' }],
                     startDate: [{ required: true, message: '开始日期不能为空' }],
                     startTime: [{ required: true, message: '开始时间不能为空' }],
                     endDate: [{ required: true, message: '截止日期不能为空' }],

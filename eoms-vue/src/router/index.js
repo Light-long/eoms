@@ -21,7 +21,7 @@ import AmectReport from "../views/amect/amect_report.vue"
 import Reim from "../views/reim/reim.vue"
 import NotFound from "../views/404.vue"
 import Todo from "../views/todo/todo.vue"
-
+import Notice from "../views/notice/notice.vue"
 
 const routes = [
 	{
@@ -163,6 +163,15 @@ const routes = [
 				component: Todo,
 				meta: {
 					title: '我的待办',
+					isTab: true
+				}
+			},
+			{
+				path: '/notice',
+				name: 'Notice',
+				component: Notice,
+				meta: {
+					title: '公告管理',
 					isTab: true
 				}
 			}
