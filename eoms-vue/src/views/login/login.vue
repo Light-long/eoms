@@ -62,7 +62,7 @@
 <script>
 import 'element-plus/lib/theme-chalk/display.css';
 import router from '../../router/index.js';
-import {isUsername, isPassword} from "../../utils/validate";
+import {isUsername, isPassword} from "../../utils/verify";
 import $ from 'jquery';
 
 export default {

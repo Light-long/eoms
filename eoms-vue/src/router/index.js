@@ -22,6 +22,7 @@ import Reim from "../views/reim/reim.vue"
 import NotFound from "../views/404.vue"
 import Todo from "../views/todo/todo.vue"
 import Notice from "../views/notice/notice.vue"
+import UserInfo from "../views/info/userInfo.vue"
 
 const routes = [
 	{
@@ -172,6 +173,15 @@ const routes = [
 				component: Notice,
 				meta: {
 					title: '公告管理',
+					isTab: true
+				}
+			},
+			{
+				path: '/userInfo',
+				name: 'UserInfo',
+				component: UserInfo,
+				meta: {
+					title: '个人中心',
 					isTab: true
 				}
 			}
