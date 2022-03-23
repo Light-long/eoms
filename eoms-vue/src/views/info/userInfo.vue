@@ -4,12 +4,17 @@
             <el-col :span="7" :xs="24">
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">
-                        <span>个人信息</span>
+                        <span style="font-size: 18px; font-weight: bold">个人信息</span>
                     </div>
+                    <el-divider />
                     <div>
                         <div class="text-center">
-                            <!--头像上传-->
-<!--                            <userAvatar :user="user" />-->
+                            <!--显示头像-->
+                            <div align="center">
+                                <img src="https://online-office-1257796177.cos.ap-beijing.myqcloud.com/img/avatar/user.jpg" class="avatar-show">
+                                <!--更换头像-->
+                                <el-button type="primary" size="mini" style="display: block; margin-top: 5px" @click="updateAvatar()">更换头像</el-button>
+                            </div>
                         </div>
                         <ul class="list-group list-group-striped">
                             <li class="list-group-item">
@@ -59,24 +64,34 @@
                 </el-card>
             </el-col>
         </el-row>
+        <AvatarUpdate v-if="avatarUpdateVisible" ref="avatarUpdate" @refreshDataList=""></AvatarUpdate>
     </div>
 </template>
 
 <script>
     import SvgIcon from "../../components/SvgIcon.vue";
+    import AvatarUpdate from './avatar-update.vue'
     export default {
         name: "userInfo",
-        components: {SvgIcon},
+        components: {
+            SvgIcon,
+            AvatarUpdate
+        },
         data() {
             return {
-
+                avatarUpdateVisible: false
             };
         },
         created() {
 
         },
         methods: {
-
+            updateAvatar: function () {
+                this.avatarUpdateVisible = true
+                this.$nextTick(() => {
+                    this.$refs.avatarUpdate.init()
+                })
+            }
         }
     };
 </script>
@@ -98,5 +113,12 @@
         fill: currentColor;
         overflow: hidden;
         margin-right: 5px;
+    }
+
+    .avatar-show {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        box-shadow: 0 0 4px #ccc;
     }
 </style>

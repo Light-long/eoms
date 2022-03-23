@@ -57,6 +57,8 @@ public class CosUtil {
         // 根据传入的type判断放入那个文件夹
         if (typeEnum == CosTypeEnum.ARCHIVE) {
             path = "/archive/" + IdUtil.simpleUUID() + fileName.substring(fileName.lastIndexOf("."));
+        } else if (typeEnum == CosTypeEnum.AVATAR){
+            path = "/avatar/" + IdUtil.simpleUUID() + fileName.substring(fileName.lastIndexOf("."));
         }
         // 元数据信息
         ObjectMetadata meta = new ObjectMetadata();
