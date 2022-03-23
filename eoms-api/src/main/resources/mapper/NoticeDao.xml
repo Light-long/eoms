@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tx.eoms.dao.NoticeDao">
+
+    <select id="searchNoticeHome" resultType="HashMap">
+        select
+            title,
+            content,
+            DATE_FORMAT(update_time,'%Y-%m-%d %H:%i') AS updateTime,
+            is_topping as isTopping
+        from tb_notice
+        where status = 1
+        order by is_topping desc, update_time desc
+    </select>
+    
+    <select id="searchNoticeByPage" parameterType="HashMap" resultType="HashMap">
+        select
+            id,
+            title,
+            content,
+            DATE_FORMAT(create_time,'%Y-%m-%d %H:%i') AS createTime,
+            DATE_FORMAT(update_time,'%Y-%m-%d %H:%i') AS updateTime,
+            status,
+            is_topping as isTopping
+        from tb_notice
+        where 1 = 1
+            <if test="title != null">
+                and title like '%${title}%'
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="updateTime != null">
+                and DATE_FORMAT(update_time,'%Y-%m-%d') = DATE_FORMAT(#{updateTime},'%Y-%m-%d')
+            </if>
+        order by is_topping desc, update_time desc
+        limit #{start}, #{length}
+    </select>
+
+    <select id="searchNoticeCount" parameterType="HashMap" resultType="long">
+        select count(*)
+        from tb_notice
+        where 1 = 1
+        <if test="title != null">
+            and title like '%${title}%'
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="updateTime != null">
+            and DATE_FORMAT(update_time,'%Y-%m-%d') = DATE_FORMAT(#{updateTime},'%Y-%m-%d')
+        </if>
+    </select>
+
+    <insert id="addNotice" parameterType="com.tx.eoms.pojo.Notice">
+        insert into tb_notice
+        set
+            title = #{title},
+            content = #{content},
+            create_time = #{createTime},
+            update_time = #{updateTime},
+            status = #{status},
+            is_topping = #{isTopping}
+    </insert>
+
+    <select id="searchNoticeById" parameterType="int" resultType="HashMap">
+        select
+            title,
+            content,
+            is_topping as isTopping,
+            status
+        from tb_notice
+        where id = #{id}
+    </select>
+
+    <update id="updateNotice" parameterType="HashMap">
+        update tb_notice
+        set
+            title = #{title},
+            content = #{content},
+            update_time = #{updateTime},
+            status = #{status},
+            is_topping = #{isTopping}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteNoticeByIds">
+        delete from tb_notice
+        where id in
+        <foreach collection="array" item="one" open="(" separator="," close=")">
+            #{one}
+        </foreach>
+    </delete>
+</mapper>
