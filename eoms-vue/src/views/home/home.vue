@@ -6,7 +6,7 @@
 					<div class="demo-collapse">
 						<h2 align="center" style="font-size:30px; font-weight: bold; color: rgb(61, 82, 102)">公告栏</h2>
 						<el-collapse accordion>
-							<el-collapse-item name="{{notice.title}}" v-for="notice in dataList">
+							<el-collapse-item :name="index" v-for="(notice,index) in dataList">
 								<template #title>
 									<span style="font-size: 20px; font-weight: bold; color: rgb(61, 82, 102)">{{notice.title}}</span>
 									<span style="font-size: 15px; font-weight: bold; color: rgb(61, 82, 102); margin-left: 10px">{{notice.updateTime}}</span>
