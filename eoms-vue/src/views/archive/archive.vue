@@ -41,6 +41,7 @@ export default {
 			this.disableBtn = false
 			this.$nextTick(() => {
 				this.$refs['upload'].clearFiles()
+				this.picList = []
 			})
 		},
 		beforeUploadHandle: function (file) {
@@ -91,6 +92,8 @@ export default {
 					type: 'error',
 					duration: 1200
 				});
+				that.btn = '归档'
+				that.disableBtn = false
 				return;
 			}
 			let files = [];

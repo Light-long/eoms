@@ -39,6 +39,7 @@
 				this.disableBtn = false
 				this.$nextTick(() => {
 					this.$refs['upload'].clearFiles()
+					this.picList = []
 				})
 			},
 			beforeUploadHandle: function (file) {
@@ -89,6 +90,8 @@
 						type: 'error',
 						duration: 1200
 					});
+					that.btn = '上传图片'
+					that.disableBtn = false
 					return;
 				}
 				let avatar = Object.keys(that.picList)[0]
