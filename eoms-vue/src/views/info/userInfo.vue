@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
         <el-row :gutter="20">
-            <el-col :span="7" :xs="24">
+            <el-col :span="10" :xs="24">
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">
                         <span style="font-size: 18px; font-weight: bold">个人信息</span>
@@ -20,7 +20,7 @@
                             <li class="list-group-item">
                                 <div style="line-height: 20px; vertical-align: center">
                                     <SvgIcon name="user_fill" class="icon-svg-3"></SvgIcon>
-                                    <span>用户名称</span>
+                                    <span>用户姓名</span>
                                     <div class="pull-right">{{user.name}}</div>
                                 </div>
                             </li>
@@ -63,6 +63,37 @@
                     </div>
                 </el-card>
             </el-col>
+            <el-col :span="13" :xs="24" style="margin-left: 30px">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span style="font-size: 18px; font-weight: bold">基本资料</span>
+                    </div>
+                    <el-divider />
+                    <el-form ref="dataForm" :model="user" :rules="dataRule" label-width="80px">
+                        <el-form-item label="用户昵称" prop="nickname">
+                            <el-input v-model="user.nickname" maxlength="30" />
+                        </el-form-item>
+                        <el-form-item label="用户姓名" prop="name">
+                            <el-input v-model="user.name" maxlength="30" />
+                        </el-form-item>
+                        <el-form-item label="手机号码" prop="tel">
+                            <el-input v-model="user.tel" maxlength="11" />
+                        </el-form-item>
+                        <el-form-item label="邮箱" prop="email">
+                            <el-input v-model="user.email" maxlength="50" />
+                        </el-form-item>
+                        <el-form-item label="性别" prop="sex">
+                            <el-radio-group v-model="user.sex">
+                                <el-radio label="男">男</el-radio>
+                                <el-radio label="女">女</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" size="mini" @click="submit">保存</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-card>
+            </el-col>
         </el-row>
         <AvatarUpdate v-if="avatarUpdateVisible" ref="avatarUpdate" @refreshDataList="loadUserProfile"></AvatarUpdate>
     </div>
@@ -81,6 +112,18 @@
             return {
                 avatarUpdateVisible: false,
                 user: {},
+                dataRule: {
+                    name: [{ required: true, pattern: '^[\u4e00-\u9fa5]{2,10}$', message: '姓名格式错误' }],
+                    sex: [{ required: true, message: '性别不能为空' }],
+                    tel: [{ required: false, pattern: '^1\\d{10}$', message: '电话格式错误' }],
+                    email: [
+                        {
+                            required: true,
+                            pattern: '^([a-zA-Z]|[0-9])(\\w|\\-)+@[a-zA-Z0-9]+\\.([a-zA-Z]{2,4})$',
+                            message: '邮箱格式错误'
+                        }
+                    ]
+                }
             };
         },
         created() {
@@ -97,6 +140,38 @@
                 this.avatarUpdateVisible = true
                 this.$nextTick(() => {
                     this.$refs.avatarUpdate.init()
+                })
+            },
+            submit: function () {
+                let that = this
+                let data = {
+                    nickname: that.user.nickname,
+                    name: that.user.name,
+                    tel: that.user.tel,
+                    sex: that.user.sex,
+                    email: that.user.email
+                }
+                this.$refs['dataForm'].validate(valid => {
+                    if (valid) {
+                        that.$http('/user/updateBasicProfile', 'POST', data, true, function (resp) {
+                            if (resp.rows === 1) {
+                                that.$message({
+                                    message: '修改成功',
+                                    type: 'success',
+                                    duration: 1200
+                                });
+                                this.loadUserProfile()
+                            } else {
+                                that.$message({
+                                    message: '修改失败',
+                                    type: 'error',
+                                    duration: 1200
+                                });
+                            }
+                        })
+                    } else {
+                        return false
+                    }
                 })
             }
         }

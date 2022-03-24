@@ -91,4 +91,9 @@ public interface UserService {
      * 更换头像
      */
     int updateAvatar(Map<String, Object> params);
+
+    /**
+     * 修改基本信息
+     */
+    int updateBasicProfile(Map<String, Object> params);
 }

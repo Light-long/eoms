@@ -139,6 +139,14 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 修改基本信息
+     */
+    @Override
+    public int updateBasicProfile(Map<String, Object> params) {
+        return userDao.updateBasicProfile(params);
+    }
+
+    /**
      * 登录
      * @param params 用户名，密码
      * @return 用户id

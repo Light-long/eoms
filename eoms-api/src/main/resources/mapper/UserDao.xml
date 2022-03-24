@@ -269,6 +269,8 @@
     <select id="searchUserProfile" parameterType="int" resultType="HashMap">
         select
             u.id,
+            u.nickname,
+            u.sex,
             u.name,
             u.photo,
             u.tel,
@@ -284,6 +286,21 @@
     <update id="updateAvatar" parameterType="HashMap">
         update tb_user
         set photo = #{avatar}
+        where id = #{id}
+    </update>
+
+    <update id="updateBasicProfile" parameterType="HashMap">
+        update tb_user
+        set
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+            <if test="tel != null">
+                tel = #{tel},
+            </if>
+            name = #{name},
+            email = #{email},
+            sex = #{sex}
         where id = #{id}
     </update>
 </mapper>

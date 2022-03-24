@@ -261,4 +261,14 @@ public class UserController {
         int rows = userService.updateAvatar(params);
         return CommonResult.ok().put("rows", rows);
     }
+
+    @PostMapping("/updateBasicProfile")
+    @Operation(summary = "修改用户基本信息")
+    @SaCheckLogin
+    public CommonResult updateBasicProfile(@Valid @RequestBody UpdateBasicProfileForm form) {
+        Map<String, Object> params = JSONUtil.parse(form).toBean(Map.class);
+        params.put("id", StpUtil.getLoginIdAsInt());
+        int rows = userService.updateBasicProfile(params);
+        return CommonResult.ok().put("rows", rows);
+    }
 }
