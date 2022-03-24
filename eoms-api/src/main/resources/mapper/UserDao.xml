@@ -18,6 +18,18 @@
         limit 1
     </select>
 
+    <insert id="register" parameterType="HashMap">
+        insert into tb_user
+        set
+            username = #{username},
+            password = HEX(AES_ENCRYPT(#{password}, #{username})),
+            photo = #{photo},
+            root = #{root},
+            role = #{role},
+            status = #{status},
+            create_time = #{createTime}
+    </insert>
+
     <select id="searchUserSummary" parameterType="Integer" resultType="HashMap">
         SELECT u.name, u.photo, d.dept_name AS deptName
         FROM tb_user u LEFT JOIN tb_dept d ON u.dept_id = d.id

@@ -23,12 +23,18 @@ import NotFound from "../views/404.vue"
 import Todo from "../views/todo/todo.vue"
 import Notice from "../views/notice/notice.vue"
 import UserInfo from "../views/info/userInfo.vue"
+import Register from "../views/login/register.vue"
 
 const routes = [
 	{
 		path: '/login',
 		name: 'Login',
 		component: Login
+	},
+	{
+		path: '/register',
+		name: 'Register',
+		component: Register
 	},
 	{
 		path: '/',
@@ -204,12 +210,17 @@ const router = createRouter({
 	routes
 })
 router.beforeEach((to, from, next) => {
-	if (to.name != "Login") {
-		let permissions = localStorage.getItem("permissions")
-		if (permissions == null || permissions == "") {
-			next({
-				name: 'Login'
-			})
+
+	if (to.name !== "Login") {
+		if (to.name === 'Register') {
+			return next()
+		} else {
+			let permissions = localStorage.getItem("permissions")
+			if (permissions == null || permissions === "") {
+				next({
+					name: 'Login'
+				})
+			}
 		}
 	}
 	return next()

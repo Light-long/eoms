@@ -147,6 +147,14 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 注册用户
+     */
+    @Override
+    public int register(Map<String, Object> params) {
+        return userDao.register(params);
+    }
+
+    /**
      * 登录
      * @param params 用户名，密码
      * @return 用户id

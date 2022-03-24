@@ -8,7 +8,7 @@
 							class="input"
 							placeholder="姓名"
 							size="medium"
-							:disabled="!isAuth(['ROOT', 'LEAVE:SELECT'])"
+							v-if="isAuth(['ROOT', 'LEAVE:SELECT'])"
 							clearable="clearable"
 					></el-input>
 				</el-form-item>
@@ -18,8 +18,9 @@
 							class="input"
 							placeholder="部门"
 							size="medium"
-							:disabled="!isAuth(['ROOT', 'LEAVE:SELECT'])"
+							v-if="isAuth(['ROOT', 'LEAVE:SELECT'])"
 							clearable="clearable"
+							@click="loadDeptList"
 					>
 						<el-option v-for="one in deptList" :key="one.id" :label="one.deptName" :value="one.id" />
 					</el-select>

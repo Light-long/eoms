@@ -96,4 +96,9 @@ public interface UserService {
      * 修改基本信息
      */
     int updateBasicProfile(Map<String, Object> params);
+
+    /**
+     * 注册用户
+     */
+    int register(Map<String, Object> params);
 }

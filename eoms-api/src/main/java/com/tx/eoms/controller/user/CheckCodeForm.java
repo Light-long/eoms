@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Schema(description = "校验验证码")
 public class CheckCodeForm {
 
-    @NotBlank
+    @NotBlank(message = "验证码不能为空")
     @Schema(description = "验证码")
     private String code;
 }

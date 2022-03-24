@@ -31,6 +31,11 @@ public interface UserDao {
     Integer login(Map<String, Object> params);
 
     /**
+     * 注册用户
+     */
+    int register(Map<String, Object> params);
+
+    /**
      * 根据用户id查询用户信息
      */
     Map<String, Object> searchUserSummary(Integer userId);

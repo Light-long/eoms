@@ -65,6 +65,22 @@ public class UserController {
         return CommonResult.ok().put("permissions", permissions);
     }
 
+    @PostMapping("/register")
+    @Operation(summary = "注册")
+    public CommonResult register(@Valid @RequestBody RegisterForm form) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", form.getUsername());
+        params.put("password", form.getPassword());
+        params.put("root", 0);
+        params.put("status", 1);
+        params.put("createTime", new Date());
+        // 默认为普通员工
+        params.put("role", "[3]");
+        params.put("photo", "https://online-office-1257796177.cos.ap-beijing.myqcloud.com/img/avatar/user.jpg");
+        int rows = userService.register(params);
+        return CommonResult.ok().put("rows", rows);
+    }
+
     @PostMapping("/getVerifyCode")
     @Operation(summary = "生成验证码")
     public CommonResult getVerifyCode(HttpServletResponse response, HttpServletRequest request) {

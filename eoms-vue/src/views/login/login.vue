@@ -47,9 +47,12 @@
 					<span v-if="!loading">登 录 系 统</span>
 					<span v-else>登 录 中...</span>
 				</el-button>
-<!--				<div style="float: right;">-->
-<!--					<router-link class="link-type" :to="'/register'">立即注册</router-link>-->
-<!--				</div>-->
+				<div style="float: right;">
+					<router-link class="link-type" :to="'/register'">立即注册</router-link>
+<!--					<el-button type="text" size="medium" @click="$router.push({name: 'Register'})">-->
+<!--						立即注册-->
+<!--					</el-button>-->
+				</div>
 			</el-form-item>
 		</el-form>
 		<!--  底部  -->
@@ -156,6 +159,7 @@ export default {
 				data: null,
 				success: function(resp) {
 					that.codeUrl = "data:image/jpg;base64," + resp.code
+					that.code = null
 				}
 			})
 		}
@@ -164,7 +168,6 @@ export default {
 </script>
 
 <style lang="less" scoped="scoped">
-	/*@import url('login.less');*/
 	.login {
 		display: flex;
 		justify-content: center;
@@ -226,5 +229,15 @@ export default {
 	.login-code-img {
 		height: 38px;
 		width: 115px;
+	}
+
+	.link-type,
+	.link-type:focus {
+		color: #337ab7;
+		cursor: pointer;
+
+		&:hover {
+			color: rgb(32, 160, 255);
+		}
 	}
 </style>

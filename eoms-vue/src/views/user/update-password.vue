@@ -21,7 +21,7 @@
 export default {
 	data() {
 		const validateConfirmPassword = (rule, value, callback) => {
-			if (value != this.dataForm.newPassword) {
+			if (value !== this.dataForm.newPassword) {
 				callback(new Error('两次输入的密码不一致'));
 			} else {
 				callback();
