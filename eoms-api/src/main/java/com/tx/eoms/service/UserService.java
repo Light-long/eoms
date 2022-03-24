@@ -80,4 +80,15 @@ public interface UserService {
      * meeting-video显示
      */
     Map<String, Object> searchNameAndDept(int userId);
+
+    /**
+     * 根据userId查找用户信息
+     * 用户中心的数据
+     */
+    Map<String, Object> searchUserProfile(int userId);
+
+    /**
+     * 更换头像
+     */
+    int updateAvatar(Map<String, Object> params);
 }

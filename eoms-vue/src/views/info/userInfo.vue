@@ -11,7 +11,7 @@
                         <div class="text-center">
                             <!--显示头像-->
                             <div align="center">
-                                <img src="https://online-office-1257796177.cos.ap-beijing.myqcloud.com/img/avatar/user.jpg" class="avatar-show">
+                                <img :src="user.photo" class="avatar-show">
                                 <!--更换头像-->
                                 <el-button type="primary" size="mini" style="display: block; margin-top: 5px" @click="updateAvatar()">更换头像</el-button>
                             </div>
@@ -21,42 +21,42 @@
                                 <div style="line-height: 20px; vertical-align: center">
                                     <SvgIcon name="user_fill" class="icon-svg-3"></SvgIcon>
                                     <span>用户名称</span>
-                                    <div class="pull-right">李世龙</div>
+                                    <div class="pull-right">{{user.name}}</div>
                                 </div>
                             </li>
                             <li class="list-group-item">
                                 <div style="line-height: 20px; vertical-align: center">
                                     <SvgIcon name="phone" class="icon-svg-4"></SvgIcon>
                                     <span>手机号码</span>
-                                    <div class="pull-right">1333333333</div>
+                                    <div class="pull-right">{{user.tel}}</div>
                                 </div>
                             </li>
                             <li class="list-group-item">
                                 <div style="line-height: 20px; vertical-align: center">
                                     <SvgIcon name="email" class="icon-svg-4"></SvgIcon>
                                     <span>用户邮箱</span>
-                                    <div class="pull-right">lishilong1108@foxmail.com</div>
+                                    <div class="pull-right">{{user.email}}</div>
                                 </div>
                             </li>
                             <li class="list-group-item">
                                 <div style="line-height: 20px; vertical-align: center">
                                     <SvgIcon name="warehouse_fill" class="icon-svg-3"></SvgIcon>
                                     <span>所属部门</span>
-                                    <div class="pull-right">管理部</div>
+                                    <div class="pull-right">{{user.deptName}}</div>
                                 </div>
                             </li>
                             <li class="list-group-item">
                                 <div style="line-height: 20px; vertical-align: center">
                                     <SvgIcon name="role_fill" class="icon-svg-3"></SvgIcon>
                                     <span>所属角色</span>
-                                    <div class="pull-right">总经理</div>
+                                    <div class="pull-right">{{user.roles}}</div>
                                 </div>
                             </li>
                             <li class="list-group-item">
                                 <div style="line-height: 20px; vertical-align: center">
                                     <SvgIcon name="time" class="icon-svg-4"></SvgIcon>
-                                    <span>创建日期</span>
-                                    <div class="pull-right">2022-02-02</div>
+                                    <span>入职日期</span>
+                                    <div class="pull-right">{{user.hiredate}}</div>
                                 </div>
                             </li>
                         </ul>
@@ -64,7 +64,7 @@
                 </el-card>
             </el-col>
         </el-row>
-        <AvatarUpdate v-if="avatarUpdateVisible" ref="avatarUpdate" @refreshDataList=""></AvatarUpdate>
+        <AvatarUpdate v-if="avatarUpdateVisible" ref="avatarUpdate" @refreshDataList="loadUserProfile"></AvatarUpdate>
     </div>
 </template>
 
@@ -79,13 +79,20 @@
         },
         data() {
             return {
-                avatarUpdateVisible: false
+                avatarUpdateVisible: false,
+                user: {},
             };
         },
         created() {
-
+            this.loadUserProfile()
         },
         methods: {
+            loadUserProfile: function() {
+                let that = this
+                that.$http('/user/searchUserProfile', 'GET', null, true, function (resp) {
+                    that.user = resp.user
+                })
+            },
             updateAvatar: function () {
                 this.avatarUpdateVisible = true
                 this.$nextTick(() => {

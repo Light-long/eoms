@@ -265,4 +265,25 @@
         from tb_user
         where id = #{id} and `status` = 1
     </select>
+
+    <select id="searchUserProfile" parameterType="int" resultType="HashMap">
+        select
+            u.id,
+            u.name,
+            u.photo,
+            u.tel,
+            u.email,
+            d.dept_name AS deptName,
+            u.hiredate,
+            ( SELECT GROUP_CONCAT( role_name separator "," ) FROM tb_role WHERE JSON_CONTAINS ( u.role, CONVERT ( id, CHAR ) ) ) AS roles
+        from tb_user as u
+        left join tb_dept as d on u.dept_id = d.id
+        where u.id = #{userId} and u.status = 1
+    </select>
+
+    <update id="updateAvatar" parameterType="HashMap">
+        update tb_user
+        set photo = #{avatar}
+        where id = #{id}
+    </update>
 </mapper>

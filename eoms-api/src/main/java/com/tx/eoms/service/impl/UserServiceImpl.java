@@ -122,6 +122,23 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 根据userId查找用户信息
+     * 用户中心的数据
+     */
+    @Override
+    public Map<String, Object> searchUserProfile(int userId) {
+        return userDao.searchUserProfile(userId);
+    }
+
+    /**
+     * 更换头像
+     */
+    @Override
+    public int updateAvatar(Map<String, Object> params) {
+        return userDao.updateAvatar(params);
+    }
+
+    /**
      * 登录
      * @param params 用户名，密码
      * @return 用户id

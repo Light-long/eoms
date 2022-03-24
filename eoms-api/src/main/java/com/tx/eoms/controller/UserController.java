@@ -242,4 +242,23 @@ public class UserController {
         Map<String, Object> userInfo = userService.searchNameAndDept(form.getId());
         return CommonResult.ok(userInfo);
     }
+
+    @GetMapping("/searchUserProfile")
+    @Operation(summary = "查询员工个人中心的信息")
+    @SaCheckLogin
+    public CommonResult searchUserProfile() {
+        Map<String, Object> user = userService.searchUserProfile(StpUtil.getLoginIdAsInt());
+        return CommonResult.ok().put("user", user);
+    }
+
+    @PostMapping("/updateAvatar")
+    @Operation(summary = "更换头像")
+    @SaCheckLogin
+    public CommonResult updateAvatar(@Valid @RequestBody UpdateAvatarForm form) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", StpUtil.getLoginIdAsInt());
+        params.put("avatar", form.getAvatar());
+        int rows = userService.updateAvatar(params);
+        return CommonResult.ok().put("rows", rows);
+    }
 }
