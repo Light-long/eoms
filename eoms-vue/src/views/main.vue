@@ -39,7 +39,7 @@
 							<template #dropdown>
 								<el-dropdown-menu>
 									<!--TODO-->
-									<el-dropdown-item @click="getuserInfo()">
+									<el-dropdown-item @click="$router.push({name: 'UserInfo'})">
 										个人中心
 									</el-dropdown-item>
 									<el-dropdown-item @click="updatePasswordHandle()">
