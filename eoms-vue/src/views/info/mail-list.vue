@@ -53,6 +53,7 @@
             <el-table-column label="操作" align="center" min-width="150px" class-name="small-padding fixed-width">
                 <template #default="scope">
                     <el-button
+                            v-if="scope.row.tel != null"
                             class="copy-btn"
                             :data-clipboard-text="scope.row.tel"
                             size="medium"
@@ -61,6 +62,7 @@
                             @click="copy"
                     >复制电话</el-button>
                     <el-button
+                            v-if="scope.row.email != null"
                             class="copy-btn"
                             :data-clipboard-text="scope.row.email"
                             size="medium"
