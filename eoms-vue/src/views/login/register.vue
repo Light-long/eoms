@@ -99,7 +99,7 @@
                         { required: true, pattern: '^[a-zA-Z0-9]{5,20}$', message: '密码格式错误' },
                         { validator: validateConfirmPassword, trigger: 'blur' }
                     ],
-                    code: [{ required: true, message: '验证码不能为空'}]
+                    code: [{ required: true, trigger: 'blur', message: '验证码不能为空'}]
                 }
             };
         },

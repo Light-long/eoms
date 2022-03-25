@@ -287,4 +287,13 @@ public class UserController {
         int rows = userService.updateBasicProfile(params);
         return CommonResult.ok().put("rows", rows);
     }
+
+    @PostMapping("/searchMailList")
+    @Operation(summary = "查询企业通讯录")
+    @SaCheckLogin
+    public CommonResult searchMailList(@Valid @RequestBody SearchMailListForm form) {
+        Map<String, Object> params = JSONUtil.parse(form).toBean(Map.class);
+        List<Map<String, Object>> mailList = userService.searchMailList(params);
+        return CommonResult.ok().put("mailList", mailList);
+    }
 }

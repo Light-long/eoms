@@ -101,4 +101,9 @@ public interface UserService {
      * 注册用户
      */
     int register(Map<String, Object> params);
+
+    /**
+     * 查询企业通讯录
+     */
+    List<Map<String, Object>> searchMailList(Map<String, Object> params);
 }

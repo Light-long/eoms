@@ -155,6 +155,14 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 查询企业通讯录
+     */
+    @Override
+    public List<Map<String, Object>> searchMailList(Map<String, Object> params) {
+        return userDao.searchMailList(params);
+    }
+
+    /**
      * 登录
      * @param params 用户名，密码
      * @return 用户id

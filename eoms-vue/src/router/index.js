@@ -24,6 +24,7 @@ import Todo from "../views/todo/todo.vue"
 import Notice from "../views/notice/notice.vue"
 import UserInfo from "../views/info/userInfo.vue"
 import Register from "../views/login/register.vue"
+import MailList from "../views/info/mail-list.vue"
 
 const routes = [
 	{
@@ -189,6 +190,15 @@ const routes = [
 				component: UserInfo,
 				meta: {
 					title: '个人中心',
+					isTab: true
+				}
+			},
+			{
+				path: '/mailList',
+				name: 'MailList',
+				component: MailList,
+				meta: {
+					title: '通讯录',
 					isTab: true
 				}
 			}

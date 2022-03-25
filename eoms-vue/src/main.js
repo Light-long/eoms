@@ -17,6 +17,10 @@ const app = createApp(App) //创建VUE对象
 import router from './router'
 app.use(router) //挂载路由插件
 
+// 导入复制组件
+// import VueClipboard from 'vue-clipboard2'
+// app.use(VueClipboard)
+
 // 自定义表格工具组件
 import RightToolbar from "./components/RightToolbar/index.vue"
 app.component('RightToolbar', RightToolbar)

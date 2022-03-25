@@ -128,4 +128,9 @@ public interface UserDao {
      * 修改基本信息
      */
     int updateBasicProfile(Map<String, Object> params);
+
+    /**
+     * 查询企业通讯录
+     */
+    List<Map<String, Object>> searchMailList(Map<String, Object> params);
 }

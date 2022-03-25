@@ -315,4 +315,26 @@
             sex = #{sex}
         where id = #{id}
     </update>
+    
+    <select id="searchMailList" parameterType="HashMap" resultType="HashMap">
+        select
+            d.dept_name as deptName,
+            u.name,
+            u.tel,
+            u.email,
+            u.sex
+        from tb_user as u
+        left join tb_dept as d on u.dept_id = d.id
+        where 1 = 1
+        <if test="name != null">
+            and u.name like "%${name}%"
+        </if>
+        <if test="deptId != null">
+            and u.dept_id = #{deptId}
+        </if>
+        <if test="sex != null">
+            and u.sex = #{sex}
+        </if>
+        order by d.dept_name
+    </select>
 </mapper>
