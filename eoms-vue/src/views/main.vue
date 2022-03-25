@@ -63,6 +63,7 @@
 					:collapseTransition="false"
 					class="site-sidebar__menu"
 				>
+					<!--首页-->
 					<el-menu-item index="home" @click="$router.push({ name: 'Home' })">
 						<SvgIcon name="home" class="icon-svg" />
 						<span slot="title">首页</span>
@@ -90,7 +91,7 @@
 							<span slot="title">个人中心</span>
 						</el-menu-item>
 						<el-menu-item
-								index="addressBook"
+								index="mailList"
 								@click="$router.push({ name: 'MailList' })"
 						>
 							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
@@ -120,7 +121,7 @@
 						</el-menu-item>
 						<el-menu-item
 							index="role"
-							v-if="isAuth(['ROOT', 'ROLE:SELECT'])"
+							v-if="isAuth(['ROOT'])"
 							@click="$router.push({ name: 'Role' })"
 						>
 							<SvgIcon name="role_fill" class="icon-svg" />
@@ -128,12 +129,42 @@
 						</el-menu-item>
 						<el-menu-item
 								index="dept"
-								v-if="isAuth(['ROOT', 'DEPT:SELECT'])"
+								v-if="isAuth(['ROOT'])"
 								@click="$router.push({ name: 'Dept' })"
 								ref="ABC"
 						>
 							<SvgIcon name="company_fill" class="icon-svg" />
 							<span slot="title">部门管理</span>
+						</el-menu-item>
+					</el-submenu>
+					<!--今日事项-->
+					<el-submenu
+							index="今日事项"
+							:popper-class="'site-sidebar--' + sidebarLayoutSkin + '-popper'"
+					>
+						<template #title>
+							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
+								<path fill="currentColor" d="M192 128v768h640V128H192zm-32-64h704a32 32 0 0 1 32 32v832a32 32 0 0 1-32 32H160a32 32 0 0 1-32-32V96a32 32 0 0 1 32-32z"></path>
+								<path fill="currentColor" d="M672 128h64v768h-64zM96 192h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zm0 192h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zm0 192h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zm0 192h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32z"></path>
+							</svg>
+							<span slot="title">今日事项</span>
+						</template>
+						<el-menu-item
+								index="checkin"
+								@click="$router.push({ name: 'Checkin' })"
+						>
+							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
+								<path fill="currentColor" d="M512 896a384 384 0 1 0 0-768 384 384 0 0 0 0 768zm0 64a448 448 0 1 1 0-896 448 448 0 0 1 0 896z"></path>
+								<path fill="currentColor" d="M745.344 361.344a32 32 0 0 1 45.312 45.312l-288 288a32 32 0 0 1-45.312 0l-160-160a32 32 0 1 1 45.312-45.312L480 626.752l265.344-265.408z"></path>
+							</svg>
+							<span slot="title">在线签到</span>
+						</el-menu-item>
+						<el-menu-item index="todo" @click="$router.push({ name: 'Todo' })">
+							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
+								<path fill="currentColor" d="M704 192h160v736H160V192h160.064v64H704v-64zM311.616 537.28l-45.312 45.248L447.36 763.52l316.8-316.8-45.312-45.184L447.36 673.024 311.616 537.28zM384 192V96h256v96H384z">
+								</path>
+							</svg>
+							<span slot="title">我的待办</span>
 						</el-menu-item>
 					</el-submenu>
 					<!--在线办公-->
@@ -145,13 +176,6 @@
 							<SvgIcon name="meeting_fill" class="icon-svg" />
 							<span slot="title">在线办公</span>
 						</template>
-						<el-menu-item index="todo" @click="$router.push({ name: 'Todo' })">
-							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
-								<path fill="currentColor" d="M704 192h160v736H160V192h160.064v64H704v-64zM311.616 537.28l-45.312 45.248L447.36 763.52l316.8-316.8-45.312-45.184L447.36 673.024 311.616 537.28zM384 192V96h256v96H384z">
-								</path>
-							</svg>
-							<span slot="title">我的待办</span>
-						</el-menu-item>
 						<el-menu-item
 							index="approval"
 							v-if="isAuth(['ROOT', 'WORKFLOW:APPROVAL', 'FILE:ARCHIVE'])"
