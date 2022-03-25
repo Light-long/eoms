@@ -29,9 +29,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -185,8 +183,13 @@ public class UserController {
         int page = form.getPage();
         int length = form.getLength();
         int start = (page - 1) * length;
-        Map condition = JSONUtil.parse(form).toBean(Map.class);
+        Map<String, Object> condition = JSONUtil.parse(form).toBean(Map.class);
         condition.put("start", start);
+        // 判断是 超级管理员 还是 部门经理，部门经理只能查到自己部门的成员
+        if (!StpUtil.hasPermission("ROOT")) {
+            int deptId = userService.searchDeptIdByUid(StpUtil.getLoginIdAsInt());
+            condition.put("deptId", deptId);
+        }
         PageUtils pageUtils = userService.searchUserByPage(condition);
         return CommonResult.ok().put("page", pageUtils);
     }

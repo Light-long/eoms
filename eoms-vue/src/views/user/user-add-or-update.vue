@@ -4,71 +4,99 @@
 		v-if="isAuth(['ROOT', 'USER:INSERT', 'USER:UPDATE'])"
 		:close-on-click-modal="false"
 		v-model="visible"
-		width="450px"
+		width="680px"
 	>
 		<el-form :model="dataForm" ref="dataForm" :rules="dataRule" label-width="80px">
-			<el-form-item label="用户名" prop="username">
-				<el-input v-model="dataForm.username" size="medium" clearable />
-			</el-form-item>
-			<el-form-item label="密码" prop="password">
-				<el-input type="password" v-model="dataForm.password" size="medium" clearable />
-			</el-form-item>
-			<el-form-item label="姓名" prop="name">
-				<el-input v-model="dataForm.name" size="medium" clearable />
-			</el-form-item>
-			<el-form-item label="性别" prop="sex">
-				<el-select v-model="dataForm.sex" size="medium" style="width: 100%;" clearable>
-					<el-option label="男" value="男"></el-option>
-					<el-option label="女" value="女"></el-option>
-				</el-select>
-			</el-form-item>
-			<el-form-item label="电话" prop="tel">
-				<el-input v-model="dataForm.tel" size="medium" clearable />
-			</el-form-item>
-			<el-form-item label="邮箱" prop="email">
-				<el-input v-model="dataForm.email" size="medium" clearable />
-			</el-form-item>
-			<el-form-item label="入职日期" prop="hiredate">
-				<el-date-picker
-					v-model="dataForm.hiredate"
-					type="date"
-					placeholder="选择日期"
-					size="medium"
-					:editable="false"
-					format="YYYY-MM-DD"
-					value-format="YYYY-MM-DD"
-					style="width: 100%;"
-				/>
-			</el-form-item>
-			<el-form-item label="角色" prop="role">
-				<el-select
-					v-model="dataForm.role"
-					size="medium"
-					placeholder="选择角色"
-					style="width: 100%;"
-					multiple
-					clearable
-				>
-					<el-option
-						v-for="one in roleList"
-						:key="one.id"
-						:label="one.roleName"
-						:value="one.id"
-						:disabled="one.roleName == '超级管理员'"
-					></el-option>
-				</el-select>
-			</el-form-item>
-			<el-form-item label="部门" prop="deptId">
-				<el-select
-					v-model="dataForm.deptId"
-					size="medium"
-					placeholder="选择部门"
-					style="width: 100%;"
-					clearable
-				>
-					<el-option v-for="one in deptList" :key="one.id" :label="one.deptName" :value="one.id" />
-				</el-select>
-			</el-form-item>
+			<el-row>
+				<el-col :span="11">
+					<el-form-item label="用户名" prop="username">
+						<el-input v-model="dataForm.username" size="medium" clearable />
+					</el-form-item>
+				</el-col>
+				<el-col :span="11">
+					<el-form-item label="密码" prop="password">
+						<el-input type="password" v-model="dataForm.password" size="medium" clearable />
+					</el-form-item>
+				</el-col>
+			</el-row>
+			<el-row>
+				<el-col :span="11">
+					<el-form-item label="姓名" prop="name">
+						<el-input v-model="dataForm.name" size="medium" clearable />
+					</el-form-item>
+				</el-col>
+				<el-col :span="11">
+					<el-form-item label="性别" prop="sex">
+						<el-select v-model="dataForm.sex" size="medium" style="width: 100%;" clearable>
+							<el-option label="男" value="男"></el-option>
+							<el-option label="女" value="女"></el-option>
+						</el-select>
+					</el-form-item>
+				</el-col>
+			</el-row>
+			<el-row>
+				<el-col :span="11">
+					<el-form-item label="电话" prop="tel">
+						<el-input v-model="dataForm.tel" size="medium" clearable />
+					</el-form-item>
+				</el-col>
+				<el-col :span="11">
+					<el-form-item label="邮箱" prop="email">
+						<el-input v-model="dataForm.email" size="medium" clearable />
+					</el-form-item>
+				</el-col>
+			</el-row>
+			<el-row>
+				<el-col :span="11">
+					<el-form-item label="入职日期" prop="hiredate">
+						<el-date-picker
+								v-model="dataForm.hiredate"
+								type="date"
+								placeholder="选择日期"
+								size="medium"
+								:editable="false"
+								format="YYYY-MM-DD"
+								value-format="YYYY-MM-DD"
+								style="width: 100%;"
+						/>
+					</el-form-item>
+				</el-col>
+				<el-col :span="11">
+					<el-form-item label="角色" prop="role">
+						<el-select
+								v-model="dataForm.role"
+								size="medium"
+								placeholder="选择角色"
+								style="width: 100%;"
+								multiple
+								clearable
+						>
+							<el-option
+									v-for="one in roleList"
+									:key="one.id"
+									:label="one.roleName"
+									:value="one.id"
+									:disabled="one.roleName === '超级管理员'"
+							></el-option>
+						</el-select>
+					</el-form-item>
+				</el-col>
+			</el-row>
+			<el-row>
+				<el-col :span="11">
+					<el-form-item label="部门" prop="deptId">
+						<el-select
+								v-model="dataForm.deptId"
+								size="medium"
+								placeholder="选择部门"
+								style="width: 100%;"
+								clearable
+						>
+							<el-option v-for="one in deptList" :key="one.id" :label="one.deptName" :value="one.id" />
+						</el-select>
+					</el-form-item>
+				</el-col>
+			</el-row>
 		</el-form>
 		<template #footer>
 			<span class="dialog-footer">

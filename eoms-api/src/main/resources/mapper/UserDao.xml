@@ -337,4 +337,11 @@
         </if>
         order by d.dept_name
     </select>
+
+    <select id="searchDeptIdByUid" parameterType="int" resultType="int">
+        select
+            dept_id as deptId
+        from tb_user
+        where id = #{id}
+    </select>
 </mapper>

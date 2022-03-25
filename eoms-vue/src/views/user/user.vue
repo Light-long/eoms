@@ -1,161 +1,152 @@
 <template>
-	<div v-if="isAuth(['ROOT', 'USER:SELECT'])">
-		<div align="center">
-			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
-				<el-form-item prop="name">
-					<el-input
-							v-model="dataForm.name"
-							placeholder="姓名"
-							size="medium"
-							class="input"
-							clearable="clearable"
-					/>
-				</el-form-item>
-				<el-form-item>
-					<el-select v-model="dataForm.sex" class="input" placeholder="性别" size="medium" clearable="clearable">
-						<el-option label="男" value="男" />
-						<el-option label="女" value="女" />
-					</el-select>
-				</el-form-item>
-				<el-form-item>
-					<el-select v-model="dataForm.role" class="input" placeholder="角色" size="medium" clearable="clearable">
-						<el-option v-for="one in roleList" :label="one.roleName" :value="one.roleName" />
-					</el-select>
-				</el-form-item>
-				<el-form-item>
-					<el-select
-							v-model="dataForm.deptId"
-							class="input"
-							placeholder="部门"
-							size="medium"
-							clearable="clearable"
-					>
-						<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
-					</el-select>
-				</el-form-item>
-				<el-form-item>
-					<el-select
-							v-model="dataForm.status"
-							class="input"
-							placeholder="状态"
-							size="medium"
-							clearable="clearable"
-					>
-						<el-option label="在职" value="1" />
-						<el-option label="离职" value="2" />
-					</el-select>
-				</el-form-item>
-				<el-form-item>
-					<el-button size="medium" type="primary" @click="searchHandle()">查询</el-button>
-					<el-button size="medium" type="warn" @click="resetForm()">重置</el-button>
-					<el-button
-							size="medium"
-							type="primary"
-							:disabled="!isAuth(['ROOT', 'USER:INSERT'])"
-							@click="addHandle()"
-					>
-						新增
-					</el-button>
-					<el-button
-							size="medium"
-							type="danger"
-							:disabled="!isAuth(['ROOT', 'USER:DELETE'])"
-							@click="deleteHandle()"
-					>
-						批量删除
-					</el-button>
-				</el-form-item>
-			</el-form>
-		</div>
-		<el-table
-			:data="dataList"
-			border
-			v-loading="dataListLoading"
-			@selection-change="selectionChangeHandle"
-			cell-style="padding: 4px 0"
-			style="width: 100%;"
-			size="medium"
-		>
-			<el-table-column type="selection" header-align="center" align="center" width="50"/>
-			<el-table-column type="index" header-align="center" align="center" width="80" label="序号">
+	<div class="app-container" v-if="isAuth(['ROOT', 'USER:SELECT'])">
+		<el-form :model="dataForm" ref="dataForm" :inline="true" :rules="dataRule" label-width="63px">
+			<el-form-item label="部门"  prop="deptId" v-if="isAuth(['ROOT'])">
+				<el-select
+						v-model="dataForm.deptId"
+						class="input"
+						placeholder="部门"
+						size="small"
+						clearable="clearable"
+				>
+					<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
+				</el-select>
+			</el-form-item>
+			<el-form-item label="姓名" prop="name">
+				<el-input
+						v-model="dataForm.name"
+						placeholder="姓名"
+						clearable
+						size="small"
+						@keyup.enter.native="searchHandle"
+				/>
+			</el-form-item>
+			<el-form-item label="性别" prop="sex">
+				<el-select v-model="dataForm.sex" class="input" placeholder="性别" size="small" clearable="clearable">
+					<el-option label="男" value="男" />
+					<el-option label="女" value="女" />
+				</el-select>
+			</el-form-item>
+			<el-form-item label="角色" prop="role" v-if="isAuth(['ROOT'])">
+				<el-select v-model="dataForm.role" class="input" placeholder="角色" size="small" clearable="clearable">
+					<el-option v-for="one in roleList" :label="one.roleName" :value="one.roleName" />
+				</el-select>
+			</el-form-item>
+			<el-form-item label="状态" prop="status">
+				<el-select
+						v-model="dataForm.status"
+						class="input"
+						placeholder="状态"
+						size="small"
+						clearable="clearable"
+				>
+					<el-option label="在职" value="1" />
+					<el-option label="离职" value="2" />
+				</el-select>
+			</el-form-item>
+		</el-form>
+
+		<el-row :gutter="15" class="mb8" style="margin-bottom: 10px">
+			<el-col :span="1.5">
+				<el-button
+						type="primary"
+						plain
+						icon="el-icon-plus"
+						size="mini"
+						@click="addHandle"
+				>新增</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button
+						type="success"
+						plain
+						icon="el-icon-edit"
+						size="mini"
+						:disabled="single"
+						@click="updateHandle(dataListSelections.map(item => item.id)[0])"
+				>修改</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button
+						type="danger"
+						plain
+						icon="el-icon-delete"
+						size="mini"
+						:disabled="multiple"
+						@click="deleteHandle()"
+				>删除</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button
+						type="info"
+						plain
+						icon="el-icon-download"
+						size="mini"
+						:disabled="multiple"
+						@click="deleteHandle()"
+				>导出</el-button>
+				<el-button style="margin-left: 700px" type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetForm">重置</el-button>
+			</el-col>
+		</el-row>
+
+		<el-table v-loading="dataListLoading" :data="dataList" @selection-change="selectionChangeHandle" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
+			<el-table-column :selectable="selectable" type="selection" width="55" align="center" />
+			<el-table-column type="index" header-align="center" align="center" min-width="50px" label="序号">
 				<template #default="scope">
 					<span>{{ (pageIndex - 1) * pageSize + scope.$index + 1 }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="name" header-align="center" align="center" min-width="100" label="姓名" />
-			<el-table-column prop="sex" header-align="center" align="center" min-width="60" label="性别" />
-			<el-table-column prop="tel" header-align="center" align="center" min-width="130" label="电话" />
-<!--			<el-table-column-->
-<!--				prop="email"-->
-<!--				header-align="center"-->
-<!--				align="center"-->
-<!--				min-width="240"-->
-<!--				label="邮箱"-->
-<!--				:show-overflow-tooltip="true"-->
-<!--			/>-->
-			<el-table-column prop="hiredate" header-align="center" align="center" min-width="110" label="入职日期" />
-			<el-table-column
-				prop="roles"
-				header-align="center"
-				align="center"
-				min-width="180"
-				label="角色"
-				:show-overflow-tooltip="true"
-			/>
-			<el-table-column prop="deptName" header-align="center" align="center" min-width="120" label="部门" />
-			<el-table-column prop="status" header-align="center" align="center" min-width="80" label="状态" />
-			<el-table-column header-align="center" align="center" width="180" label="操作">
+			<el-table-column label="姓名" min-width="100px" align="center" prop="name" :show-overflow-tooltip="true"/>
+			<el-table-column label="性别" align="center" prop="sex" min-width="80px">
+				<template #default="scope">
+					<el-tag type="primary" v-if="scope.row.sex === '男'">{{scope.row.sex}}</el-tag>
+					<el-tag type="success" v-if="scope.row.sex === '女'">{{scope.row.sex}}</el-tag>
+				</template>
+			</el-table-column>
+			<el-table-column prop="tel" header-align="center" align="center" min-width="130px" label="电话" />
+			<el-table-column label="入职日期" align="center" prop="hiredate" min-width="120px"></el-table-column>
+			<el-table-column prop="roles" header-align="center" align="center" min-width="200px" label="角色" :show-overflow-tooltip="true"/>
+			<el-table-column prop="deptName" header-align="center" align="center" min-width="100px" label="部门" />
+			<el-table-column prop="status" header-align="center" align="center" min-width="80px" label="状态" />
+			<el-table-column label="操作" align="center" min-width="150px" class-name="small-padding fixed-width">
 				<template #default="scope">
 					<el-button
-						type="text"
-						size="medium"
-						v-if="isAuth(['ROOT', 'USER:UPDATE'])"
-						@click="updateHandle(scope.row.id)"
-					>
-						修改
-					</el-button>
+							:disabled="scope.row.root"
+							size="medium"
+							type="text"
+							icon="el-icon-edit"
+							@click="updateHandle(scope.row.id)"
+					>修改</el-button>
 					<el-button
-						type="text"
-						size="medium"
-						v-if="isAuth(['ROOT', 'USER:UPDATE'])"
-						:disabled="scope.row.status == '离职' || scope.row.root"
-						@click="dimissHandle(scope.row.id)"
-					>
-						离职
-					</el-button>
-					<el-button
-						type="text"
-						size="medium"
-						:disabled="scope.row.root"
-						v-if="isAuth(['ROOT', 'USER:DELETE'])"
-						@click="deleteHandle(scope.row.id)"
-					>
-						删除
-					</el-button>
+							:disabled="scope.row.root"
+							size="medium"
+							type="text"
+							icon="el-icon-delete"
+							@click="deleteHandle(scope.row.id)"
+					>删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
+
 		<el-pagination
-			@size-change="sizeChangeHandle"
-			@current-change="currentChangeHandle"
-			:current-page="pageIndex"
-			:page-sizes="[5,10,20]"
-			:page-size="pageSize"
-			:total="totalCount"
-			layout="total, sizes, prev, pager, next, jumper"
+				@size-change="sizeChangeHandle"
+				@current-change="currentChangeHandle"
+				:current-page="pageIndex"
+				:page-sizes="[5, 10, 20]"
+				:page-size="pageSize"
+				:total="totalCount"
+				layout="total, sizes, prev, pager, next, jumper"
 		></el-pagination>
 		<add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="loadDataList"></add-or-update>
-		<dimiss v-if="dimissVisible" ref="dimiss" @refreshDataList="loadDataList"></dimiss>
 	</div>
 </template>
 
 <script>
 import AddOrUpdate from './user-add-or-update.vue';
-import Dimiss from '../dimiss.vue';
 export default {
 	components: {
 		AddOrUpdate,
-		Dimiss
 	},
 	data() {
 		return {
@@ -170,12 +161,15 @@ export default {
 			roleList: [],
 			deptList: [],
 			pageIndex: 1,
-			pageSize: 10,
+			pageSize: 5,
 			totalCount: 0,
 			dataListLoading: false,
+			// 非单个禁用
+			single: true,
+			// 非多个禁用
+			multiple: true,
 			dataListSelections: [],
 			addOrUpdateVisible: false,
-			dimissVisible: false,
 			dataRule: {
 				name: [{ required: false, pattern: '^[\u4e00-\u9fa5]{1,10}$', message: '姓名格式错误' }]
 			}
@@ -199,9 +193,9 @@ export default {
 				let page = resp.page
 				let list = page.list
 				for (let one of list) {
-					if (one.status == 1) {
+					if (one.status === 1) {
 						one.status = "在职"
-					} else if (one.status == 2) {
+					} else if (one.status === 2) {
 						one.status = "离职"
 					}
 				}
@@ -225,7 +219,9 @@ export default {
 			});
 		},
 		selectionChangeHandle: function(val) {
-			this.dataListSelections = val;
+			this.dataListSelections = val
+			this.single = val.length !== 1
+			this.multiple = !val.length
 		},
 		// 每页多少数据
 		sizeChangeHandle: function (val) {
@@ -246,11 +242,11 @@ export default {
 					//清理页面上的表单验证结果
 					this.$refs['dataForm'].clearValidate();
 					//不允许上传空字符串给后端，但是可以传null值
-					if (this.dataForm.name == '') {
+					if (this.dataForm.name === '') {
 						this.dataForm.name = null;
 					}
 					//如果当前页面不是第一页，则跳转到第一页显示查询的结果
-					if (this.pageIndex != 1) {
+					if (this.pageIndex !== 1) {
 						this.pageIndex = 1;
 					}
 					this.loadDataList();
@@ -282,7 +278,7 @@ export default {
 		deleteHandle: function (id) {
 			let that = this
 			let ids = id ? [id] : that.dataListSelections.map(item => item.id)
-			if (ids.length == 0) {
+			if (ids.length === 0) {
 				that.$message({
 					message: '没有选中记录',
 					type: 'warning',
@@ -312,6 +308,10 @@ export default {
 					})
 				})
 			}
+		},
+		// 多选框能不能勾选
+		selectable: function(row) {
+			return !(row.root);
 		}
 	},
 	created: function() {

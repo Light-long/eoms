@@ -133,4 +133,9 @@ public interface UserDao {
      * 查询企业通讯录
      */
     List<Map<String, Object>> searchMailList(Map<String, Object> params);
+
+    /**
+     * 根据用户id查询部门id
+     */
+    int searchDeptIdByUid(int id);
 }

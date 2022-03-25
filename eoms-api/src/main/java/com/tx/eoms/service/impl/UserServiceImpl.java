@@ -163,6 +163,14 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 根据用户id查询部门id
+     */
+    @Override
+    public int searchDeptIdByUid(int id) {
+        return userDao.searchDeptIdByUid(id);
+    }
+
+    /**
      * 登录
      * @param params 用户名，密码
      * @return 用户id

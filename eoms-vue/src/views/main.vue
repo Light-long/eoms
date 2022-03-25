@@ -101,42 +101,6 @@
 							<span slot="title">企业通讯录</span>
 						</el-menu-item>
 					</el-submenu>
-					<!--组织管理-->
-					<el-submenu
-						index="组织管理"
-						:popper-class="'site-sidebar--' + sidebarLayoutSkin + '-popper'"
-						v-if="isAuth(['ROOT', 'USER:SELECT'])"
-					>
-						<template #title>
-							<SvgIcon name="users_fill" class="icon-svg" />
-							<span slot="title">组织管理</span>
-						</template>
-						<el-menu-item
-								index="user"
-								v-if="isAuth(['ROOT', 'USER:SELECT'])"
-								@click="$router.push({ name: 'User' })"
-						>
-							<SvgIcon name="user_fill" class="icon-svg" />
-							<span slot="title">用户管理</span>
-						</el-menu-item>
-						<el-menu-item
-							index="role"
-							v-if="isAuth(['ROOT'])"
-							@click="$router.push({ name: 'Role' })"
-						>
-							<SvgIcon name="role_fill" class="icon-svg" />
-							<span slot="title">角色管理</span>
-						</el-menu-item>
-						<el-menu-item
-								index="dept"
-								v-if="isAuth(['ROOT'])"
-								@click="$router.push({ name: 'Dept' })"
-								ref="ABC"
-						>
-							<SvgIcon name="company_fill" class="icon-svg" />
-							<span slot="title">部门管理</span>
-						</el-menu-item>
-					</el-submenu>
 					<!--今日事项-->
 					<el-submenu
 							index="今日事项"
@@ -242,6 +206,42 @@
 						>
 							<SvgIcon name="service_fill" class="icon-svg" />
 							<span slot="title">线上会议</span>
+						</el-menu-item>
+					</el-submenu>
+					<!--组织管理-->
+					<el-submenu
+							index="组织管理"
+							:popper-class="'site-sidebar--' + sidebarLayoutSkin + '-popper'"
+							v-if="isAuth(['ROOT', 'USER:SELECT'])"
+					>
+						<template #title>
+							<SvgIcon name="users_fill" class="icon-svg" />
+							<span slot="title">组织管理</span>
+						</template>
+						<el-menu-item
+								index="user"
+								v-if="isAuth(['ROOT', 'USER:SELECT'])"
+								@click="$router.push({ name: 'User' })"
+						>
+							<SvgIcon name="user_fill" class="icon-svg" />
+							<span slot="title">用户管理</span>
+						</el-menu-item>
+						<el-menu-item
+								index="role"
+								v-if="isAuth(['ROOT'])"
+								@click="$router.push({ name: 'Role' })"
+						>
+							<SvgIcon name="role_fill" class="icon-svg" />
+							<span slot="title">角色管理</span>
+						</el-menu-item>
+						<el-menu-item
+								index="dept"
+								v-if="isAuth(['ROOT'])"
+								@click="$router.push({ name: 'Dept' })"
+								ref="ABC"
+						>
+							<SvgIcon name="company_fill" class="icon-svg" />
+							<span slot="title">部门管理</span>
 						</el-menu-item>
 					</el-submenu>
 					<!--系统设置-->
