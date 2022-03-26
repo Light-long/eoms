@@ -83,9 +83,20 @@
 						icon="el-icon-download"
 						size="mini"
 						:disabled="multiple"
-						@click="deleteHandle()"
+						@click="exportData()"
 				>导出</el-button>
-				<el-button style="margin-left: 700px" type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button
+						type="primary"
+						plain
+						icon="el-icon-download"
+						size="mini"
+						@click="exportDataAll()"
+				>导出全部</el-button>
+			</el-col>
+			<el-col :span="1.5" style="margin-left: 550px">
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetForm">重置</el-button>
 			</el-col>
 		</el-row>
@@ -258,6 +269,7 @@ export default {
 		// 重置表单
 		resetForm: function () {
 			this.dataForm = {}
+			this.pageIndex = 1
 			this.loadDataList()
 		},
 		// 添加用户
@@ -312,6 +324,81 @@ export default {
 		// 多选框能不能勾选
 		selectable: function(row) {
 			return !(row.root);
+		},
+		// 导出数据
+		exportData: function () {
+			//处理封装userList对象
+			let userList = []
+			for (let i = 0; i < this.dataListSelections.length; i++) {
+				let user = this.dataListSelections[i]
+				if (user.status === 1) {
+					user.status = '在职'
+				} else if (user.status === 2) {
+					user.status = '离职'
+				}
+				if (user.hiredate != null) {
+					user.hiredate = dayjs(user.hiredate).format('YYYY-MM-DD')
+				}
+				userList[i] = user
+			}
+			let data = {
+				title: "用户数据表",
+				data: JSON.stringify(userList)
+			}
+			console.log(data)
+			let that = this
+			that.$http('/excel/export', 'POST', data, true, function (resp) {
+				if (resp.code === 200) {
+					that.$message({
+						type: 'success',
+						duration: 1200,
+						message: '成功导出到：' + resp.path
+					});
+				} else {
+					that.$message({
+						type: 'error',
+						duration: 1200,
+						message: '导出失败:' + "请检查文件是不是已经存在或打开"
+					});
+				}
+			})
+		},
+		exportDataAll: function () {
+			//处理封装userList对象
+			let userList = []
+			for (let i = 0; i < this.dataList.length; i++) {
+				let user = this.dataList[i]
+				if (user.status === 1) {
+					user.status = '在职'
+				} else if (user.status === 2) {
+					user.status = '离职'
+				}
+				if (user.hiredate != null) {
+					user.hiredate = dayjs(user.hiredate).format('YYYY-MM-DD')
+				}
+				userList[i] = user
+			}
+			let data = {
+				title: "用户数据表",
+				data: JSON.stringify(userList)
+			}
+			console.log(data)
+			let that = this
+			that.$http('/excel/export', 'POST', data, true, function (resp) {
+				if (resp.code === 200) {
+					that.$message({
+						type: 'success',
+						duration: 1200,
+						message: '成功导出到：' + resp.path
+					});
+				} else {
+					that.$message({
+						type: 'error',
+						duration: 1200,
+						message: '导出失败:' + "请检查文件是不是已经存在或打开"
+					});
+				}
+			})
 		}
 	},
 	created: function() {
