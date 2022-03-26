@@ -344,4 +344,10 @@
         from tb_user
         where id = #{id}
     </select>
+
+    <update id="updateUserStatus" parameterType="HashMap">
+        update tb_user
+        set status = #{status}
+        where id = #{id}
+    </update>
 </mapper>

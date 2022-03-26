@@ -111,4 +111,9 @@ public interface UserService {
      * 根据用户id查询部门id
      */
     int searchDeptIdByUid(int id);
+
+    /**
+     * 更改用户状态
+     */
+    int updateUserStatus(Map<String, Object> params);
 }

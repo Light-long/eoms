@@ -299,4 +299,15 @@ public class UserController {
         List<Map<String, Object>> mailList = userService.searchMailList(params);
         return CommonResult.ok().put("mailList", mailList);
     }
+
+    @PostMapping("/updateUserStatus")
+    @Operation(summary = "更改用户状态")
+    @SaCheckPermission(value = {"ROOT", "USER:UPDATE"}, mode = SaMode.OR)
+    public CommonResult updateUserStatus(@Valid @RequestBody UpdateUserStatusForm form) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", form.getId());
+        params.put("status", form.getStatus());
+        int rows = userService.updateUserStatus(params);
+        return CommonResult.ok().put("rows", rows);
+    }
 }

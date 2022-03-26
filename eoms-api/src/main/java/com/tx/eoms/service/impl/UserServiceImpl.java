@@ -171,6 +171,14 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 更改用户状态
+     */
+    @Override
+    public int updateUserStatus(Map<String, Object> params) {
+        return userDao.updateUserStatus(params);
+    }
+
+    /**
      * 登录
      * @param params 用户名，密码
      * @return 用户id

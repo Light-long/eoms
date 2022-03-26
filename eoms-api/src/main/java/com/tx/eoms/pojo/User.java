@@ -77,7 +77,7 @@ public class User implements Serializable {
     private Integer deptId;
 
     /**
-     * 状态
+     * 状态, 1正常，2停用
      */
     private Byte status;
 

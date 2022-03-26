@@ -40,8 +40,8 @@
 						size="small"
 						clearable="clearable"
 				>
-					<el-option label="在职" value="1" />
-					<el-option label="离职" value="2" />
+					<el-option label="正常" value="1" />
+					<el-option label="停用" value="2" />
 				</el-select>
 			</el-form-item>
 		</el-form>
@@ -119,7 +119,12 @@
 			<el-table-column label="入职日期" align="center" prop="hiredate" min-width="120px"></el-table-column>
 			<el-table-column prop="roles" header-align="center" align="center" min-width="200px" label="角色" :show-overflow-tooltip="true"/>
 			<el-table-column prop="deptName" header-align="center" align="center" min-width="100px" label="部门" />
-			<el-table-column prop="status" header-align="center" align="center" min-width="80px" label="状态" />
+			<el-table-column prop="status" header-align="center" align="center" min-width="80px" label="状态">
+				<template #default="scope">
+					<el-tag type="success" v-if="scope.row.status === '正常'">{{scope.row.status}}</el-tag>
+					<el-tag type="danger" v-if="scope.row.status === '停用'">{{scope.row.status}}</el-tag>
+				</template>
+			</el-table-column>
 			<el-table-column label="操作" align="center" min-width="150px" class-name="small-padding fixed-width">
 				<template #default="scope">
 					<el-button
@@ -131,11 +136,20 @@
 					>修改</el-button>
 					<el-button
 							:disabled="scope.row.root"
+							v-if="scope.row.status === '正常'"
 							size="medium"
 							type="text"
-							icon="el-icon-delete"
-							@click="deleteHandle(scope.row.id)"
-					>删除</el-button>
+							icon="el-icon-remove-outline"
+							@click="updateStatusHandle(scope.row.id, 2)"
+					>停用</el-button>
+					<el-button
+							:disabled="scope.row.root"
+							v-if="scope.row.status === '停用'"
+							size="medium"
+							type="text"
+							icon="el-icon-circle-plus-outline"
+							@click="updateStatusHandle(scope.row.id, 1)"
+					>恢复</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -172,7 +186,7 @@ export default {
 			roleList: [],
 			deptList: [],
 			pageIndex: 1,
-			pageSize: 5,
+			pageSize: 10,
 			totalCount: 0,
 			dataListLoading: false,
 			// 非单个禁用
@@ -205,9 +219,9 @@ export default {
 				let list = page.list
 				for (let one of list) {
 					if (one.status === 1) {
-						one.status = "在职"
+						one.status = "正常"
 					} else if (one.status === 2) {
-						one.status = "离职"
+						one.status = "停用"
 					}
 				}
 				that.dataList = list
@@ -332,9 +346,9 @@ export default {
 			for (let i = 0; i < this.dataListSelections.length; i++) {
 				let user = this.dataListSelections[i]
 				if (user.status === 1) {
-					user.status = '在职'
+					user.status = '正常'
 				} else if (user.status === 2) {
-					user.status = '离职'
+					user.status = '停用'
 				}
 				if (user.hiredate != null) {
 					user.hiredate = dayjs(user.hiredate).format('YYYY-MM-DD')
@@ -369,9 +383,9 @@ export default {
 			for (let i = 0; i < this.dataList.length; i++) {
 				let user = this.dataList[i]
 				if (user.status === 1) {
-					user.status = '在职'
+					user.status = '正常'
 				} else if (user.status === 2) {
-					user.status = '离职'
+					user.status = '停用'
 				}
 				if (user.hiredate != null) {
 					user.hiredate = dayjs(user.hiredate).format('YYYY-MM-DD')
@@ -398,6 +412,35 @@ export default {
 						message: '导出失败:' + "请检查文件是不是已经存在或打开"
 					});
 				}
+			})
+		},
+		updateStatusHandle: function (id, status) {
+			let that = this
+			let data = {
+				id: id,
+				status: status
+			}
+			that.$confirm(`确定要更改该用户状态？`, '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '点错了',
+				type: 'warning'
+			}).then(() => {
+				that.$http("/user/updateUserStatus", "POST", data, true, function (resp) {
+					if (resp.rows === 1) {
+						that.$message({
+							message: '更改成功',
+							type: 'success',
+							duration: 1200
+						});
+						that.loadDataList();
+					} else {
+						that.$message({
+							message: '更改失败',
+							type: 'error',
+							duration: 1200
+						});
+					}
+				})
 			})
 		}
 	},
