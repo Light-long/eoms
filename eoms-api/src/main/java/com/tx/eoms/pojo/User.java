@@ -22,11 +22,6 @@ public class User implements Serializable {
     private String password;
 
     /**
-     * 长期授权字符串
-     */
-    private String openId;
-
-    /**
      * 昵称
      */
     private String nickname;
