@@ -361,7 +361,7 @@ export default {
 			}
 			console.log(data)
 			let that = this
-			that.$http('/excel/export', 'POST', data, true, function (resp) {
+			that.$http('/excel/exportUserExcel', 'POST', data, true, function (resp) {
 				if (resp.code === 200) {
 					that.$message({
 						type: 'success',
@@ -398,7 +398,7 @@ export default {
 			}
 			console.log(data)
 			let that = this
-			that.$http('/excel/export', 'POST', data, true, function (resp) {
+			that.$http('/excel/exportUserExcel', 'POST', data, true, function (resp) {
 				if (resp.code === 200) {
 					that.$message({
 						type: 'success',

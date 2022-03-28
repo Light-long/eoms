@@ -34,6 +34,17 @@
             </el-form-item>
         </el-form>
 
+        <el-row :gutter="15" class="mb8" style="margin-bottom: 10px">
+            <el-col :span="1.5">
+                <el-button
+                        type="primary"
+                        plain
+                        icon="el-icon-download"
+                        size="mini"
+                        @click="exportDataAll()"
+                >导出全部</el-button>
+            </el-col>
+        </el-row>
         <el-table v-loading="dataListLoading" :data="dataList" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
             <el-table-column type="index" header-align="center" align="center" min-width="50px" label="序号">
                 <template #default="scope">
@@ -78,6 +89,7 @@
 
 <script>
     import Clipboard from 'clipboard'
+
     export default {
         name: "mail-list",
         data: function () {
@@ -157,7 +169,34 @@
                     });
                     clipboard.destroy() // 释放内存
                 })
-            }
+            },
+            exportDataAll: function () {
+                //处理封装userList对象
+                let infoList = []
+                for (let i = 0; i < this.dataList.length; i++) {
+                    infoList[i] = this.dataList[i]
+                }
+                let data = {
+                    title: "通讯录",
+                    data: JSON.stringify(infoList)
+                }
+                let that = this
+                that.$http('/excel/exportMailListExcel', 'POST', data, true, function (resp) {
+                    if (resp.code === 200) {
+                        that.$message({
+                            type: 'success',
+                            duration: 1200,
+                            message: '成功导出到：' + resp.path
+                        });
+                    } else {
+                        that.$message({
+                            type: 'error',
+                            duration: 1200,
+                            message: '导出失败:' + "请检查文件是不是已经存在或打开"
+                        });
+                    }
+                })
+            },
         }
     }
 </script>
