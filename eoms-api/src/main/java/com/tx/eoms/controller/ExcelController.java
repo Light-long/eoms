@@ -6,6 +6,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.tx.eoms.controller.excel.ExcelExportForm;
+import com.tx.eoms.pojo.excel.DeptExcel;
 import com.tx.eoms.pojo.excel.MailListExcel;
 import com.tx.eoms.pojo.excel.RoleExcel;
 import com.tx.eoms.pojo.excel.UserExcel;
@@ -50,9 +51,17 @@ public class ExcelController {
     public CommonResult exportRoleExcel(@Valid @RequestBody ExcelExportForm form) {
         String fileName = PATH +form.getTitle() + IdUtil.simpleUUID() +".xlsx";
         String data = form.getData().replaceAll("&quot;", "\"");
-
         List<RoleExcel> roles = JSONUtil.parseArray(data).toList(RoleExcel.class);
         EasyExcel.write(fileName, RoleExcel.class).registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).sheet("模板").doWrite(roles);
+        return CommonResult.ok().put("path", fileName);
+    }
+
+    @PostMapping("/exportDeptExcel")
+    public CommonResult exportDeptExcel(@Valid @RequestBody ExcelExportForm form) {
+        String fileName = PATH +form.getTitle() + IdUtil.simpleUUID() +".xlsx";
+        String data = form.getData().replaceAll("&quot;", "\"");
+        List<DeptExcel> deptList = JSONUtil.parseArray(data).toList(DeptExcel.class);
+        EasyExcel.write(fileName, DeptExcel.class).registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).sheet("模板").doWrite(deptList);
         return CommonResult.ok().put("path", fileName);
     }
 }

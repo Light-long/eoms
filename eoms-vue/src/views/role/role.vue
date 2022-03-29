@@ -260,7 +260,7 @@ export default {
             }
         },
         exportDataAll: function () {
-            //处理封装userList对象
+            //处理封装roleList对象
             let roleList = []
             for (let i = 0; i < this.dataList.length; i++) {
                 let role = this.dataList[i]
