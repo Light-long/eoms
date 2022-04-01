@@ -1,67 +1,94 @@
 <template>
-	<div v-if="isAuth(['ROOT'])">
-		<div align="center">
-			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
-				<el-form-item prop="type">
-					<el-input
-							v-model="dataForm.type"
-							placeholder="类型名称"
-							size="medium"
-							class="input"
-							clearable="clearable"
-					/>
-				</el-form-item>
-				<el-form-item>
-					<el-button size="medium" type="primary" @click="searchHandle()">查询</el-button>
-					<el-button size="medium" type="common" @click="reset()">重置</el-button>
-					<el-button size="medium" type="success" @click="addHandle()">新增</el-button>
-					<el-button size="medium" type="danger" @click="deleteHandle()">批量删除</el-button>
-				</el-form-item>
-			</el-form>
-		</div>
-		<el-table
-			:data="dataList"
-			border
-			v-loading="dataListLoading"
-			@selection-change="selectionChangeHandle"
-			cell-style="padding: 4px 0"
-			style="width: 100%;"
-			size="medium"
-		>
-			<el-table-column
-				type="selection"
-				:selectable="selectable"
-				header-align="center"
-				align="center"
-				width="50"
-			/>
-			<el-table-column type="index" header-align="center" align="center" width="100" label="序号">
+	<div class="app-container" v-if="isAuth(['ROOT'])">
+		<!--查询表单-->
+		<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
+			<el-form-item prop="type" label="罚款类型">
+				<el-input
+						v-model="dataForm.type"
+						placeholder="类型名称"
+						size="small"
+						class="input"
+						clearable="clearable"
+						@keyup.enter.native="searchHandle"
+				/>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="reset">重置</el-button>
+			</el-form-item>
+		</el-form>
+
+		<!--按钮-->
+		<el-row :gutter="15" class="mb8" style="margin-bottom: 10px">
+			<el-col :span="1.5">
+				<el-button
+						type="primary"
+						plain
+						icon="el-icon-plus"
+						size="mini"
+						@click="addHandle"
+				>新增</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button
+						type="success"
+						plain
+						icon="el-icon-edit"
+						size="mini"
+						:disabled="single"
+						@click="updateHandle(dataListSelections.map(item => item.id)[0])"
+				>修改</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button
+						type="danger"
+						plain
+						icon="el-icon-delete"
+						size="mini"
+						:disabled="multiple"
+						@click="deleteHandle()"
+				>删除</el-button>
+			</el-col>
+		</el-row>
+
+		<el-table v-loading="dataListLoading" :data="dataList" @selection-change="selectionChangeHandle" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
+			<el-table-column type="selection" :selectable="selectable" header-align="center" align="center" min-width="80px"/>
+			<el-table-column type="index" header-align="center" align="center" min-width="100px" label="序号">
 				<template #default="scope">
 					<span>{{ (pageIndex - 1) * pageSize + scope.$index + 1 }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="type" header-align="center" align="center" label="罚款类型" />
-			<el-table-column header-align="center" align="center" label="罚款金额">
+			<el-table-column prop="type" header-align="center" min-width="200px" align="center" label="罚款类型" />
+			<el-table-column header-align="center" min-width="150px" align="center" label="罚款金额">
 				<template #default="scope">
 					<span>{{ scope.row.money }}元</span>
 				</template>
 			</el-table-column>
-			<el-table-column header-align="center" align="center" label="系统内置">
+			<el-table-column header-align="center" min-width="150px" align="center" label="系统内置">
 				<template #default="scope">
-					<span>{{ scope.row.systemic ? '是' : '否' }}</span>
+					<el-tag type="primary" v-if="scope.row.systemic === true">是</el-tag>
+					<el-tag type="info" v-if="scope.row.systemic === false">否</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column header-align="center" align="center" label="未缴罚款数量">
+			<el-table-column header-align="center" min-width="150px" align="center" label="未缴罚款数量">
 				<template #default="scope">
 					<span>{{ scope.row.notPay === 0 ? '--' : scope.row.notPay + '个' }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
+			<el-table-column fixed="right" header-align="center" align="center" min-width="200px" label="操作">
 				<template #default="scope">
-					<el-button type="text" size="medium" @click="updateHandle(scope.row.id)">修改</el-button>
+					<el-button
+							type="text"
+							size="medium"
+							icon="el-icon-edit"
+							@click="updateHandle(scope.row.id)"
+					>
+						修改
+					</el-button>
 					<el-button
 						type="text"
 						size="medium"
+						icon="el-icon-delete"
 						:disabled="scope.row.canDelete === 'false'"
 						@click="deleteHandle(scope.row.id)"
 					>
@@ -103,6 +130,10 @@ export default {
 			dataListLoading: false,
 			dataListSelections: [],
 			addOrUpdateVisible: false,
+			// 非单个禁用
+			single: true,
+			// 非多个禁用
+			multiple: true,
 			dataRule: {
 				type: [{ required: false, pattern: '^[a-zA-Z0-9\u4e00-\u9fa5]{1,10}$', message: '类型名称格式错误' }]
 			}
@@ -167,6 +198,8 @@ export default {
 		},
 		selectionChangeHandle: function (val) {
 			this.dataListSelections = val
+			this.single = val.length !== 1
+			this.multiple = !val.length
 		},
 		selectable: function (row) {
 			return row.canDelete === 'true'
