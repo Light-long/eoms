@@ -39,10 +39,8 @@ public class MeetingRoomController {
     @SaCheckLogin
     public CommonResult searchMeetingRoomByPage(@Valid @RequestBody SearchMeetingRoomByPageForm form) {
         Map<String, Object> condition = JSONUtil.parse(form).toBean(Map.class);
-        int start = (form.getPage() - 1) * form.getLength();
-        condition.put("start", start);
-        PageUtils roomPage = meetingRoomService.searchMeetingRoomByPage(condition);
-        return CommonResult.ok().put("page", roomPage);
+        List<Map<String, Object>> meetingRoomList = meetingRoomService.searchMeetingRoomByPage(condition);
+        return CommonResult.ok().put("list", meetingRoomList);
     }
 
     @PostMapping("/addMeetingRoom")

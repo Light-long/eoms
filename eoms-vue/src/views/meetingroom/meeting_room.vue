@@ -1,127 +1,196 @@
 <template>
-	<div>
+	<div class="app-container">
 		<div align="center">
-			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
-				<el-form-item prop="name">
+			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm" label-width="100px">
+				<el-form-item prop="name" label="会议室名称">
 					<el-input
 							v-model="dataForm.name"
 							placeholder="会议室名称"
-							size="medium"
+							size="small"
 							class="input"
 							clearable="clearable"
+							@keyup.enter.native="searchHandle"
 					/>
 				</el-form-item>
-				<el-form-item>
-					<el-select v-model="dataForm.canDelete" class="input" placeholder="条件" size="medium">
-						<el-option label="全部" value="all" />
-						<el-option label="可删除" value="true" />
-						<el-option label="不可删除" value="false" />
+				<el-form-item label="条件" label-width="60px">
+					<el-select v-model="dataForm.status" class="input" placeholder="状态" size="small">
+						<el-option label="正常" value="1" />
+						<el-option label="停用" value="0" />
 					</el-select>
 				</el-form-item>
 				<el-form-item>
-					<el-button size="medium" type="primary" @click="searchHandle()">查询</el-button>
-					<el-button size="medium" type="common" @click="resetForm()">重置</el-button>
+					<el-button size="small" type="primary" @click="searchHandle()">查询</el-button>
+					<el-button size="small" type="common" @click="resetForm()">重置</el-button>
 					<el-button
-							size="medium"
-							type="primary"
-							:disabled="!isAuth(['ROOT', 'MEETING_ROOM:INSERT'])"
+							size="small"
+							type="success"
+							v-if="isAuth(['ROOT', 'MEETING_ROOM:INSERT'])"
 							@click="addHandle()"
 					>
 						新增
 					</el-button>
-					<el-button
-							size="medium"
-							type="danger"
-							:disabled="!isAuth(['ROOT', 'MEETING_ROOM:DELETE'])"
-							@click="deleteHandle()"
-					>
-						批量删除
-					</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
-		<el-table
-			:data="dataList"
-			border
-			v-loading="dataListLoading"
-			@selection-change="selectionChangeHandle"
-			cell-style="padding: 4px 0"
-			style="width: 100%;"
-			size="medium"
-		>
-			<el-table-column type="selection" header-align="center" align="center" width="50" />
-			<el-table-column type="index" header-align="center" align="center" width="100" label="序号">
-				<template #default="scope">
-					<span>{{ (pageIndex - 1) * pageSize + scope.$index + 1 }}</span>
-				</template>
-			</el-table-column>
-			<el-table-column prop="name" header-align="center" align="center" min-width="150" label="会议室名称" />
-			<el-table-column header-align="center" align="center" min-width="120" label="人数上限">
-				<template #default="scope">
-					<span>{{ scope.row.max }}人</span>
-				</template>
-			</el-table-column>
-			<el-table-column header-align="center" align="center" min-width="150" label="关联会议个数">
-				<template #default="scope">
-					<span>{{ scope.row.meetings }}个</span>
-				</template>
-			</el-table-column>
-			<el-table-column header-align="center" align="center" min-width="100" label="状态">
-				<template #default="scope">
-					<span>{{ scope.row.status == 1 ? '可使用' : '已停用' }}</span>
-				</template>
-			</el-table-column>
-			<el-table-column prop="desc" header-align="center" align="center" label="备注" min-width="300" />
-			<el-table-column header-align="center" align="center" width="150" label="操作">
-				<template #default="scope">
-					<el-button
-						type="text"
-						size="medium"
-						:disabled="!isAuth(['ROOT', 'MEETING_ROOM:UPDATE']) || scope.row.id == 0"
-						@click="updateHandle(scope.row.id)"
-					>
-						修改
-					</el-button>
-					<el-button
-						type="text"
-						size="medium"
-						:disabled="!isAuth(['ROOT', 'MEETING_ROOM:DELETE']) || scope.row.id == 0"
-						@click="deleteHandle(scope.row.id)"
-					>
-						删除
-					</el-button>
-				</template>
-			</el-table-column>
-		</el-table>
-		<el-pagination
-			@size-change="sizeChangeHandle"
-			@current-change="currentChangeHandle"
-			:current-page="pageIndex"
-			:page-sizes="[5, 10, 20]"
-			:page-size="pageSize"
-			:total="totalCount"
-			layout="total, sizes, prev, pager, next, jumper"
-		></el-pagination>
+
+		<!--内容-->
+		<el-row :gutter="20">
+			<el-col :span="11" :xs="24" style="margin-left: 30px">
+				<div v-for="(meetingRoom, index) in dataList">
+					<el-card v-if="index % 2 !== 1" class="box-card" style="margin-bottom: 10px">
+						<div slot="header" class="clearfix">
+							<span style="font-size: 18px; font-weight: bold">{{meetingRoom.name}}</span>
+							<div class="pull-right">
+								<el-button
+										size="medium"
+										type="text"
+										icon="el-icon-edit"
+										v-if="isAuth(['ROOT', 'MEETING_ROOM:UPDATE'])"
+										@click="updateHandle(meetingRoom.id)"
+								>修改</el-button>
+								<el-button
+										size="medium"
+										type="text"
+										icon="el-icon-delete"
+										v-if="isAuth(['ROOT', 'MEETING_ROOM:DELETE'])"
+										@click="deleteHandle(meetingRoom.id)"
+										:disabled="meetingRoom.meetings > 0"
+								>删除</el-button>
+							</div>
+						</div>
+						<div>
+							<ul class="list-group list-group-striped">
+								<li class="list-group-item">
+									<div style="line-height: 20px; vertical-align: center">
+										<SvgIcon name="company_fill" class="icon-svg-3"></SvgIcon>
+										<span>会议室名称</span>
+										<div class="pull-right">{{meetingRoom.name}}</div>
+									</div>
+								</li>
+								<li class="list-group-item">
+									<div style="line-height: 20px; vertical-align: center">
+										<SvgIcon name="geren" class="icon-svg-4"></SvgIcon>
+										<span>人数上限</span>
+										<div class="pull-right">{{meetingRoom.max}} 人</div>
+									</div>
+								</li>
+								<li class="list-group-item">
+									<div style="line-height: 20px; vertical-align: center">
+										<SvgIcon name="pinglun" class="icon-svg-4"></SvgIcon>
+										<span>关联会议个数</span>
+										<div class="pull-right">{{meetingRoom.meetings}} 个</div>
+									</div>
+								</li>
+								<li class="list-group-item">
+									<div style="line-height: 20px; vertical-align: center">
+										<SvgIcon name="xingqu" class="icon-svg-3"></SvgIcon>
+										<span>状态</span>
+										<div class="pull-right">
+											<el-tag type="primary" v-if="meetingRoom.status=== '正常'">{{meetingRoom.status}}</el-tag>
+											<el-tag type="danger" v-if="meetingRoom.status=== '停用'">{{meetingRoom.status}}</el-tag>
+										</div>
+									</div>
+								</li>
+								<li class="list-group-item">
+									<div style="line-height: 20px; vertical-align: center">
+										<SvgIcon name="tixing" class="icon-svg-3"></SvgIcon>
+										<span>备注</span>
+										<div class="pull-right">{{meetingRoom.desc}}</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</el-card>
+				</div>
+			</el-col>
+			<el-col :span="11" :xs="24" style="margin-left: 30px">
+				<div v-for="(meetingRoom, index) in dataList">
+					<el-card v-if="index % 2 === 1" class="box-card" style="margin-bottom: 10px">
+						<div slot="header" class="clearfix">
+							<span style="font-size: 18px; font-weight: bold">{{meetingRoom.name}}</span>
+							<div class="pull-right">
+								<el-button
+										size="medium"
+										type="text"
+										icon="el-icon-edit"
+										v-if="isAuth(['ROOT', 'MEETING_ROOM:UPDATE'])"
+										@click="updateHandle(meetingRoom.id)"
+								>修改</el-button>
+								<el-button
+										size="medium"
+										type="text"
+										icon="el-icon-delete"
+										v-if="isAuth(['ROOT', 'MEETING_ROOM:DELETE'])"
+										@click="deleteHandle(meetingRoom.id)"
+										:disabled="meetingRoom.meetings > 0"
+								>删除</el-button>
+							</div>
+						</div>
+						<div>
+							<ul class="list-group list-group-striped">
+								<li class="list-group-item">
+									<div style="line-height: 20px; vertical-align: center">
+										<SvgIcon name="company_fill" class="icon-svg-3"></SvgIcon>
+										<span>会议室名称</span>
+										<div class="pull-right">{{meetingRoom.name}}</div>
+									</div>
+								</li>
+								<li class="list-group-item">
+									<div style="line-height: 20px; vertical-align: center">
+										<SvgIcon name="geren" class="icon-svg-4"></SvgIcon>
+										<span>人数上限</span>
+										<div class="pull-right">{{meetingRoom.max}} 人</div>
+									</div>
+								</li>
+								<li class="list-group-item">
+									<div style="line-height: 20px; vertical-align: center">
+										<SvgIcon name="pinglun" class="icon-svg-4"></SvgIcon>
+										<span>关联会议个数</span>
+										<div class="pull-right">{{meetingRoom.meetings}} 个</div>
+									</div>
+								</li>
+								<li class="list-group-item">
+									<div style="line-height: 20px; vertical-align: center">
+										<SvgIcon name="xingqu" class="icon-svg-3"></SvgIcon>
+										<span>状态</span>
+										<div class="pull-right">
+											<el-tag type="primary" v-if="meetingRoom.status=== '正常'">{{meetingRoom.status}}</el-tag>
+											<el-tag type="danger" v-if="meetingRoom.status=== '停用'">{{meetingRoom.status}}</el-tag>
+										</div>
+									</div>
+								</li>
+								<li class="list-group-item">
+									<div style="line-height: 20px; vertical-align: center">
+										<SvgIcon name="tixing" class="icon-svg-3"></SvgIcon>
+										<span>备注</span>
+										<div class="pull-right">{{meetingRoom.desc}}</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</el-card>
+				</div>
+			</el-col>
+		</el-row>
 		<add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="loadDataList"></add-or-update>
 	</div>
 </template>
 
 <script>
 import AddOrUpdate from './meeting_room-add-or-update.vue';
+import SvgIcon from "../../components/SvgIcon.vue";
 export default {
 	components: {
-		AddOrUpdate
+		AddOrUpdate,
+		SvgIcon
 	},
 	data: function() {
 		return {
 			dataForm: {
 				name: null,
-				canDelete: null
+				status: null
 			},
 			dataList: [],
-			pageIndex: 1,
-			pageSize: 10,
-			totalCount: 0,
 			dataListLoading: false,
 			dataListSelections: [],
 			addOrUpdateVisible: false,
@@ -151,14 +220,18 @@ export default {
 			that.dataListLoading = true
 			let data = {
 				name: that.dataForm.name,
-				canDelete: that.dataForm.canDelete === "all" ? null : that.dataForm.canDelete,
-				page: that.pageIndex,
-				length: that.pageSize
+				status: that.dataForm.status
 			}
 			that.$http("/meetingRoom/searchMeetingRoomByPage", "POST", data, true, function (resp) {
-				let page = resp.page
-				that.dataList = page.list
-				that.totalCount = page.totalCount
+				let list = resp.list
+				for (let one of list) {
+					if (one.status === 1) {
+						one.status = '正常'
+					} else {
+						one.status = '停用'
+					}
+				}
+				that.dataList = list
 				that.dataListLoading = false
 			})
 		},
@@ -233,4 +306,22 @@ export default {
 };
 </script>
 
-<style lang="less"></style>
+<style lang="scss">
+	@import "src/assets/scss/ruoyi";
+
+	.icon-svg-3 {
+		width: 1.5em;
+		height: 1.5em;
+		fill: currentColor;
+		overflow: hidden;
+		margin-right: 5px;
+	}
+
+	.icon-svg-4 {
+		width: 1.3em;
+		height: 1.3em;
+		fill: currentColor;
+		overflow: hidden;
+		margin-right: 5px;
+	}
+</style>

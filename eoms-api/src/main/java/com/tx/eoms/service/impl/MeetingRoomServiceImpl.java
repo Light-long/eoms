@@ -25,17 +25,9 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
         return meetingRoomDao.searchAllMeetingRoom();
     }
 
-    /**
-     * 根据条件查询会议室列表
-     * @param condition 条件，包括这个会议室能否删除
-     */
     @Override
-    public PageUtils searchMeetingRoomByPage(Map<String, Object> condition) {
-        List<Map<String, Object>> roomList = meetingRoomDao.searchMeetingRoomByPage(condition);
-        long roomCount = meetingRoomDao.searchMeetingRoomCount(condition);
-        int start = (int) condition.get("start");
-        int length = (int) condition.get("length");
-        return new PageUtils(roomList, roomCount, start, length);
+    public List<Map<String, Object>> searchMeetingRoomByPage(Map<String, Object> condition) {
+        return meetingRoomDao.searchMeetingRoomByPage(condition);
     }
 
     /**

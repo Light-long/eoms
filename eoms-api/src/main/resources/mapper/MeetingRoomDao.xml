@@ -19,34 +19,14 @@
             count(m.id) as meetings
         from tb_meeting_room as mr
         left join tb_meeting as m on m.status = 2 and mr.`name` = m.place
+        where 1 = 1
         <if test="name != null">
-            where mr.name like "%${name}%"
+            and mr.name like "%${name}%"
+        </if>
+        <if test="status != null">
+            and mr.status = #{status}
         </if>
         group by mr.id
-        <if test="canDelete == false">
-            having count(m.id) > 0
-        </if>
-        <if test="canDelete == true">
-            having count(m.id) = 0
-        </if>
-        limit #{start}, #{length}
-    </select>
-
-    <select id="searchMeetingRoomCount" parameterType="HashMap" resultType="long">
-        select count(*) from (
-            select mr.id
-            from tb_meeting_room as mr left join tb_meeting as m
-            on m.status = 2 and m.place = mr.`name`
-            <if test="name != null">
-                where mr.name like "%${name}%"
-            </if>
-            <if test="canDelete == false">
-                having count(m.id) > 0
-            </if>
-            <if test="canDelete == true">
-                having count(m.id) = 0
-            </if>
-        ) as temp
     </select>
 
     <insert id="addMeetingRoom" parameterType="com.tx.eoms.pojo.MeetingRoom">

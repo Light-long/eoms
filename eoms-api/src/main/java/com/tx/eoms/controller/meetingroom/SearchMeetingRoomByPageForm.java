@@ -15,16 +15,7 @@ public class SearchMeetingRoomByPageForm {
     @Schema(description = "会议室名称")
     private String name;
 
-    @Schema(description = "是否可以删除")
-    private Boolean canDelete;
+    @Schema(description = "状态")
+    private Integer status;
 
-    @NotNull(message = "page不能为空")
-    @Min(value = 1, message = "page不能小于1")
-    @Schema(description = "页数")
-    private Integer page;
-
-    @NotNull(message = "length不能为空")
-    @Range(min = 5, max = 20, message = "length必须在5~20之间")
-    @Schema(description = "每页记录数")
-    private Integer length;
 }

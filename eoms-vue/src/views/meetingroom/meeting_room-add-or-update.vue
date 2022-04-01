@@ -18,8 +18,8 @@
 			</el-form-item>
 			<el-form-item v-if="dataForm.id" label="状态">
 				<el-select v-model="dataForm.status" class="input" placeholder="状态" size="medium">
-					<el-option label="可使用" value="1" />
-					<el-option label="已停用" value="0" />
+					<el-option label="正常" value="1" />
+					<el-option label="停用" value="0" />
 				</el-select>
 			</el-form-item>
 		</el-form>

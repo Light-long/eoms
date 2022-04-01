@@ -15,9 +15,8 @@ public interface MeetingRoomService {
 
     /**
      * 根据条件查询会议室列表
-     * @param condition 条件，包括这个会议室能否删除
      */
-    PageUtils searchMeetingRoomByPage(Map<String, Object> condition);
+    List<Map<String, Object>> searchMeetingRoomByPage(Map<String, Object> condition);
 
     /**
      * 添加会议室

@@ -16,14 +16,8 @@ public interface MeetingRoomDao {
 
     /**
      * 根据条件查询会议室列表
-     * @param condition 条件，包括这个会议室能否删除
      */
     List<Map<String, Object>> searchMeetingRoomByPage(Map<String, Object> condition);
-
-    /**
-     * 根据条件查询会议室数量
-     */
-    long searchMeetingRoomCount(Map<String, Object> condition);
 
     /**
      * 添加会议室
