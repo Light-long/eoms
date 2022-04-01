@@ -26,6 +26,9 @@
         <if test="type != null">
             and `at`.type like '%${type}%'
         </if>
+        <if test="systemic != null">
+            and `at`.systemic = #{systemic}
+        </if>
         group by `at`.id
         limit #{start}, #{length}
     </select>

@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container" v-if="isAuth(['ROOT'])">
 		<!--查询表单-->
-		<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
+		<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm" label-width="80px">
 			<el-form-item prop="type" label="罚款类型">
 				<el-input
 						v-model="dataForm.type"
@@ -11,6 +11,12 @@
 						clearable="clearable"
 						@keyup.enter.native="searchHandle"
 				/>
+			</el-form-item>
+			<el-form-item label="是否内置" prop="systemic">
+				<el-select v-model="dataForm.systemic" placeholder="是否内置" clearable size="small">
+					<el-option label="是" value="1"></el-option>
+					<el-option label="否" value="0"></el-option>
+				</el-select>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
@@ -121,7 +127,8 @@ export default {
 	data: function() {
 		return {
 			dataForm: {
-				type: null
+				type: null,
+				systemic: null
 			},
 			dataList: [],
 			pageIndex: 1,
@@ -145,6 +152,7 @@ export default {
 			that.dataListLoading = true
 			let data = {
 				type: that.dataForm.type,
+				systemic: that.dataForm.systemic,
 				page: that.pageIndex,
 				length: that.pageSize
 			}
@@ -181,7 +189,7 @@ export default {
 			})
 		},
 		reset: function () {
-			this.dataForm.type = null
+			this.dataForm = {}
 			this.loadDataList()
 		},
 		addHandle: function () {

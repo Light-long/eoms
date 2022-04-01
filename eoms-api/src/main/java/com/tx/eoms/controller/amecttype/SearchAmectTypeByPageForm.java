@@ -16,6 +16,9 @@ public class SearchAmectTypeByPageForm {
     @Schema(description = "类型名称")
     private String type;
 
+    @Schema(description = "是否内置")
+    private Integer systemic;
+
     @NotNull(message = "page不能为空")
     @Min(value = 1, message = "page不能小于1")
     @Schema(description = "页数")
