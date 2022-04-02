@@ -37,7 +37,7 @@
 		<el-row :gutter="20">
 			<el-col :span="11" :xs="24" style="margin-left: 30px">
 				<div v-for="(meetingRoom, index) in dataList">
-					<el-card v-if="index % 2 !== 1" class="box-card" style="margin-bottom: 10px">
+					<el-card shadow="hover" v-if="index % 2 !== 1" class="box-card" style="margin-bottom: 10px">
 						<div slot="header" class="clearfix">
 							<span style="font-size: 18px; font-weight: bold">{{meetingRoom.name}}</span>
 							<div class="pull-right">
@@ -105,7 +105,7 @@
 			</el-col>
 			<el-col :span="11" :xs="24" style="margin-left: 30px">
 				<div v-for="(meetingRoom, index) in dataList">
-					<el-card v-if="index % 2 === 1" class="box-card" style="margin-bottom: 10px">
+					<el-card shadow="hover" v-if="index % 2 === 1" class="box-card" style="margin-bottom: 10px">
 						<div slot="header" class="clearfix">
 							<span style="font-size: 18px; font-weight: bold">{{meetingRoom.name}}</span>
 							<div class="pull-right">

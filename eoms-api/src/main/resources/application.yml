@@ -108,7 +108,7 @@ wx:
 
 eoms:
   code: 62338DECF3CA18B0
-  tcode: "285413"
+  tcode: "547228"
   receiveNotify: http://localhost:8090/eoms-api/meeting/receiveNotify
   email:
     system: 2201673330@qq.com

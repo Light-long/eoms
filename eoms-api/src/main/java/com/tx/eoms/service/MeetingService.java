@@ -9,19 +9,14 @@ import java.util.Map;
 public interface MeetingService {
 
     /**
-     * 分页查询线下会议
+     * 查询线下会议列表
      */
-    PageUtils searchOfflineMeetingByPage(Map<String, Object> condition);
+    List<Map<String, Object>> searchOfflineMeetingList(Map<String, Object> params);
 
     /**
      * 添加会议
      */
     int addMeeting(Meeting meeting);
-
-    /**
-     * 查询一周的现在会议--日历图
-     */
-    List<Map<String, Object>> searchOfflineMeetingInWeek(Map<String, Object> params);
 
     /**
      * 查询会议信息

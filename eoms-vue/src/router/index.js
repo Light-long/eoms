@@ -25,6 +25,7 @@ import Notice from "../views/notice/notice.vue"
 import UserInfo from "../views/info/userInfo.vue"
 import Register from "../views/login/register.vue"
 import MailList from "../views/info/mail-list.vue"
+import Meeting from "../views/meeting/meeting.vue"
 
 const routes = [
 	{
@@ -92,6 +93,15 @@ const routes = [
 				component: OfflineMeeting,
 				meta: {
 					title: '线下会议',
+					isTab: true
+				}
+			},
+			{
+				path: '/meeting',
+				name: 'Meeting',
+				component: Meeting,
+				meta: {
+					title: '会议列表',
 					isTab: true
 				}
 			},

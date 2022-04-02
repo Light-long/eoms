@@ -211,7 +211,6 @@
 
     <select id="searchUserInfo" parameterType="int" resultType="HashMap">
         select
-            u.open_id AS openId,
             u.nickname,
             u.name,
             u.photo,

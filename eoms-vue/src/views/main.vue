@@ -194,6 +194,13 @@
 							<span slot="title">会议室</span>
 						</el-menu-item>
 						<el-menu-item
+								index="meeting"
+								@click="$router.push({ name: 'Meeting' })"
+						>
+							<SvgIcon name="warehouse_fill" class="icon-svg" />
+							<span slot="title">会议列表</span>
+						</el-menu-item>
+						<el-menu-item
 							index="demo-echarts"
 							@click="$router.push({ name: 'OfflineMeeting' })"
 						>

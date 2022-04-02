@@ -30,37 +30,33 @@
         JOIN tb_user u ON m.creator_id = u.id
         WHERE m.id = #{id} AND u.status = 1
     </select>
-    
-    <select id="searchOfflineMeetingByPage" parameterType="HashMap" resultType="HashMap">
-        select
-            mr.name,
-            temp.meeting
-        from tb_meeting_room as mr
-        left join (
-            select place,
-            CONCAT(
-                "[",
-                GROUP_CONCAT(
-                    JSON_OBJECT(
-                    'start', DATE_FORMAT(start, '%H:%i'),
-                    'end', DATE_FORMAT(end, '%H:%i'),
-                    'status', status,
-                    'time',  ROUND(timestampdiff(MINUTE, CONCAT(date," ",start), CONCAT(date," ",end))/30)
-                    )
-                ),
-                "]"
-            ) as meeting
-            from tb_meeting
-            where type = 2 and status != 2 and date = #{date}
-            <if test="mold == '我的会议' ">
-                and JSON_CONTAINS(members, cast(#{userId} as char))
-            </if>
-            group by place
-        ) as temp
-        on mr.name = temp.place
-        where mr.status = 1
-        limit #{start}, #{length}
-    </select>
+
+    <select id="searchOfflineMeetingList" parameterType="HashMap" resultType="HashMap">
+        SELECT
+          m.id,
+          m.uuid,
+          m.title,
+          u.name,
+          DATE_FORMAT(m.date,'%Y-%m-%d') AS date,
+          m.place,
+          DATE_FORMAT(m.start,'%H:%i') AS start,
+          DATE_FORMAT(m.end,'%H:%i') AS end,
+          m.status,
+          m.desc,
+          m.instance_id as instanceId,
+          if(m.creator_id = #{userId}, "true", "false") as isCreator
+        FROM tb_meeting as m
+        join tb_meeting_room as mr on m.place = mr.name
+        join tb_user as u on u.id = m.creator_id
+        where m.type = 2 and m.date = #{date}
+        <if test="mold == '我的会议' ">
+            and JSON_CONTAINS(m.members, cast(#{userId} as char))
+        </if>
+        <if test="roomName != null">
+            and mr.name = #{roomName}
+        </if>
+        order by m.start asc
+      </select>
 
     <select id="searchOfflineMeetingCount" parameterType="HashMap" resultType="long">
         select count(*)
@@ -94,25 +90,6 @@
         status = #{status},
         create_time = NOW()
     </insert>
-
-    <select id="searchOfflineMeetingInWeek" parameterType="HashMap" resultType="HashMap">
-        select
-            id,
-            title,
-            DATE_FORMAT(`date`, '%m/%d') as `date`,
-            DATE_FORMAT(`start`, '%H:%i') as `start`,
-            round(timestampdiff(MINUTE, concat(`date`, " ", `start`), concat(`date`, " ", `end`)) / 30) as time,
-            uuid,
-            instance_id as instanceId,
-            if(creator_id = #{userId}, "true", "false") as isCreator,
-            `status`
-        from tb_meeting
-        where type = 2 and place = #{place} and `status` != 2
-        and date between #{startDate} and #{endDate}
-        <if test="mold == '我的会议'">
-            and JSON_CONTAINS(members, cast(#{userId} as char))
-        </if>
-    </select>
 
     <select id="searchMeetingInfo" parameterType="long" resultType="HashMap">
         select

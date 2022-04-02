@@ -20,9 +20,9 @@ public interface MeetingDao {
     Map<String, Object> searchMeetingById(Map<String, Object> params);
 
     /**
-     * 分页查询线下会议
+     * 查询线下会议列表
      */
-    List<Map<String, Object>> searchOfflineMeetingByPage(Map<String, Object> condition);
+    List<Map<String, Object>> searchOfflineMeetingList(Map<String, Object> params);
 
     /**
      * 线下会议条数
@@ -39,11 +39,6 @@ public interface MeetingDao {
      * 添加会议
      */
     int addMeeting(Meeting meeting);
-
-    /**
-     * 查询一周的现在会议--日历图
-     */
-    List<Map<String, Object>> searchOfflineMeetingInWeek(Map<String, Object> params);
 
     /**
      * 查询未开始的会议

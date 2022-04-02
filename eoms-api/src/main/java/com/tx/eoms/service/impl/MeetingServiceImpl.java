@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.tx.eoms.dao.MeetingDao;
 import com.tx.eoms.exception.EomsException;
@@ -15,9 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class MeetingServiceImpl implements MeetingService {
@@ -31,20 +30,12 @@ public class MeetingServiceImpl implements MeetingService {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
+    /**
+     * 查询线下会议列表
+     */
     @Override
-    public PageUtils searchOfflineMeetingByPage(Map<String, Object> condition) {
-        List<Map<String, Object>> offlineMeetingList = meetingDao.searchOfflineMeetingByPage(condition);
-        long offlineMeetingCount = meetingDao.searchOfflineMeetingCount(condition);
-        int start = (int) condition.get("start");
-        int length = (int) condition.get("length");
-        // 将meeting字段转换为json数组格式
-        offlineMeetingList.forEach(offlineMeeting -> {
-            String meeting = (String) offlineMeeting.get("meeting");
-            if (meeting != null && meeting.length() > 0) {
-                offlineMeeting.replace("meeting", JSONUtil.parseArray(meeting));
-            }
-        });
-        return new PageUtils(offlineMeetingList, offlineMeetingCount, start, length);
+    public List<Map<String, Object>> searchOfflineMeetingList(Map<String, Object> params) {
+        return meetingDao.searchOfflineMeetingList(params);
     }
 
     @Override
@@ -56,14 +47,6 @@ public class MeetingServiceImpl implements MeetingService {
         meetingWorkFlowTask.startMeetingWorkFlow(meeting.getUuid(), meeting.getCreatorId(), meeting.getTitle(),
                 meeting.getDate(), meeting.getStart() + ":00", meeting.getType() == 1 ? "线上会议" : "线下会议");
         return rows;
-    }
-
-    /**
-     * 查询一周的现在会议--日历图
-     */
-    @Override
-    public List<Map<String, Object>> searchOfflineMeetingInWeek(Map<String, Object> params) {
-        return meetingDao.searchOfflineMeetingInWeek(params);
     }
 
     /**

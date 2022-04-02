@@ -42,7 +42,7 @@
 					</ul>
 				</el-col>
 			</el-row>
-			<el-row class="info member" v-if="['进行中', '已结束'].includes(status)">
+			<el-row class="info member" v-if="['已结束'].includes(status)">
 				<el-col :span="3" class="label">缺席：</el-col>
 				<el-col :span="21" class="value">
 					<ul class="list">
@@ -55,9 +55,9 @@
 			</el-row>
 		</div>
 		<template #footer>
-			<span class="dialog-footer"><el-button :disabled="!btnDisable" type="primary" size="medium" @click="checkinIn">签到</el-button></span>
+			<span class="dialog-footer"><el-button :disabled="!btnDisable" type="primary" size="small" @click="checkinIn">签到</el-button></span>
 			&nbsp;
-			<span class="dialog-footer"><el-button size="medium" @click="visible = false">关闭</el-button></span>
+			<span class="dialog-footer"><el-button size="small" @click="visible = false">关闭</el-button></span>
 		</template>
 	</el-dialog>
 </template>
@@ -100,7 +100,7 @@ export default {
 					if (meetingInfo.status === 1) {
 						that.status = '待审批';
 					} else if (meetingInfo.status === 3) {
-						that.status = '未开始';
+						that.status = '审批通过，待开始';
 					} else if (meetingInfo.status === 4) {
 						that.status = '进行中';
 					} else if (meetingInfo.status === 5) {
