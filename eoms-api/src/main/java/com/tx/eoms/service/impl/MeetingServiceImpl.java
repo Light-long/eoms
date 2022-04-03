@@ -112,12 +112,8 @@ public class MeetingServiceImpl implements MeetingService {
      * 查询线上会议列表
      */
     @Override
-    public PageUtils searchOnlineMeetingByPage(Map<String, Object> params) {
-        List<Map<String, Object>> onlineMeetingList = meetingDao.searchOnlineMeetingByPage(params);
-        long onlineMeetingCount = meetingDao.searchOnlineMeetingCount(params);
-        int start = (int) params.get("start");
-        int length = (int) params.get("length");
-        return new PageUtils(onlineMeetingList, onlineMeetingCount, start, length);
+    public List<Map<String, Object>> searchOnlineMeetingList(Map<String, Object> params) {
+        return meetingDao.searchOnlineMeetingList(params);
     }
 
     /**

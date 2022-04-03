@@ -44,7 +44,8 @@
           m.status,
           m.desc,
           m.instance_id as instanceId,
-          if(m.creator_id = #{userId}, "true", "false") as isCreator
+          if(m.creator_id = #{userId}, "true", "false") as isCreator,
+          IF(JSON_CONTAINS(m.members, CAST(#{userId} AS CHAR))=1,"true","false") AS mine
         FROM tb_meeting as m
         join tb_meeting_room as mr on m.place = mr.name
         join tb_user as u on u.id = m.creator_id
@@ -57,12 +58,6 @@
         </if>
         order by m.start asc
       </select>
-
-    <select id="searchOfflineMeetingCount" parameterType="HashMap" resultType="long">
-        select count(*)
-        from tb_meeting_room
-        where status = 1
-    </select>
     
     <update id="updateMeetingInstanceId" parameterType="HashMap">
         update tb_meeting
@@ -174,44 +169,28 @@
         where id = #{id} and creator_id = #{creatorId}
     </delete>
 
-    <select id="searchOnlineMeetingByPage" parameterType="HashMap" resultType="HashMap">
-        select
+    <select id="searchOnlineMeetingList" parameterType="HashMap" resultType="HashMap">
+        SELECT
             m.id,
-            m.title,
-            u.`name` AS creatorName,
-            IF( creator_id = #{userId}, "true", "false" ) AS isCreator,
-            IF(JSON_CONTAINS(m.members, CAST(#{userId} AS CHAR))=1,"true","false") AS mine,
-            m.date,
-            DATE_FORMAT(m.`start`, '%H:%i') AS `start`,
-            DATE_FORMAT(m.`end`, '%H:%i') AS `end`,
-            JSON_LENGTH ( m.members ) AS num,
-            m.`status`,
-            m.`desc`,
             m.uuid,
-            m.instance_id AS instanceId
-        from tb_meeting as m
-        join tb_user as u on m.creator_id = u.id
-        where m.type = 1 and m.`status` != 2
-        <if test="date != null">
-            and m.date = #{date}
-        </if>
-        <if test="mold == '我的会议'">
+            m.title,
+            u.name,
+            DATE_FORMAT(m.date,'%Y-%m-%d') AS date,
+            DATE_FORMAT(m.start,'%H:%i') AS start,
+            DATE_FORMAT(m.end,'%H:%i') AS end,
+            m.status,
+            m.desc,
+            m.instance_id as instanceId,
+            JSON_LENGTH ( m.members ) AS num,
+            if(m.creator_id = #{userId}, "true", "false") as isCreator,
+            IF(JSON_CONTAINS(m.members, CAST(#{userId} AS CHAR)) = 1,"true","false") AS mine
+        FROM tb_meeting as m
+        join tb_user as u on u.id = m.creator_id
+        where m.type = 1 and m.date = #{date}
+        <if test="mold == '我的会议' ">
             and JSON_CONTAINS(m.members, cast(#{userId} as char))
         </if>
-        order by m.id desc
-        limit #{start}, #{length}
-    </select>
-
-    <select id="searchOnlineMeetingCount" parameterType="HashMap" resultType="long">
-        select count(*)
-        from tb_meeting
-        where type = 1 and status != 2
-        <if test="date != null">
-            and date = #{date}
-        </if>
-        <if test="mold == '我的会议'">
-            and JSON_CONTAINS(members, cast(#{userId} as char))
-        </if>
+        order by m.start asc
     </select>
 
     <select id="searchOnlineMeetingMembers" parameterType="HashMap" resultType="HashMap">
@@ -231,7 +210,7 @@
         from tb_meeting
         where id = #{meetingId}
         and status in (3, 4)
-        and NOW() between DATE_SUB(concat(date, " ", start), interval 15 minute) and DATE_ADD(concat(date, " ", start), interval 15 minute)
+        and NOW() between DATE_SUB(concat(date, " ", start), interval 5 minute) and DATE_ADD(concat(date, " ", start), interval 15 minute)
         and JSON_CONTAINS( ifnull(members, JSON_ARRAY()), cast(#{userId} as char))
         and not JSON_CONTAINS( ifnull(present, JSON_ARRAY()), cast(#{userId} as char))
     </select>

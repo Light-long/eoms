@@ -33,7 +33,7 @@ public interface MeetingService {
     /**
      * 查询线上会议列表
      */
-    PageUtils searchOnlineMeetingByPage(Map<String, Object> params);
+    List<Map<String, Object>> searchOnlineMeetingList(Map<String, Object> params);
 
     /**
      * 根据uuid获取在线会议roomId

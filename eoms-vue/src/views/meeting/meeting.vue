@@ -59,7 +59,7 @@
 												type="text"
 												icon="el-icon-zoom-in"
 												@click="infoHandle(offlineMeeting.id, offlineMeeting.status)"
-												v-if="dataForm.mold === '我的会议' && offlineMeeting.status !== 2"
+												v-if="offlineMeeting.mine === 'true' && offlineMeeting.status !== 2"
 										>查看详情</el-button>
 										<el-button
 												size="small"
@@ -121,7 +121,93 @@
 				</div>
 			</el-col>
 			<el-col :span="12" :xs="24">
-
+				<div style="font-size: 22px; font-weight: bold; margin-bottom: 10px" align="center" >线上会议</div>
+				<div>
+					<el-card shadow="none" class="box-card">
+						<div style="font-size: 22px; font-weight: bold; margin-bottom: 5px" >{{showDate}}</div>
+						<div v-if="onlineMeetingList.length === 0">
+							<el-card shadow="none" class="box-card">
+								<div align="center">暂无数据</div>
+							</el-card>
+						</div>
+						<div v-if="onlineMeetingList.length !== 0" v-for="onlineMeeting in onlineMeetingList">
+							<el-card shadow="hover" class="box-card" style="margin-bottom: 10px">
+								<div slot="header" class="clearfix">
+									<span style="font-size: 18px; font-weight: bold">{{onlineMeeting.title}}</span>
+									<div class="pull-right">
+										<el-button
+												size="small"
+												type="text"
+												icon="el-icon-delete"
+												v-if="onlineMeeting.isCreator === 'true' && [1, 3].includes(onlineMeeting.status)"
+												@click="deleteHandle(onlineMeeting)"
+										>删除</el-button>
+									</div>
+								</div>
+								<div>
+									<ul class="list-group list-group-striped">
+										<li class="list-group-item">
+											<div style="line-height: 20px; vertical-align: center">
+												<SvgIcon name="geren" class="icon-svg-4"></SvgIcon>
+												<span>创建人姓名</span>
+												<div class="pull-right">{{onlineMeeting.name}}</div>
+											</div>
+										</li>
+										<li class="list-group-item">
+											<div style="line-height: 20px; vertical-align: center">
+												<SvgIcon name="users_fill" class="icon-svg-4"></SvgIcon>
+												<span>参会人数</span>
+												<div class="pull-right">{{onlineMeeting.num}} 人</div>
+											</div>
+										</li>
+										<li class="list-group-item">
+											<div style="line-height: 20px; vertical-align: center">
+												<SvgIcon name="job" class="icon-svg-3"></SvgIcon>
+												<span>起止时间</span>
+												<div class="pull-right">{{onlineMeeting.start}} ~ {{onlineMeeting.end}}</div>
+											</div>
+										</li>
+										<li class="list-group-item">
+											<div style="line-height: 20px; vertical-align: center">
+												<SvgIcon name="xingqu" class="icon-svg-4"></SvgIcon>
+												<span>状态</span>
+												<div class="pull-right">
+													<el-tag size="small" type="warning" v-if="onlineMeeting.status=== 1">申请中</el-tag>
+													<el-tag size="small" type="danger" v-if="onlineMeeting.status=== 2">审批未通过</el-tag>
+													<el-tag size="small" type="success" v-if="onlineMeeting.status=== 3">审批通过,待开始</el-tag>
+													<el-tag size="small" type="primary" v-if="onlineMeeting.status=== 4">会议进行中</el-tag>
+													<el-tag size="small" type="info" v-if="onlineMeeting.status=== 5">会议结束</el-tag>
+												</div>
+											</div>
+										</li>
+										<li class="list-group-item">
+											<div style="line-height: 20px; vertical-align: center">
+												<SvgIcon name="pinglun" class="icon-svg-3"></SvgIcon>
+												<span>会议内容</span>
+												<div class="pull-right">{{onlineMeeting.desc}}</div>
+											</div>
+										</li>
+										<li class="list-group-item">
+											<div style="line-height: 20px; vertical-align: center">
+												<SvgIcon name="" class="icon-svg-3"></SvgIcon>
+												<span style="font-weight: bold">点击进入在线会议</span>
+												<div class="pull-right">
+													<el-button
+															size="small"
+															type="success"
+															icon="el-icon-d-arrow-right"
+															:disabled="!onlineMeeting.canEnterMeeting"
+															@click=""
+													>进入</el-button>
+												</div>
+											</div>
+										</li>
+									</ul>
+								</div>
+							</el-card>
+						</div>
+					</el-card>
+				</div>
 			</el-col>
 		</el-row>
 		<add v-if="addVisible" ref="add" @refresh="refresh"></add>
@@ -160,7 +246,8 @@ export default {
 		});
 		//加载线下会议数据
 		that.loadOfflineMeetingList()
-		// TODO 加载线上会议数据
+		// 加载线上会议数据
+		that.loadOnlineMeetingList()
 	},
 	methods: {
 		// 加载线下会议数据
@@ -189,12 +276,39 @@ export default {
 				}
 			})
 		},
+		// 加载线上会议数据
+		loadOnlineMeetingList: function() {
+			let that = this
+			that.dataListLoading = true
+			let data = {
+				mold: that.dataForm.mold
+			}
+			// 如果没有选择日期，默认是当天的会议数据
+			if (that.dataForm.date === null || that.dataForm.date === '') {
+				data.date = dayjs(new Date()).format('YYYY-MM-DD')
+			} else {
+				data.date = dayjs(that.dataForm.date).format('YYYY-MM-DD')
+			}
+			that.$http('/meeting/searchOnlineMeetingList', 'POST', data, true, function (resp) {
+				let list = resp.list
+				for (let one of list) {
+					//计算会议是否可以进入
+					//1.开会前5分钟可以进入会议室
+					//2.会议状态必须是未开始或者进行中
+					let minute = dayjs(new Date()).diff(dayjs(`${one.date} ${one.start}`), 'minute')
+					one.canEnterMeeting = one.mine === 'true' && (minute >= -5 && minute <= 0 && one.status === 3 || one.status === 4);
+				}
+				that.onlineMeetingList = list
+			})
+		},
 		// 条件查询
 		searchHandle: function() {
 			this.$refs["dataForm"].validate( valid => {
 				if (valid) {
 					this.$refs["dataForm"].clearValidate()
+					// 分别查询线上线下会议
 					this.loadOfflineMeetingList()
+					this.loadOnlineMeetingList()
 				} else {
 					return false
 				}
@@ -259,8 +373,12 @@ export default {
 		},
 		refresh: function () {
 			this.loadOfflineMeetingList()
-			// TODO 刷新线上会议数据
-		}
+			// 刷新线上会议数据
+			this.loadOnlineMeetingList()
+		},
+		// enterHandle: function (meetingId, uuid) {
+		// 	this.$router.push({name: 'MeetingVideo', params: {meetingId: meetingId, uuid: uuid}})
+		// }
 	}
 };
 </script>

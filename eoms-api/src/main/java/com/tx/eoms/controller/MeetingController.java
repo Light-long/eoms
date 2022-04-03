@@ -89,16 +89,14 @@ public class MeetingController {
         return CommonResult.ok().put("rows", rows);
     }
 
-    @PostMapping("/searchOnlineMeetingByPage")
-    @Operation(summary = "查询线上会议分页数据")
+    @PostMapping("/searchOnlineMeetingList")
+    @Operation(summary = "查询线上会议列表")
     @SaCheckLogin
-    public CommonResult searchOnlineMeetingByPage(@Valid @RequestBody SearchOnlineMeetingByPageForm form) {
-        int start = (form.getPage() - 1) * form.getLength();
+    public CommonResult searchOnlineMeetingList(@Valid @RequestBody SearchOnlineMeetingListForm form) {
         Map<String, Object> params = JSONUtil.parse(form).toBean(Map.class);
-        params.put("start", start);
         params.put("userId", StpUtil.getLoginIdAsInt());
-        PageUtils onlineMeetingPage = meetingService.searchOnlineMeetingByPage(params);
-        return CommonResult.ok().put("page", onlineMeetingPage);
+        List<Map<String, Object>> onlineMeetingList = meetingService.searchOnlineMeetingList(params);
+        return CommonResult.ok().put("list", onlineMeetingList);
     }
 
     @GetMapping("/searchMyUserSig")

@@ -24,10 +24,6 @@ public interface MeetingDao {
      */
     List<Map<String, Object>> searchOfflineMeetingList(Map<String, Object> params);
 
-    /**
-     * 线下会议条数
-     */
-    long searchOfflineMeetingCount(Map<String, Object> condition);
 
     /**
      * 更新会议的instanceId
@@ -62,12 +58,7 @@ public interface MeetingDao {
     /**
      * 查询线上会议列表
      */
-    List<Map<String, Object>> searchOnlineMeetingByPage(Map<String, Object> params);
-
-    /**
-     * 查询会议数量
-     */
-    long searchOnlineMeetingCount(Map<String, Object> params);
+    List<Map<String, Object>> searchOnlineMeetingList(Map<String, Object> params);
 
     /**
      * 查询在线会议参会人员信息
