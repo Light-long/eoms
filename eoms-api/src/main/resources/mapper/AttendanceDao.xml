@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tx.eoms.dao.AttendanceDao">
+
+  <select id="isAlreadySignIn" parameterType="HashMap" resultType="Integer">
+      select id
+      from tb_attendance
+      where user_id = #{userId} and date = #{date}
+      and type = 1
+      limit 1
+  </select>
+
+    <insert id="signIn" parameterType="com.tx.eoms.pojo.Attendance" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_attendance
+        set
+            user_id = #{userId},
+            status = #{status},
+            `date` = #{date},
+            create_time = #{createTime},
+            type = 1
+    </insert>
+
+    <select id="searchSignInResult" parameterType="HashMap" resultType="HashMap">
+        select
+            status,
+            DATE_FORMAT(create_time, '%H:%i') as signInTime
+        from tb_attendance
+        where user_id = #{userId} and date = #{date} and type = 1
+        limit 1
+    </select>
+
+    <select id="isAlreadySignOut" parameterType="HashMap" resultType="Integer">
+        select id
+        from tb_attendance
+        where user_id = #{userId} and date = #{date}
+        and type = 2
+        limit 1
+    </select>
+
+    <insert id="signOut" parameterType="com.tx.eoms.pojo.Attendance" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_attendance
+        set
+            user_id = #{userId},
+            status = #{status},
+            `date` = #{date},
+            create_time = #{createTime},
+            type = 2
+    </insert>
+
+    <select id="searchSignOutResult" parameterType="HashMap" resultType="HashMap">
+        select
+            status,
+            DATE_FORMAT(create_time, '%H:%i') as signOutTime
+        from tb_attendance
+        where user_id = #{userId} and date = #{date} and type = 2
+        limit 1
+    </select>
+</mapper>
