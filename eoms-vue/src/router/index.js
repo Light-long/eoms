@@ -26,6 +26,7 @@ import UserInfo from "../views/info/userInfo.vue"
 import Register from "../views/login/register.vue"
 import MailList from "../views/info/mail-list.vue"
 import Meeting from "../views/meeting/meeting.vue"
+import Attendance from "../views/attendance/attendance.vue"
 
 const routes = [
 	{
@@ -182,6 +183,15 @@ const routes = [
 				component: Todo,
 				meta: {
 					title: '我的待办',
+					isTab: true
+				}
+			},
+			{
+				path: '/attendance',
+				name: 'Attendance',
+				component: Attendance,
+				meta: {
+					title: '在线考勤',
 					isTab: true
 				}
 			},
