@@ -81,11 +81,11 @@
                             <li class="list-group-item">
                                 <div style="line-height: 20px; vertical-align: center" align="center">
                                     <el-button
-                                        :disabled="canSignIn.flag === false"
+                                        :disabled="disableSignInBtn"
                                         type="primary"
                                         size="medium"
                                         style="display: block; margin-top: 5px"
-                                        @click="signIn">签到</el-button>
+                                        @click="signIn">{{signInButtonText}}</el-button>
                                 </div>
                             </li>
                         </ul>
@@ -133,20 +133,20 @@
                                     <span>签退结果</span>
                                     <div class="pull-right">
                                         <el-tag v-if="signOutResult === '未签退'" size="small" type="info">{{signOutResult}}</el-tag>
-                                        <el-tag v-if="signInResult === '早退'" size="small" type="danger">{{signOutResult}}</el-tag>
-                                        <el-tag v-if="signInResult === '正常'" size="small" type="success">{{signOutResult}}</el-tag>
-                                        <el-tag v-if="signInResult === '加班'" size="small" type="primary">{{signOutResult}}</el-tag>
+                                        <el-tag v-if="signOutResult === '早退'" size="small" type="danger">{{signOutResult}}</el-tag>
+                                        <el-tag v-if="signOutResult === '正常'" size="small" type="success">{{signOutResult}}</el-tag>
+                                        <el-tag v-if="signOutResult === '加班'" size="small" type="primary">{{signOutResult}}</el-tag>
                                     </div>
                                 </div>
                             </li>
                             <li class="list-group-item">
                                 <div style="line-height: 20px; vertical-align: center" align="center">
                                     <el-button
-                                        :disabled="canSignOut.flag === false"
+                                        :disabled="disableSignOutBtn"
                                         type="primary"
                                         size="medium"
                                         style="display: block; margin-top: 5px"
-                                        @click="">签退</el-button>
+                                        @click="signOut">{{signOutButtonText}}</el-button>
                                 </div>
                             </li>
                         </ul>
@@ -170,10 +170,14 @@
                 address: null,
                 user: {},
                 attendanceTimeMap: {},
-                canSignIn: {},
+                // canSignIn: {},
+                signInButtonText: '签到',
+                disableSignInBtn: false,
                 signInTime: null,
                 signInResult: null,
-                canSignOut: {},
+                // canSignOut: {},
+                signOutButtonText: '签退',
+                disableSignOutBtn: false,
                 signOutTime: null,
                 signOutResult: null
             };
@@ -187,10 +191,10 @@
         created() {
             this.loadUserProfile()
             this.getAllAttendanceTime()
-            this.validCanSignIn()
+            // this.validCanSignIn()
             // 查询签到结果
             this.searchSignInResult()
-            this.validCanSignOut()
+            // this.validCanSignOut()
             // 签退结果
             this.searchSignOutResult()
         },
@@ -210,12 +214,12 @@
                 })
             },
             // 判断是否能签到
-            validCanSignIn: function () {
-                let that = this
-                that.$http('/attendance/validCanSignIn', 'GET', null, true, function (result) {
-                    that.canSignIn = result.result
-                })
-            },
+            // validCanSignIn: function () {
+            //     let that = this
+            //     that.$http('/attendance/validCanSignIn', 'GET', null, true, function (result) {
+            //         that.canSignIn = result.result
+            //     })
+            // },
             // 查询签到结果
             searchSignInResult: function () {
                 let that = this
@@ -229,7 +233,9 @@
                         } else if (info.status === 2) {
                             that.signInResult = '迟到'
                         }
-                        that.signOutTime = info.signInTime
+                        that.signInTime = info.signInTime
+                        that.disableSignInBtn = true
+                        that.signInButtonText = '已签到'
                     }
                 })
             },
@@ -256,12 +262,12 @@
                 })
             },
             // 判断是否能签退
-            validCanSignOut: function () {
-                let that = this
-                that.$http('/attendance/validCanSignOut', 'GET', null, true, function (resp) {
-                    that.canSignOut = resp.result
-                })
-            },
+            // validCanSignOut: function () {
+            //     let that = this
+            //     that.$http('/attendance/validCanSignOut', 'GET', null, true, function (resp) {
+            //         that.canSignOut = resp.result
+            //     })
+            // },
             // 查询签退结果
             searchSignOutResult: function () {
                 let that = this
@@ -277,7 +283,9 @@
                         } else if (info.status === 3) {
                             that.signOutResult = '加班'
                         }
-                        that.signInTime = info.signOutTime
+                        that.signOutTime = info.signOutTime
+                        that.disableSignOutBtn = true
+                        that.signOutButtonText = '已签退'
                     }
                 })
             },
