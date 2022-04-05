@@ -6,10 +6,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.tx.eoms.controller.excel.ExcelExportForm;
-import com.tx.eoms.pojo.excel.DeptExcel;
-import com.tx.eoms.pojo.excel.MailListExcel;
-import com.tx.eoms.pojo.excel.RoleExcel;
-import com.tx.eoms.pojo.excel.UserExcel;
+import com.tx.eoms.pojo.excel.*;
 import com.tx.eoms.util.CommonResult;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +59,15 @@ public class ExcelController {
         String data = form.getData().replaceAll("&quot;", "\"");
         List<DeptExcel> deptList = JSONUtil.parseArray(data).toList(DeptExcel.class);
         EasyExcel.write(fileName, DeptExcel.class).registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).sheet("模板").doWrite(deptList);
+        return CommonResult.ok().put("path", fileName);
+    }
+
+    @PostMapping("/exportAttendanceExcel")
+    public CommonResult exportAttendanceExcel(@Valid @RequestBody ExcelExportForm form) {
+        String fileName = PATH +form.getTitle() + IdUtil.simpleUUID() +".xlsx";
+        String data = form.getData().replaceAll("&quot;", "\"");
+        List<AttendanceExcel> attendanceList = JSONUtil.parseArray(data).toList(AttendanceExcel.class);
+        EasyExcel.write(fileName, AttendanceExcel.class).registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).sheet("模板").doWrite(attendanceList);
         return CommonResult.ok().put("path", fileName);
     }
 }

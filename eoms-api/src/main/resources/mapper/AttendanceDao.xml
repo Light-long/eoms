@@ -82,4 +82,33 @@
         where type = 1 and date = #{date}
     </select>
 
+    <select id="searchAttendanceRecord" parameterType="HashMap" resultType="HashMap">
+        select
+            `date`,
+            `type`,
+            DATE_FORMAT(create_time, '%Y-%m-%d %H:%i') as createTime,
+            `status`
+        from tb_attendance
+        where user_id = #{userId}
+        <if test="date != null">
+            and `date` = #{date}
+        </if>
+        <if test="type != null">
+            and `type` = #{type}
+        </if>
+        order by create_time asc
+        limit #{start}, #{length}
+    </select>
+
+    <select id="searchAttendanceRecordCount" parameterType="HashMap" resultType="long">
+        select count(*)
+        from tb_attendance
+        where user_id = #{userId}
+        <if test="date != null">
+            and `date` = #{date}
+        </if>
+        <if test="type != null">
+            and `type` = #{type}
+        </if>
+    </select>
 </mapper>

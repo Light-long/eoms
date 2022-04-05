@@ -52,5 +52,10 @@ public interface AttendanceDao {
      */
     List<Integer> searchAllSignInUserByDate(Map<String, Object> params);
 
+    /**
+     * 查询个人考勤记录
+     */
+    List<Map<String, Object>> searchAttendanceRecord(Map<String, Object> params);
 
+    long searchAttendanceRecordCount(Map<String, Object> params);
 }

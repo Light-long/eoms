@@ -7,22 +7,25 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONUtil;
 import com.tx.eoms.config.init.SystemConstants;
+import com.tx.eoms.controller.attendance.SearchAttendanceRecordForm;
 import com.tx.eoms.exception.EomsException;
 import com.tx.eoms.pojo.Attendance;
 import com.tx.eoms.service.AttendanceService;
 import com.tx.eoms.service.UserService;
 import com.tx.eoms.util.CommonResult;
+import com.tx.eoms.util.PageUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -211,5 +214,17 @@ public class AttendanceController {
                 - MapUtil.getInt(attendanceInfo, "late");
         attendanceInfo.put("absence", absence);
         return CommonResult.ok().put("attendanceInfo", attendanceInfo);
+    }
+
+    @PostMapping("/searchAttendanceRecord")
+    @Operation(summary = "查询个人所有的考勤记录")
+    @SaCheckLogin
+    public CommonResult searchAttendanceRecord(@Valid @RequestBody SearchAttendanceRecordForm form) {
+        int start = (form.getPage() - 1) * form.getLength();
+        Map<String, Object> params = JSONUtil.parse(form).toBean(Map.class);
+        params.put("start", start);
+        params.put("userId", StpUtil.getLoginIdAsInt());
+        PageUtils page = attendanceService.searchAttendanceRecord(params);
+        return CommonResult.ok().put("page", page);
     }
 }

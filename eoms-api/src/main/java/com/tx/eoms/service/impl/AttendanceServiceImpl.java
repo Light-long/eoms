@@ -7,11 +7,14 @@ import com.tx.eoms.config.init.SystemConstants;
 import com.tx.eoms.dao.AttendanceDao;
 import com.tx.eoms.pojo.Attendance;
 import com.tx.eoms.service.AttendanceService;
+import com.tx.eoms.util.CommonResult;
+import com.tx.eoms.util.PageUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -127,5 +130,17 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public Map<String, Object> searchAttendanceInMonth(Map<String, Object> params) {
         return attendanceDao.searchAttendanceInMonth(params);
+    }
+
+    /**
+     * 查询个人考勤记录
+     */
+    @Override
+    public PageUtils searchAttendanceRecord(Map<String, Object> params) {
+        List<Map<String, Object>> record = attendanceDao.searchAttendanceRecord(params);
+        long count = attendanceDao.searchAttendanceRecordCount(params);
+        int start = MapUtil.getInt(params, "start");
+        int length = MapUtil.getInt(params, "length");
+        return new PageUtils(record, count, start, length);
     }
 }

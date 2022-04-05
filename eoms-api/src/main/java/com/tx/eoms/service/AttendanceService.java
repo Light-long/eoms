@@ -1,7 +1,9 @@
 package com.tx.eoms.service;
 
 import com.tx.eoms.pojo.Attendance;
+import com.tx.eoms.util.PageUtils;
 
+import java.util.List;
 import java.util.Map;
 
 public interface AttendanceService {
@@ -40,4 +42,9 @@ public interface AttendanceService {
      * 查询当月的考勤统计
      */
     Map<String, Object> searchAttendanceInMonth(Map<String, Object> params);
+
+    /**
+     * 查询个人考勤记录
+     */
+    PageUtils searchAttendanceRecord(Map<String, Object> params);
 }

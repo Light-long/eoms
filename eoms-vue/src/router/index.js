@@ -27,6 +27,7 @@ import Register from "../views/login/register.vue"
 import MailList from "../views/info/mail-list.vue"
 import Meeting from "../views/meeting/meeting.vue"
 import Attendance from "../views/attendance/attendance.vue"
+import AttendanceRecord from '../views/attendance/attendanceRecord.vue'
 
 const routes = [
 	{
@@ -192,6 +193,15 @@ const routes = [
 				component: Attendance,
 				meta: {
 					title: '在线考勤',
+					isTab: true
+				}
+			},
+			{
+				path: '/attendanceRecord',
+				name: 'AttendanceRecord',
+				component: AttendanceRecord,
+				meta: {
+					title: '考勤记录',
 					isTab: true
 				}
 			},
