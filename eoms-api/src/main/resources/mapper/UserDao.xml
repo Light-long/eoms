@@ -349,4 +349,10 @@
         set status = #{status}
         where id = #{id}
     </update>
+
+    <select id="searchHiredate" parameterType="Integer" resultType="String">
+        select hiredate
+        from tb_user
+        where id = #{userId} and status = 1
+    </select>
 </mapper>

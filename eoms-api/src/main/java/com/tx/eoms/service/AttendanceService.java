@@ -35,4 +35,9 @@ public interface AttendanceService {
      * 查询签退结果
      */
     Map<String, Object> searchSignOutResult(Map<String, Object> params);
+
+    /**
+     * 查询当月的考勤统计
+     */
+    Map<String, Object> searchAttendanceInMonth(Map<String, Object> params);
 }

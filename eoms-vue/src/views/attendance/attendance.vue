@@ -21,8 +21,9 @@
                                     size="small"
                                     type="primary"
                                     style="float: right;"
+                                    @click="showInfo()"
                                 >
-                                    本月考勤记录
+                                    本月考勤统计
                                 </el-button>
                                 <img :src="user.photo" class="avatar-show" style="margin-left: 10px">
                                 <div style="font-weight: bold; font-size: 15px; margin-top: 10px; margin-bottom: 5px">{{user.deptName}} - {{user.name}}</div>
@@ -155,14 +156,17 @@
             </el-col>
         </el-row>
     </div>
+    <attendance-in-month v-if="infoVisible" ref="info"></attendance-in-month>
 </template>
 
 <script>
     import SvgIcon from "../../components/SvgIcon.vue";
+    import attendanceInMonth from "./attendanceInMonth.vue";
     export default {
         name: "attendance",
         components: {
-            SvgIcon
+            SvgIcon,
+            attendanceInMonth
         },
         data() {
             return {
@@ -179,7 +183,8 @@
                 signOutButtonText: '签退',
                 disableSignOutBtn: false,
                 signOutTime: null,
-                signOutResult: null
+                signOutResult: null,
+                infoVisible: false
             };
         },
         mounted() {
@@ -315,6 +320,12 @@
                     setInterval(() => {
                         that.$router.go(0)
                     }, 500)
+                })
+            },
+            showInfo: function () {
+                this.infoVisible = true
+                this.$nextTick(() => {
+                    this.$refs.info.init();
                 })
             }
         }

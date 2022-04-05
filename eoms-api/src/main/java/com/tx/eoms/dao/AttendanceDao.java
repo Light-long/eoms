@@ -4,6 +4,7 @@ import com.tx.eoms.pojo.Attendance;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -40,4 +41,16 @@ public interface AttendanceDao {
      * 查询签退结果
      */
     Map<String, Object> searchSignOutResult(Map<String, Object> params);
+
+    /**
+     * 查询当月的考勤统计
+     */
+    Map<String, Object> searchAttendanceInMonth(Map<String, Object> params);
+
+    /**
+     * 查询当天签到的用户id
+     */
+    List<Integer> searchAllSignInUserByDate(Map<String, Object> params);
+
+
 }

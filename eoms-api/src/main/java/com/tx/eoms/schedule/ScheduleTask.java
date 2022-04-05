@@ -3,9 +3,11 @@ package com.tx.eoms.schedule;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.date.DateTime;
+import com.tx.eoms.dao.AttendanceDao;
 import com.tx.eoms.dao.TodoDao;
 import com.tx.eoms.dao.UserDao;
 import com.tx.eoms.exception.EomsException;
+import com.tx.eoms.pojo.Attendance;
 import com.tx.eoms.task.MailTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
@@ -13,6 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +32,13 @@ public class ScheduleTask {
     @Resource
     private MailTask mailTask;
 
+    @Resource
+    private AttendanceDao attendanceDao;
+
+    /**
+     * 没分钟执行一次
+     * 判断如果有待办过期了，改变待办的状态
+     */
     @Scheduled(cron = "0 0/1 * * * ?")
     public void autoExpireTodoList() {
         // 查询出所有的结束时间
@@ -49,6 +59,10 @@ public class ScheduleTask {
         }
     }
 
+    /**
+     * 没分钟执行一次
+     * 判断如果有待办开始了，则给该用户发送一封邮件
+     */
     @Scheduled(cron = "0 0/1 * * * ?")
     public void sendStartEmail() {
         // 查询所有的开始时间
@@ -80,6 +94,42 @@ public class ScheduleTask {
                 }
             } else {
                 log.info("暂无开始的待办");
+            }
+        }
+    }
+
+    /**
+     * 每天晚上23:59分执行
+     * 如果签到了，没有签退 ，则生成一条 早退的考勤
+     */
+    @Scheduled(cron = "0 59 23 * * ?")
+    public void addLeaveEarlyAttendance() {
+        // 查询今天所有的签到用户id
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", DateUtil.today());
+        List<Integer> ids = attendanceDao.searchAllSignInUserByDate(params);
+        // 判断这些签到有没有签退
+        for (Integer id : ids) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("date", DateUtil.today());
+            map.put("userId", id);
+            // 没有签退，则添加早退的考勤
+            if (attendanceDao.isAlreadySignOut(map) == null) {
+                // 生成 早退的考勤
+                Attendance attendance = Attendance.builder()
+                        .userId(id)
+                        .createTime(DateUtil.date())
+                        .date(DateUtil.today())
+                        .status((byte) 2)
+                        .build();
+                Integer row = attendanceDao.signOut(attendance);
+                if (row == 1) {
+                    log.info("给id为" + id + "的用户生成了早退的考勤");
+                } else {
+                    log.error("给id为" + id + "的用户生成了早退的考勤失败");
+                }
+            } else {
+                log.info("id为" + id + "的用户已经完成了签到和签退");
             }
         }
     }

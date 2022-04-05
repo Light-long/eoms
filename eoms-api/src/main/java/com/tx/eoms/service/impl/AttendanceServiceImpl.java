@@ -120,4 +120,12 @@ public class AttendanceServiceImpl implements AttendanceService {
     public Map<String, Object> searchSignOutResult(Map<String, Object> params) {
         return attendanceDao.searchSignOutResult(params);
     }
+
+    /**
+     * 查询当月的考勤统计
+     */
+    @Override
+    public Map<String, Object> searchAttendanceInMonth(Map<String, Object> params) {
+        return attendanceDao.searchAttendanceInMonth(params);
+    }
 }

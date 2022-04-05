@@ -55,4 +55,31 @@
         where user_id = #{userId} and date = #{date} and type = 2
         limit 1
     </select>
+
+    <select id="searchAttendanceInMonth" parameterType="HashMap" resultType="HashMap">
+        select
+            (select count(*) from tb_attendance
+            where `type` = 1 and `status` = 1 and user_id = #{userId}
+            and `date` between #{startDate} and #{endDate}) as successSignIn,
+            (select count(*) from tb_attendance
+            where `type` = 1 and `status` = 2 and user_id = #{userId}
+            and `date` between #{startDate} and #{endDate}) as late,
+            (select count(*) from tb_attendance
+            where `type` = 2 and `status` = 1 and user_id = #{userId}
+            and `date` between #{startDate} and #{endDate}) as successSignOut,
+            (select count(*) from tb_attendance
+            where `type` = 2 and `status` = 2 and user_id = #{userId}
+            and `date` between #{startDate} and #{endDate}) as leaveEarly,
+            (select count(*) from tb_attendance
+            where `type` = 2 and `status` = 3 and user_id = #{userId}
+            and `date` between #{startDate} and #{endDate}) as workOverTime
+    </select>
+
+    <select id="searchAllSignInUserByDate" parameterType="HashMap" resultType="Integer">
+        select
+            user_id as userId
+        from tb_attendance
+        where type = 1 and date = #{date}
+    </select>
+
 </mapper>

@@ -2,12 +2,16 @@ package com.tx.eoms.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import com.tx.eoms.config.init.SystemConstants;
+import com.tx.eoms.exception.EomsException;
 import com.tx.eoms.pojo.Attendance;
 import com.tx.eoms.service.AttendanceService;
+import com.tx.eoms.service.UserService;
 import com.tx.eoms.util.CommonResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +36,9 @@ public class AttendanceController {
 
     @Resource
     private SystemConstants systemConstants;
+
+    @Resource
+    private UserService userService;
 
     @GetMapping("/getAllAttendanceTime")
     @Operation(summary = "查询系统设置的考勤打卡时间")
@@ -163,5 +171,45 @@ public class AttendanceController {
         params.put("date", DateUtil.today());
         Map<String, Object> result = attendanceService.searchSignOutResult(params);
         return CommonResult.ok().put("info", result);
+    }
+
+    @GetMapping("/searchAttendanceInMonth")
+    @Operation(summary = "查询本月的考勤统计")
+    @SaCheckLogin
+    public CommonResult searchAttendanceInMonth() {
+        // 当前年月
+        Date date = new Date();
+        int year = DateUtil.year(date);
+        int thisMonth = DateUtil.month(date) + 1;
+        // 将月份转换成两位数
+        String month = thisMonth < 10 ? "0" + thisMonth : thisMonth+"";
+        System.out.println(year + "-"+ month);
+        // 查询入职日期
+        DateTime hiredate = DateUtil.parse(userService.searchHiredate(StpUtil.getLoginIdAsInt()));
+        // 查询这个月的第一天
+        DateTime startDate = DateUtil.parse(year + "-" + month + "-01");
+        // 如果查询的这个月，早于入职当月，抛异常
+        if (startDate.isBefore(DateUtil.beginOfMonth(hiredate))) {
+            throw new EomsException("还没入职，没有签到数据");
+        }
+        // 从入职月的入职日期开始算
+        if (startDate.isBefore(hiredate)) {
+            startDate = hiredate;
+        }
+        // 查询今天的前一天
+        DateTime endDate = DateUtil.endOfMonth(startDate);
+        if (DateUtil.date().isBefore(endDate)) {
+            endDate = DateUtil.date().offset(DateField.DAY_OF_MONTH, -1);
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", StpUtil.getLoginIdAsInt());
+        params.put("startDate", DateUtil.formatDate(startDate));
+        params.put("endDate", DateUtil.formatDate(endDate));
+        Map<String, Object> attendanceInfo =  attendanceService.searchAttendanceInMonth(params);
+        long absence = DateUtil.between(startDate, endDate, DateUnit.DAY) + 1
+                - MapUtil.getInt(attendanceInfo, "successSignIn")
+                - MapUtil.getInt(attendanceInfo, "late");
+        attendanceInfo.put("absence", absence);
+        return CommonResult.ok().put("attendanceInfo", attendanceInfo);
     }
 }

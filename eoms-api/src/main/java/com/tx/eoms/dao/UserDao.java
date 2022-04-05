@@ -143,4 +143,9 @@ public interface UserDao {
      * 更改用户状态
      */
     int updateUserStatus(Map<String, Object> params);
+
+    /**
+     * 查询用户入职日期
+     */
+    String searchHiredate(int userId);
 }
