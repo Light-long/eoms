@@ -53,8 +53,9 @@
 				</el-card>
 			</el-col>
 			<el-col :span="12" :xs="24">
-				<!--echarts-->
 				<el-card class="box-card">
+					<!--echarts-->
+					<div class="chart" id="chart" style="height: 310px; width: 310px"></div>
 				</el-card>
 			</el-col>
 		</el-row>
@@ -67,6 +68,7 @@
 </template>
 
 <script>
+	import $ from 'jquery';
 	import SvgIcon from "../../components/SvgIcon.vue";
 export default {
 	components: {
@@ -93,6 +95,68 @@ export default {
 			that.$nextTick(() => {
 				that.$http('/attendance/searchAttendanceInMonth', 'GET', null, true, function (resp) {
 					that.attendanceInfo = resp.attendanceInfo
+					// 生成echarts
+					let option = {
+						title: {
+							show: false,
+							text: '暂无数据',
+							left: 'center',
+							top: 'center',
+							textStyle: {
+								color: 'pink',
+								fontSize: 16,
+								fontWeight: 400
+							}
+						},
+						tooltip: {
+							trigger: 'item'
+						},
+						legend: {
+							top: '5%',
+							left: 'center'
+						},
+						series: [
+							{
+								name: '当月考勤统计图',
+								type: 'pie',
+								radius: ['40%', '70%'],
+								avoidLabelOverlap: false,
+								label: {
+									show: false,
+									position: 'center'
+								},
+								emphasis: {
+									label: {
+										show: true,
+										fontSize: '30',
+										fontWeight: 'bold'
+									}
+								},
+								labelLine: {
+									show: false
+								},
+								data: [
+									{ value: that.attendanceInfo.successSignIn, name: '正常签到' },
+									{ value: that.attendanceInfo.late, name: '迟到' },
+									{ value: that.attendanceInfo.leaveEarly, name: '早退' },
+									{ value: that.attendanceInfo.successSignOut, name: '正常签退' },
+									{ value: that.attendanceInfo.workOverTime, name: '加班' },
+									{ value: that.attendanceInfo.absence, name: '缺勤' }
+								]
+							}
+						]
+					};
+					let myChart;
+					if (that.attendanceInfo.length === 0) {
+						option.title.show = true;
+						myChart = that.$echarts.init($('#chart')[0]);
+						myChart.setOption(option);
+					} else {
+						option.title.show = true;
+						option.title.text = ''
+						myChart = that.$echarts.init($('#chart')[0]);
+						myChart.setOption(option);
+					}
 				})
 			})
 		}
@@ -101,4 +165,8 @@ export default {
 </script>
 
 <style lang="less" scoped="scoped">
+	.chart{
+		background-color: #fff;
+		height: 300px;
+	}
 </style>
