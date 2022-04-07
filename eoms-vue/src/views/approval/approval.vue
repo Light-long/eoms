@@ -2,25 +2,25 @@
 	<div v-if="isAuth(['ROOT', 'WORKFLOW:APPROVAL', 'FILE:ARCHIVE'])">
 		<div align="center">
 			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="searchHandle()">
-				<el-form-item prop="creatorName">
-					<el-input v-model="dataForm.creatorName" size="medium" placeholder="申请人" clearable="clearable" />
+				<el-form-item prop="creatorName" label="申请人">
+					<el-input v-model="dataForm.creatorName" size="small" placeholder="申请人" clearable="clearable" />
 				</el-form-item>
-				<el-form-item prop="type">
-					<el-select v-model="dataForm.type" placeholder="类别" size="medium" clearable="clearable">
+				<el-form-item prop="type" label="申请类别">
+					<el-select v-model="dataForm.type" placeholder="类别" size="small" clearable="clearable">
 						<el-option label="会议申请" value="会议申请"></el-option>
 						<el-option label="员工请假" value="员工请假"></el-option>
 						<el-option label="报销申请" value="报销申请"></el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item prop="instanceId">
-					<el-input v-model="dataForm.instanceId" size="medium" placeholder="实例编号" clearable="clearable" />
+				<el-form-item prop="instanceId" label="实例ID">
+					<el-input v-model="dataForm.instanceId" size="small" placeholder="实例编号" clearable="clearable" />
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" size="medium" @click="searchHandle()">查询</el-button>
-					<el-button type="common" size="medium" @click="reset">重置</el-button>
+					<el-button type="primary" size="small" @click="searchHandle()">查询</el-button>
+					<el-button type="common" size="small" @click="reset">重置</el-button>
 				</el-form-item>
 				<el-form-item class="mold">
-					<el-radio-group v-model="dataForm.status" size="medium" @change="searchHandle()">
+					<el-radio-group v-model="dataForm.status" size="small" @change="searchHandle()">
 						<el-radio-button label="待审批"></el-radio-button>
 						<el-radio-button label="已审批"></el-radio-button>
 						<el-radio-button label="已结束"></el-radio-button>
@@ -29,6 +29,7 @@
 			</el-form>
 		</div>
 		<el-table
+			:header-cell-style="{background:'#eef1f6',color:'#606266'}"
 			ref="approvalTable"
 			:data="dataList"
 			border="border"
