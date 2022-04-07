@@ -1,38 +1,40 @@
 <template>
     <div class="app-container">
-        <el-form :model="dataForm" ref="dataForm" :inline="true" label-width="68px" :rules="dataRule">
-            <el-form-item>
-                <el-select
-                        v-model="dataForm.deptId"
-                        class="input"
-                        placeholder="部门名称"
-                        size="small"
-                        clearable="clearable"
-                >
-                    <el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
-                </el-select>
-            </el-form-item>
-            <el-form-item prop="name">
-                <el-input
-                        v-model="dataForm.name"
-                        placeholder="姓名"
-                        size="small"
-                        class="input"
-                        clearable="clearable"
-                        @keyup.enter.native="searchHandle"
-                />
-            </el-form-item>
-            <el-form-item>
-                <el-select v-model="dataForm.sex" class="input" placeholder="性别" size="small" clearable="clearable">
-                    <el-option label="男" value="男" />
-                    <el-option label="女" value="女" />
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
-                <el-button icon="el-icon-refresh" size="mini" @click="reset">重置</el-button>
-            </el-form-item>
-        </el-form>
+        <div align="center">
+            <el-form :model="dataForm" ref="dataForm" :inline="true" :rules="dataRule">
+                <el-form-item label="部门名称">
+                    <el-select
+                            v-model="dataForm.deptId"
+                            class="input"
+                            placeholder="部门名称"
+                            size="small"
+                            clearable="clearable"
+                    >
+                        <el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item prop="name" label="姓名">
+                    <el-input
+                            v-model="dataForm.name"
+                            placeholder="姓名"
+                            size="small"
+                            class="input"
+                            clearable="clearable"
+                            @keyup.enter.native="searchHandle"
+                    />
+                </el-form-item>
+                <el-form-item label="性别">
+                    <el-select v-model="dataForm.sex" class="input" placeholder="性别" size="small" clearable="clearable">
+                        <el-option label="男" value="男" />
+                        <el-option label="女" value="女" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
+                    <el-button icon="el-icon-refresh" size="mini" @click="reset">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
 
         <el-row :gutter="15" class="mb8" style="margin-bottom: 10px">
             <el-col :span="1.5">

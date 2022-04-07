@@ -1,21 +1,23 @@
 <template>
 	<div class="app-container" v-if="isAuth(['ROOT', 'DEPT:SELECT'])">
-		<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm" label-width="85px">
-			<el-form-item prop="deptName" label="部门名称">
-				<el-input
-					v-model="dataForm.deptName"
-					placeholder="部门名称"
-					size="small"
-					class="input"
-					clearable="clearable"
-					@keyup.enter.native="searchHandle"
-				/>
-			</el-form-item>
-			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
-				<el-button icon="el-icon-refresh" size="mini" @click="resetForm">重置</el-button>
-			</el-form-item>
-		</el-form>
+		<div align="center">
+			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm" label-width="85px">
+				<el-form-item prop="deptName" label="部门名称">
+					<el-input
+							v-model="dataForm.deptName"
+							placeholder="部门名称"
+							size="small"
+							class="input"
+							clearable="clearable"
+							@keyup.enter.native="searchHandle"
+					/>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
+					<el-button icon="el-icon-refresh" size="mini" @click="resetForm">重置</el-button>
+				</el-form-item>
+			</el-form>
+		</div>
 
 		<!--按钮-->
 		<el-row :gutter="15" class="mb8" style="margin-bottom: 10px">

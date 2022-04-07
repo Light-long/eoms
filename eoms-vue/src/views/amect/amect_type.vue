@@ -1,28 +1,30 @@
 <template>
 	<div class="app-container" v-if="isAuth(['ROOT'])">
 		<!--查询表单-->
-		<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm" label-width="80px">
-			<el-form-item prop="type" label="罚款类型">
-				<el-input
-						v-model="dataForm.type"
-						placeholder="类型名称"
-						size="small"
-						class="input"
-						clearable="clearable"
-						@keyup.enter.native="searchHandle"
-				/>
-			</el-form-item>
-			<el-form-item label="是否内置" prop="systemic">
-				<el-select v-model="dataForm.systemic" placeholder="是否内置" clearable size="small">
-					<el-option label="是" value="1"></el-option>
-					<el-option label="否" value="0"></el-option>
-				</el-select>
-			</el-form-item>
-			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
-				<el-button icon="el-icon-refresh" size="mini" @click="reset">重置</el-button>
-			</el-form-item>
-		</el-form>
+		<div align="center">
+			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm" label-width="80px">
+				<el-form-item prop="type" label="罚款类型">
+					<el-input
+							v-model="dataForm.type"
+							placeholder="类型名称"
+							size="small"
+							class="input"
+							clearable="clearable"
+							@keyup.enter.native="searchHandle"
+					/>
+				</el-form-item>
+				<el-form-item label="是否内置" prop="systemic">
+					<el-select v-model="dataForm.systemic" placeholder="是否内置" clearable size="small">
+						<el-option label="是" value="1"></el-option>
+						<el-option label="否" value="0"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
+					<el-button icon="el-icon-refresh" size="mini" @click="reset">重置</el-button>
+				</el-form-item>
+			</el-form>
+		</div>
 
 		<!--按钮-->
 		<el-row :gutter="15" class="mb8" style="margin-bottom: 10px">

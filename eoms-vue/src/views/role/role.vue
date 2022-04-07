@@ -1,8 +1,9 @@
 <template>
     <div class="app-container" v-if="isAuth(['ROOT', 'ROLE:SELECT'])">
         <!--查询表单-->
-        <el-form :model="dataForm" ref="dataForm" :inline="true" :rules="dataRule" label-width="85px">
-            <el-form-item label="角色名称"  prop="roleName">
+        <div align="center">
+            <el-form :model="dataForm" ref="dataForm" :inline="true" :rules="dataRule" label-width="85px">
+                <el-form-item label="角色名称"  prop="roleName">
                     <el-input
                             v-model="dataForm.roleName"
                             placeholder="角色名称"
@@ -12,11 +13,12 @@
                             @keyup.enter.native="searchHandle"
                     />
                 </el-form-item>
-            <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
-                <el-button icon="el-icon-refresh" size="mini" @click="resetForm">重置</el-button>
-            </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
+                    <el-button icon="el-icon-refresh" size="mini" @click="resetForm">重置</el-button>
+                </el-form-item>
             </el-form>
+        </div>
         <!--按钮-->
         <el-row :gutter="15" class="mb8" style="margin-bottom: 10px">
             <el-col :span="1.5">

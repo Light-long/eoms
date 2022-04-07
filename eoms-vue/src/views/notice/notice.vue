@@ -1,36 +1,38 @@
 <template>
     <div class="app-container">
-        <el-form :model="dataForm" ref="dataForm" :inline="true" label-width="68px">
-            <el-form-item label="公告标题" prop="title">
-                <el-input
-                        v-model="dataForm.title"
-                        placeholder="请输入公告标题"
-                        clearable
-                        size="small"
-                        @keyup.enter.native="searchHandle"
-                />
-            </el-form-item>
-            <el-form-item label="更新时间" prop="updateTime" >
-                <el-date-picker
-                        v-model="dataForm.updateTime"
-                        style="width: 200px;"
-                        type="date"
-                        size="small"
-                        placeholder="请选择日期"
-                        clearable="clearable"
-                ></el-date-picker>
-            </el-form-item>
-            <el-form-item label="公告状态" prop="status">
-                <el-select v-model="dataForm.status" placeholder="公告状态" clearable size="small">
-                    <el-option label="关闭" value="0"></el-option>
-                    <el-option label="正常" value="1"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
-                <el-button icon="el-icon-refresh" size="mini" @click="reset">重置</el-button>
-            </el-form-item>
-        </el-form>
+        <div align="center">
+            <el-form :model="dataForm" ref="dataForm" :inline="true" label-width="68px">
+                <el-form-item label="公告标题" prop="title">
+                    <el-input
+                            v-model="dataForm.title"
+                            placeholder="请输入公告标题"
+                            clearable
+                            size="small"
+                            @keyup.enter.native="searchHandle"
+                    />
+                </el-form-item>
+                <el-form-item label="更新时间" prop="updateTime" >
+                    <el-date-picker
+                            v-model="dataForm.updateTime"
+                            style="width: 200px;"
+                            type="date"
+                            size="small"
+                            placeholder="请选择日期"
+                            clearable="clearable"
+                    ></el-date-picker>
+                </el-form-item>
+                <el-form-item label="公告状态" prop="status">
+                    <el-select v-model="dataForm.status" placeholder="公告状态" clearable size="small">
+                        <el-option label="关闭" value="0"></el-option>
+                        <el-option label="正常" value="1"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
+                    <el-button icon="el-icon-refresh" size="mini" @click="reset">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
 
         <el-row :gutter="15" class="mb8" style="margin-bottom: 10px">
             <el-col :span="1.5">
