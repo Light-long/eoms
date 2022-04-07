@@ -78,7 +78,7 @@
         select count(*)
         from tb_leave
         where user_id = #{userId} and `status` != 2
-        and (#{start} between `start` and `end`) or (#{end} between `start` and `end`)
+        and ((#{start} between `start` and `end`) or (#{end} between `start` and `end`))
     </select>
 
     <insert id="AddLeave" parameterType="com.tx.eoms.pojo.Leave" useGeneratedKeys="true" keyProperty="id">

@@ -1,51 +1,52 @@
 <template>
 	<div class="app-container" v-if="isAuth(['ROOT', 'USER:SELECT'])">
-		<el-form :model="dataForm" ref="dataForm" :inline="true" :rules="dataRule" label-width="63px">
-			<el-form-item label="部门"  prop="deptId" v-if="isAuth(['ROOT'])">
-				<el-select
-						v-model="dataForm.deptId"
-						class="input"
-						placeholder="部门"
-						size="small"
-						clearable="clearable"
-				>
-					<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
-				</el-select>
-			</el-form-item>
-			<el-form-item label="姓名" prop="name">
-				<el-input
-						v-model="dataForm.name"
-						placeholder="姓名"
-						clearable
-						size="small"
-						@keyup.enter.native="searchHandle"
-				/>
-			</el-form-item>
-			<el-form-item label="性别" prop="sex">
-				<el-select v-model="dataForm.sex" class="input" placeholder="性别" size="small" clearable="clearable">
-					<el-option label="男" value="男" />
-					<el-option label="女" value="女" />
-				</el-select>
-			</el-form-item>
-			<el-form-item label="角色" prop="role" v-if="isAuth(['ROOT'])">
-				<el-select v-model="dataForm.role" class="input" placeholder="角色" size="small" clearable="clearable">
-					<el-option v-for="one in roleList" :label="one.roleName" :value="one.roleName" />
-				</el-select>
-			</el-form-item>
-			<el-form-item label="状态" prop="status">
-				<el-select
-						v-model="dataForm.status"
-						class="input"
-						placeholder="状态"
-						size="small"
-						clearable="clearable"
-				>
-					<el-option label="正常" value="1" />
-					<el-option label="停用" value="2" />
-				</el-select>
-			</el-form-item>
-		</el-form>
-
+		<div align="center">
+			<el-form :model="dataForm" ref="dataForm" :inline="true" :rules="dataRule" label-width="63px">
+				<el-form-item label="部门"  prop="deptId" v-if="isAuth(['ROOT'])">
+					<el-select
+							v-model="dataForm.deptId"
+							class="input"
+							placeholder="部门"
+							size="small"
+							clearable="clearable"
+					>
+						<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
+					</el-select>
+				</el-form-item>
+				<el-form-item label="姓名" prop="name">
+					<el-input
+							v-model="dataForm.name"
+							placeholder="姓名"
+							clearable
+							size="small"
+							@keyup.enter.native="searchHandle"
+					/>
+				</el-form-item>
+				<el-form-item label="性别" prop="sex">
+					<el-select v-model="dataForm.sex" class="input" placeholder="性别" size="small" clearable="clearable">
+						<el-option label="男" value="男" />
+						<el-option label="女" value="女" />
+					</el-select>
+				</el-form-item>
+				<el-form-item label="角色" prop="role" v-if="isAuth(['ROOT'])">
+					<el-select v-model="dataForm.role" class="input" placeholder="角色" size="small" clearable="clearable">
+						<el-option v-for="one in roleList" :label="one.roleName" :value="one.roleName" />
+					</el-select>
+				</el-form-item>
+				<el-form-item label="状态" prop="status">
+					<el-select
+							v-model="dataForm.status"
+							class="input"
+							placeholder="状态"
+							size="small"
+							clearable="clearable"
+					>
+						<el-option label="正常" value="1" />
+						<el-option label="停用" value="2" />
+					</el-select>
+				</el-form-item>
+			</el-form>
+		</div>
 		<el-row :gutter="15" class="mb8" style="margin-bottom: 10px">
 			<el-col :span="1.5">
 				<el-button

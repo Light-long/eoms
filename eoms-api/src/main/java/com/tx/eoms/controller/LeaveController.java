@@ -13,6 +13,7 @@ import com.tx.eoms.controller.leave.SearchLeaveInfoByIdForm;
 import com.tx.eoms.exception.EomsException;
 import com.tx.eoms.pojo.Leave;
 import com.tx.eoms.service.LeaveService;
+import com.tx.eoms.service.UserService;
 import com.tx.eoms.util.CommonResult;
 import com.tx.eoms.util.PageUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +38,9 @@ public class LeaveController {
     @Resource
     private LeaveService leaveService;
 
+    @Resource
+    private UserService userService;
+
     @PostMapping("/searchLeaveByPage")
     @Operation(summary = "查询请假分页数据")
     @SaCheckLogin
@@ -45,9 +49,18 @@ public class LeaveController {
         int start = (form.getPage() - 1) * form.getLength();
         condition.put("start", start);
         condition.put("myId", StpUtil.getLoginIdAsInt());
-        // 没有LEAVE：SELECT 或者 ROOT 权限，只能查到自己的请假数据
-        if (!(StpUtil.hasPermission("ROOT") || StpUtil.hasPermission("LEAVE:SELECT"))) {
-            condition.put("userId", StpUtil.getLoginIdAsInt());
+        // ROOT 能查到所有的请假记录
+
+        if (!StpUtil.hasPermission("ROOT")) {
+            // 拥有LEAVE：SELECT 的部门经理只能查到自己部门的请假记录
+            if (StpUtil.hasPermission("LEAVE:SELECT")) {
+                // 查询该部门的部门id
+                int deptId = userService.searchDeptIdByUid(StpUtil.getLoginIdAsInt());
+                condition.put("deptId", deptId);
+                // 普通用户只能查到自己的请假记录
+            } else {
+                condition.put("userId", StpUtil.getLoginIdAsInt());
+            }
         }
         PageUtils page = leaveService.searchLeaveByPage(condition);
         return CommonResult.ok().put("page", page);

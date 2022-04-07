@@ -75,6 +75,7 @@
                 <el-table-column header-align="center" align="center" width="150" label="操作" min-width="120">
                     <template #default="scope">
                         <el-button
+                                icon="el-icon-circle-check"
                                 type="text"
                                 size="medium"
                                 :disabled=" !(new Date().getTime() > new Date(scope.row.start).getTime() && new Date().getTime() < new Date(scope.row.end).getTime())
@@ -84,6 +85,7 @@
                             完成
                         </el-button>
                         <el-button
+                                icon="el-icon-delete"
                                 type="text"
                                 size="medium"
                                 :disabled="scope.row.status === '已完成' || scope.row.status === '已过期'"
