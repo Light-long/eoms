@@ -3,22 +3,22 @@
         <!--条件表单-->
         <div align="center">
             <el-form :inline="true" :model="dataForm" ref="dataForm">
-                <el-form-item>
+                <el-form-item prop="date" label="待办日期">
                     <el-date-picker
                             v-model="dataForm.date"
                             style="width: 200px;"
                             type="date"
-                            size="medium"
+                            size="small"
                             placeholder="请选择日期"
                             clearable="clearable"
                     ></el-date-picker>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item prop="status" label="状态">
                     <el-select
                         v-model="dataForm.status"
                         class="input"
                         placeholder="完成状态"
-                        size="medium"
+                        size="small"
                         clearable="clearable"
                     >
                         <el-option label="待完成" value="1"></el-option>
@@ -27,22 +27,28 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" size="medium" @click="searchHandle()">查询</el-button>
-                    <el-button type="common" size="medium" @click="reset()">重置</el-button>
-                    <el-button type="success" size="medium" @click="addHandle()">添加待办</el-button>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
+                    <el-button icon="el-icon-refresh" size="mini" @click="reset">重置</el-button>
                 </el-form-item>
             </el-form>
         </div>
+
+        <!--按钮-->
+        <el-row :gutter="15" class="mb8" style="margin-bottom: 10px">
+            <el-col :span="1.5">
+                <el-button
+                        type="success"
+                        plain
+                        icon="el-icon-plus"
+                        size="mini"
+                        @click="addHandle()"
+                >添加待办</el-button>
+            </el-col>
+        </el-row>
+
         <!--表格-->
         <div v-show="mold === 'table'">
-            <el-table
-                    :data="dataList"
-                    border="border"
-                    v-loading="dataListLoading"
-                    cell-style="padding: 4px 0"
-                    style="width: 100%;"
-                    size="medium"
-            >
+            <el-table v-loading="dataListLoading" :data="dataList" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
                 <el-table-column type="index" header-align="center" align="center" width="60" label="序号">
                     <template #default="scope">
                         <span>{{ (pageIndex - 1) * pageSize + scope.$index + 1 }}</span>
@@ -99,7 +105,12 @@
             ></el-pagination>
         </div>
         <div v-show="mold === 'timeline'">
-            <el-timeline>
+            <div v-if="dataList.length === 0">
+                <el-card shadow="none" class="box-card">
+                    <div align="center">暂无数据</div>
+                </el-card>
+            </div>
+            <el-timeline v-if="dataList.length !== 0">
                 <el-timeline-item
                         v-for="(data, index) in dataList"
                         :key="index"
@@ -141,7 +152,11 @@
                 },
                 dataList: [],
                 addVisible: false,
-                mold: 'table'
+                mold: 'table',
+                // 非单个禁用
+                single: true,
+                // 非多个禁用
+                multiple: true
             }
         },
         created: function() {
@@ -197,23 +212,23 @@
             },
             searchHandle: function() {
                 let that = this
-                if (this.dataForm.date == null || this.dataForm.date === '') {
-                    this.$refs['dataForm'].validate(valid => {
+                if (that.dataForm.date == null || that.dataForm.date === '') {
+                    that.$refs['dataForm'].validate(valid => {
                         if (valid) {
-                            this.$refs['dataForm'].clearValidate()
-                            if (this.pageIndex !== 1) {
-                                this.pageIndex = 1
+                            that.$refs['dataForm'].clearValidate()
+                            if (that.pageIndex !== 1) {
+                                that.pageIndex = 1
                             }
-                            this.loadDataList()
-                            this.mold = 'table'
+                            that.loadDataList()
+                            that.mold = 'table'
                         } else {
                             return false
                         }
                     })
                 } else {
-                    this.$refs['dataForm'].validate(valid => {
+                    that.$refs['dataForm'].validate(valid => {
                         if (valid) {
-                            this.$refs['dataForm'].clearValidate()
+                            that.$refs['dataForm'].clearValidate()
                             // 查询出这个日期的全部待办事项，以时间线表示
                             let data = {
                                 date: dayjs(that.dataForm.date).format("YYYY-MM-DD"),
