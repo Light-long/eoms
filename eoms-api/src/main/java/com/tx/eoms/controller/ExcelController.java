@@ -70,4 +70,13 @@ public class ExcelController {
         EasyExcel.write(fileName, AttendanceExcel.class).registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).sheet("模板").doWrite(attendanceList);
         return CommonResult.ok().put("path", fileName);
     }
+
+    @PostMapping("/exportAmectExcel")
+    public CommonResult exportAmectExcel(@Valid @RequestBody ExcelExportForm form) {
+        String fileName = PATH +form.getTitle() + IdUtil.simpleUUID() +".xlsx";
+        String data = form.getData().replaceAll("&quot;", "\"");
+        List<AmectExcel> amectList = JSONUtil.parseArray(data).toList(AmectExcel.class);
+        EasyExcel.write(fileName, AmectExcel.class).registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).sheet("模板").doWrite(amectList);
+        return CommonResult.ok().put("path", fileName);
+    }
 }

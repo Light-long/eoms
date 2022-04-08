@@ -1,41 +1,42 @@
 <template>
 	<div>
 		<div align="center">
-			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
-				<el-form-item>
+			<el-form :inline="true" :model="dataForm" ref="dataForm">
+				<el-form-item label="部门">
 					<el-select
 							v-model="dataForm.deptId"
 							class="input"
-							placeholder="部门"
-							size="medium"
+							placeholder="部门名称"
+							size="small"
 							clearable="clearable"
 					>
 						<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
 					</el-select>
 				</el-form-item>
-				<el-form-item>
+				<el-form-item label="类型">
 					<el-select
 							v-model="dataForm.typeId"
 							class="input"
 							placeholder="罚款类型"
-							size="medium"
+							size="small"
 							clearable="clearable"
 					>
 						<el-option v-for="one in amectTypeList" :label="one.type" :value="one.id" />
 					</el-select>
 				</el-form-item>
-				<el-form-item>
+				<el-form-item label="时间区间">
 					<el-date-picker
 							v-model="dataForm.date"
 							type="daterange"
 							range-separator="~"
 							start-placeholder="开始日期"
 							end-placeholder="结束日期"
-							size="medium"
+							size="small"
 					></el-date-picker>
 				</el-form-item>
 				<el-form-item>
-					<el-button size="medium" type="primary" @click="searchHandle()">生成报表</el-button>
+					<el-button size="small" type="primary" @click="searchHandle()">生成报表</el-button>
+					<el-button size="small" type="common" @click="reset">重置</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -357,6 +358,10 @@ export default {
 					return false;
 				}
 			});
+		},
+		reset: function () {
+			this.dataForm = {}
+			this.loadDataList();
 		}
 	},
 	created: function() {

@@ -1,35 +1,33 @@
 <template>
 	<div>
-		<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
-			<div align="center">
-				<el-form-item prop="name">
+		<div align="center">
+			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
+				<el-form-item v-if="isAuth(['ROOT'])">
+					<el-select
+							v-model="dataForm.deptId"
+							class="input"
+							placeholder="部门名称"
+							size="small"
+							clearable="clearable"
+					>
+						<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
+					</el-select>
+				</el-form-item>
+				<el-form-item prop="name" v-if="isAuth(['ROOT', 'AMECT:SELECT'])">
 					<el-input
 							v-model="dataForm.name"
 							placeholder="姓名"
-							:disabled="!isAuth(['ROOT', 'AMECT:SELECT'])"
-							size="medium"
+							size="small"
 							class="input"
 							clearable="clearable"
 					/>
 				</el-form-item>
 				<el-form-item>
 					<el-select
-							v-model="dataForm.deptId"
-							class="input"
-							placeholder="部门"
-							:disabled="!isAuth(['ROOT', 'AMECT:SELECT'])"
-							size="medium"
-							clearable="clearable"
-					>
-						<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
-					</el-select>
-				</el-form-item>
-				<el-form-item>
-					<el-select
 							v-model="dataForm.typeId"
 							class="input"
 							placeholder="罚款类型"
-							size="medium"
+							size="small"
 							clearable="clearable"
 					>
 						<el-option v-for="one in amectTypeList" :label="one.type" :value="one.id" />
@@ -42,53 +40,80 @@
 							range-separator="~"
 							start-placeholder="开始日期"
 							end-placeholder="结束日期"
-							size="medium"
+							size="small"
 					></el-date-picker>
 				</el-form-item>
 				<el-form-item>
 					<el-select
 							v-model="dataForm.status"
 							class="input"
-							placeholder="状态"
-							size="medium"
+							placeholder="缴纳状态"
+							size="small"
 							clearable="clearable"
 					>
 						<el-option label="未缴纳" value="1" />
 						<el-option label="已缴纳" value="2" />
 					</el-select>
 				</el-form-item>
-			</div>
-			<div align="center">
-				<el-form-item>
-					<el-button size="medium" type="primary" @click="searchHandle()">查询</el-button>
-					<el-button size="medium" type="common" @click="reset">重置</el-button>
-					<el-button
-							size="medium"
-							type="success"
-							:disabled="!isAuth(['ROOT', 'AMECT:INSERT'])"
-							@click="addHandle()"
-					>
-						新增
-					</el-button>
-					<el-button
-							size="medium"
-							type="danger"
-							:disabled="!isAuth(['ROOT', 'AMECT:DELETE'])"
-							@click="deleteHandle()"
-					>
-						批量删除
-					</el-button>
-					<el-button
-							size="medium"
-							type="warning"
-							@click="reportHandle()"
-							v-if="isAuth(['ROOT', 'AMECT:SELECT'])"
-					>
-						查看报告
-					</el-button>
-				</el-form-item>
-			</div>
-		</el-form>
+			</el-form>
+		</div>
+
+		<el-row :gutter="15" class="mb8" style="margin-bottom: 10px">
+			<el-col :span="1.5">
+				<el-button
+						:disabled="!isAuth(['ROOT', 'AMECT:INSERT'])"
+						type="success"
+						plain
+						icon="el-icon-plus"
+						size="mini"
+						@click="addHandle()"
+				>新增</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button
+						type="primary"
+						plain
+						icon="el-icon-edit"
+						size="mini"
+						:disabled="single || !isAuth(['ROOT', 'AMECT:UPDATE'])"
+						@click="updateHandle(dataListSelections.map(item => item.id)[0])"
+				>修改</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button
+						type="danger"
+						plain
+						icon="el-icon-delete"
+						size="mini"
+						:disabled="multiple || !isAuth(['ROOT', 'AMECT:DELETE'])"
+						@click="deleteHandle()"
+				>删除</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button
+						type="primary"
+						plain
+						icon="el-icon-download"
+						size="mini"
+						@click="exportDataAll()"
+				>导出全部</el-button>
+			</el-col>
+			<el-col :span="1.5">
+				<el-button
+						:disabled="!isAuth(['ROOT', 'AMECT:SELECT'])"
+						type="warning"
+						plain
+						icon="el-icon-zoom-in"
+						size="mini"
+						@click="reportHandle()"
+				>查看报告</el-button>
+			</el-col>
+			<el-col :span="1.5" style="margin-left: 570px">
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="searchHandle">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="reset">重置</el-button>
+			</el-col>
+		</el-row>
+
 		<el-table
 			:data="dataList"
 			border
@@ -133,14 +158,8 @@
 			<el-table-column header-align="center" align="center" width="150" label="操作">
 				<template #default="scope">
 					<el-button
-						type="text"
-						size="medium"
-						:disabled="!(isAuth(['ROOT', 'AMECT:UPDATE']) && scope.row.status !== '已缴纳')"
-						@click="updateHandle(scope.row.id)"
-					>
-						修改
-					</el-button>
-					<el-button
+						v-if="isAuth(['ROOT', 'AMECT:DELETE'])"
+						icon="el-icon-delete"
 						type="text"
 						size="medium"
 						:disabled="!(isAuth(['ROOT', 'AMECT:DELETE']) && scope.row.status !== '已缴纳')"
@@ -149,12 +168,24 @@
 						删除
 					</el-button>
 					<el-button
+						v-if="scope.row.status === '未缴纳'"
+						icon="el-icon-circle-check"
 						type="text"
 						size="medium"
 						:disabled="!(scope.row.mine === 'true' && scope.row.status === '未缴纳')"
 						@click="payHandle(scope.row.id)"
 					>
 						交款
+					</el-button>
+					<el-button
+							v-if="scope.row.status === '已缴纳'"
+							icon="el-icon-circle-check"
+							type="text"
+							size="medium"
+							:disabled="true"
+							@click="payHandle(scope.row.id)"
+					>
+						已交款
 					</el-button>
 				</template>
 			</el-table-column>
@@ -174,11 +205,11 @@
 </template>
 
 <script>
-import dayjs from 'dayjs';
-import AddOrUpdate from './amect-add-or-update.vue';
-import Pay from './amect-pay.vue';
+	import dayjs from 'dayjs';
+	import AddOrUpdate from './amect-add-or-update.vue';
+	import Pay from './amect-pay.vue';
 
-export default {
+	export default {
 	components: { AddOrUpdate, Pay },
 	data: function() {
 		return {
@@ -201,10 +232,19 @@ export default {
 				name: [{ required: false, pattern: '^[\u4e00-\u9fa5]{1,10}$', message: '姓名格式错误' }]
 			},
 			addOrUpdateVisible: false,
-			payVisible: false
+			payVisible: false,
+			// 非单个禁用
+			single: true,
+			// 非多个禁用
+			multiple: true
 		};
 	},
 	methods: {
+		selectionChangeHandle: function(val) {
+			this.dataListSelections = val
+			this.single = val.length !== 1
+			this.multiple = !val.length
+		},
 		loadDeptList: function() {
 			let that = this;
 			that.$http('/dept/searchAllDept', 'GET', null, true, function(resp) {
@@ -293,9 +333,6 @@ export default {
 		selectable: function (row) {
 			return row.status !== '已缴纳';
 		},
-		selectionChangeHandle: function (val) {
-			this.dataListSelections = val
-		},
 		deleteHandle: function (id) {
 			let that = this
 			let ids = id ? [id] : this.dataListSelections.map(item => item.id)
@@ -338,6 +375,33 @@ export default {
 		},
 		reportHandle: function () {
 			this.$router.push({name: 'AmectReport'})
+		},
+		exportDataAll: function () {
+			let amectList = []
+			for (let i = 0; i < this.dataList.length; i++) {
+				amectList[i] = this.dataList[i]
+			}
+			let data = {
+				title: "罚款数据表",
+				data: JSON.stringify(amectList)
+			}
+			console.log(data)
+			let that = this
+			that.$http('/excel/exportAmectExcel', 'POST', data, true, function (resp) {
+				if (resp.code === 200) {
+					that.$message({
+						type: 'success',
+						duration: 1200,
+						message: '成功导出到：' + resp.path
+					});
+				} else {
+					that.$message({
+						type: 'error',
+						duration: 1200,
+						message: '导出失败:' + "请检查文件是不是已经存在或打开"
+					});
+				}
+			})
 		}
 	},
 	created: function() {

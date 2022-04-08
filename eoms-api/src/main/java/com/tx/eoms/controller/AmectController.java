@@ -9,6 +9,7 @@ import cn.hutool.json.JSONUtil;
 import com.tx.eoms.controller.amect.*;
 import com.tx.eoms.pojo.Amect;
 import com.tx.eoms.service.AmectService;
+import com.tx.eoms.service.UserService;
 import com.tx.eoms.util.CommonResult;
 import com.tx.eoms.util.PageUtils;
 import com.tx.eoms.websocket.WebSocketService;
@@ -42,6 +43,9 @@ public class AmectController {
     @Resource
     private AmectService amectService;
 
+    @Resource
+    private UserService userService;
+
     @Value("${wx.key}")
     private String key;
 
@@ -57,9 +61,17 @@ public class AmectController {
         int start = (form.getPage() - 1) * form.getLength();
         condition.put("start", start);
         condition.put("currentUserId", StpUtil.getLoginIdAsInt());
-        // 如果该用户没有 ROOT || AMECT:SELECT 权限，则只能查询和自己有关的罚款记录
-        if (!(StpUtil.hasPermission("AMECT:SELECT") || StpUtil.hasPermission("ROOT"))) {
-            condition.put("userId", StpUtil.getLoginIdAsInt());
+        // ROOT查询所有
+        // 部门经理（AMECT：SELECT）查询该部门的
+        // 普通员工查询自己的
+        if (!StpUtil.hasPermission("ROOT")) {
+            if (StpUtil.hasPermission("AMECT:SELECT")) {
+                // 查询该部门的部门id
+                int deptId = userService.searchDeptIdByUid(StpUtil.getLoginIdAsInt());
+                condition.put("deptId", deptId);
+            }  else {
+                condition.put("userId", StpUtil.getLoginIdAsInt());
+            }
         }
         PageUtils amectList = amectService.searchAmectByPage(condition);
         return CommonResult.ok().put("page", amectList);
