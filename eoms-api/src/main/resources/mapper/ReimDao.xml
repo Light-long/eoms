@@ -12,7 +12,6 @@
             r.amount,
             r.anleihen,
             r.balance,
-            r.type_id AS typeId,
             r.`status`,
             DATE_FORMAT(r.create_time,'%Y-%m-%d') AS createTime,
             IF(r.user_id = #{currentUserId},"true","false") AS mine
@@ -22,9 +21,6 @@
         where 1 = 1
         <if test="deptId!=null">
             AND u.dept_id = #{deptId}
-        </if>
-        <if test="typeId!=null">
-            AND r.type_id = #{typeId}
         </if>
         <if test="status!=null">
             AND r.`status` = #{status}
@@ -50,9 +46,6 @@
         WHERE 1=1
         <if test="deptId!=null">
             AND u.dept_id = #{deptId}
-        </if>
-        <if test="typeId!=null">
-            AND r.type_id = #{typeId}
         </if>
         <if test="status!=null">
             AND r.`status` = #{status}
@@ -82,7 +75,6 @@
             amount = #{amount},
             anleihen = #{anleihen},
             balance = #{balance},
-            type_id = #{typeId},
             status = #{status},
             create_time = NOW()
     </insert>

@@ -28,9 +28,4 @@ public class AddReimForm {
     @Schema(description = "差额")
     private BigDecimal balance;
 
-    @NotNull(message = "typeId不能为空")
-    @Min(value = 1, message = "typeId不能小于1")
-    @Schema(description = "类型ID")
-    private Byte typeId;
-
 }

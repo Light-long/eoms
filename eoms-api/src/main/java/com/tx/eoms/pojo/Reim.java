@@ -38,11 +38,6 @@ public class Reim implements Serializable {
     private BigDecimal balance;
 
     /**
-     * 类型：1普通报销，2差旅报销
-     */
-    private Byte typeId;
-
-    /**
      * 状态：1审批中，2已拒绝，3审批通过，4.已归档
      */
     private Byte status;

@@ -9,6 +9,7 @@ import com.tx.eoms.controller.reim.DeleteReimByIdForm;
 import com.tx.eoms.controller.reim.SearchReimByPageForm;
 import com.tx.eoms.pojo.Reim;
 import com.tx.eoms.service.ReimService;
+import com.tx.eoms.service.UserService;
 import com.tx.eoms.util.CommonResult;
 import com.tx.eoms.util.PageUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +33,9 @@ public class ReimController {
     @Resource
     private ReimService reimService;
 
+    @Resource
+    private UserService userService;
+
     @PostMapping("/searchReimByPage")
     @Operation(summary = "查询报销记录")
     @SaCheckLogin
@@ -45,9 +49,18 @@ public class ReimController {
         Map<String, Object> condition = JSONUtil.parse(form).toBean(Map.class);
         condition.put("start", start);
         condition.put("currentUserId", userId);
-        // 没有Reim：Select || ROOT 权限，只能查看自己的报销信息
-        if (!(StpUtil.hasPermission("REIM:SELECT") || StpUtil.hasPermission("ROOT"))) {
-            condition.put("userId", userId);
+        // ROOT可以查看所有报销记录
+        // REIM:SELECT 可以查看部门报销记录
+        // 普通员工只能查看自己的包销记录
+        if (!StpUtil.hasPermission("ROOT")) {
+            if (StpUtil.hasPermission("REIM:SELECT")) {
+                // 查询该部门的部门id
+                int deptId = userService.searchDeptIdByUid(StpUtil.getLoginIdAsInt());
+                condition.put("deptId", deptId);
+                // 普通用户只能查到自己的请假记录
+            } else {
+                condition.put("userId", StpUtil.getLoginIdAsInt());
+            }
         }
         PageUtils reimPage = reimService.searchReimByPage(condition);
         return CommonResult.ok().put("page", reimPage);

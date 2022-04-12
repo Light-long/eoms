@@ -16,10 +16,6 @@ public class SearchReimByPageForm {
     @Schema(description = "部门ID")
     private Integer deptId;
 
-    @Min(value = 1, message = "typeId不能小于1")
-    @Schema(description = "类型ID")
-    private Byte typeId;
-
     @Min(value = 1, message = "status不能小于1")
     @Schema(description = "状态")
     private Byte status;

@@ -2,44 +2,32 @@
 	<div>
 		<div align="center">
 			<el-form :inline="true" :model="dataForm" :rules="dataRule" ref="dataForm">
-				<el-form-item prop="name">
-					<el-input
-							v-model="dataForm.name"
-							placeholder="姓名"
-							size="medium"
-							class="input"
-							clearable="clearable"
-					/>
-				</el-form-item>
-				<el-form-item>
+				<el-form-item label="部门" v-if="isAuth(['ROOT'])">
 					<el-select
 							v-model="dataForm.deptId"
 							class="input"
-							placeholder="部门"
-							size="medium"
+							placeholder="部门名称"
+							size="small"
 							clearable="clearable"
 					>
 						<el-option v-for="one in deptList" :label="one.deptName" :value="one.id" />
 					</el-select>
 				</el-form-item>
-				<el-form-item>
-					<el-select
-							v-model="dataForm.typeId"
+				<el-form-item prop="name" label="申请人" v-if="isAuth(['ROOT', 'LEAVE:SELECT'])">
+					<el-input
+							v-model="dataForm.name"
+							placeholder="姓名"
+							size="small"
 							class="input"
-							placeholder="类型"
-							size="medium"
 							clearable="clearable"
-					>
-						<el-option label="普通报销" value="1" />
-						<el-option label="差旅报销" value="2" />
-					</el-select>
+					/>
 				</el-form-item>
-				<el-form-item>
+				<el-form-item label="状态">
 					<el-select
 							v-model="dataForm.status"
 							class="input"
 							placeholder="状态"
-							size="medium"
+							size="small"
 							clearable="clearable"
 					>
 						<el-option label="待审批" value="1" />
@@ -48,23 +36,35 @@
 						<el-option label="已归档" value="4" />
 					</el-select>
 				</el-form-item>
-				<el-form-item>
+				<el-form-item label="日期">
 					<el-date-picker
 							v-model="dataForm.date"
 							type="daterange"
 							range-separator="~"
 							start-placeholder="开始日期"
 							end-placeholder="结束日期"
-							size="medium"
+							size="small"
 					></el-date-picker>
 				</el-form-item>
 				<el-form-item>
-					<el-button size="medium" type="primary" @click="searchHandle()">查询</el-button>
-					<el-button size="medium" type="common" @click="reset()">重置</el-button>
-					<el-button size="medium" type="success" @click="addHandle()">新增</el-button>
+					<el-button size="small" type="primary" @click="searchHandle()">查询</el-button>
+					<el-button size="small" type="common" @click="reset()">重置</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
+
+		<el-row :gutter="15" class="mb8" style="margin-bottom: 10px">
+			<el-col :span="1.5">
+				<el-button
+						plain
+						size="small"
+						type="success"
+						@click="addHandle()">
+					申请报销
+				</el-button>
+			</el-col>
+		</el-row>
+
 		<el-table
 			:data="dataList"
 			border
@@ -72,6 +72,7 @@
 			cell-style="padding: 4px 0"
 			style="width: 100%;"
 			size="medium"
+			:header-cell-style="{background:'#eef1f6',color:'#606266'}"
 		>
 			<el-table-column
 				width="40px"
@@ -103,7 +104,7 @@
 				type="index"
 				header-align="center"
 				align="center"
-				width="80"
+				min-width="80px"
 				label="序号"
 			>
 				<template #default="scope">
@@ -111,42 +112,35 @@
 				</template>
 			</el-table-column>
 			<el-table-column
-				prop="type"
-				header-align="center"
-				align="center"
-				label="报销类型"
-				min-width="120"
-			/>
-			<el-table-column
 				prop="name"
 				header-align="center"
 				align="center"
 				label="申请人"
-				min-width="100"
+				min-width="120px"
 			/>
 			<el-table-column
 				prop="deptName"
 				header-align="center"
 				align="center"
 				label="所属部门"
-				width="100"
+				min-width="120px"
 			/>
-			<el-table-column header-align="center" align="center" label="报销金额" min-width="100">
+			<el-table-column header-align="center" align="center" label="报销金额" min-width="120px">
 				<template #default="scope">
 					<span>{{ scope.row.amount }}元</span>
 				</template>
 			</el-table-column>
-			<el-table-column header-align="center" align="center" label="借款金额" min-width="100">
+			<el-table-column header-align="center" align="center" label="借款金额" min-width="120px">
 				<template #default="scope">
 					<span>{{ scope.row.anleihen }}元</span>
 				</template>
 			</el-table-column>
-			<el-table-column header-align="center" align="center" label="实际报销" min-width="100">
+			<el-table-column header-align="center" align="center" label="实际报销" min-width="120px">
 				<template #default="scope">
 					<span>{{ scope.row.balance }}元</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="status" header-align="center" align="center" label="状态" min-width="100">
+			<el-table-column prop="status" header-align="center" align="center" label="状态" min-width="120px">
 				<template #default="scope">
 					<span v-if="scope.row.status === '待审批'" style="color: orange;">待审批</span>
 					<span v-if="scope.row.status === '已否决'" style="color: red;">已否决</span>
@@ -159,17 +153,22 @@
 				header-align="center"
 				align="center"
 				label="申请日期"
-				width="150"
+				min-width="150px"
 			/>
-			<el-table-column header-align="center" align="center" min-width="150" label="操作">
+			<el-table-column header-align="center" align="center" label="报销单" width="120px">
 				<template #default="scope">
-					<el-button 
-						type="text" 
-						size="medium"
-						@click="pdfHandle(scope.row.id)">
+					<el-button
+							type="text"
+							size="medium"
+							@click="pdfHandle(scope.row.id)">
 						报销单
 					</el-button>
+				</template>
+			</el-table-column>
+			<el-table-column header-align="center" align="center" min-width="100px" label="操作">
+				<template #default="scope">
 					<el-button
+						icon="el-icon-delete"
 						type="text"
 						size="medium"
 						:disabled="!(['待审批', '已否决'].includes(scope.row.status) && scope.row.mine === 'true')"
@@ -180,6 +179,7 @@
 				</template>
 			</el-table-column>
 		</el-table>
+
 		<el-pagination
 			@size-change="sizeChangeHandle"
 			@current-change="currentChangeHandle"
@@ -206,7 +206,6 @@ export default {
 				name: null,
 				deptId: null,
 				status: null,
-				typeId: null,
 				date: null
 			},
 			deptList: [],
@@ -237,7 +236,6 @@ export default {
 			let data = {
 				name: that.dataForm.name,
 				deptId: that.dataForm.deptId,
-				typeId: that.dataForm.typeId,
 				status: that.dataForm.status,
 				page: that.pageIndex,
 				length: that.pageSize
@@ -256,13 +254,8 @@ export default {
 					3: '已通过',
 					4: '已归档',
 				}
-				let type = {
-					1: '普通报销',
-					2: '差旅报销'
-				}
 				for (let one of page.list) {
 					one.status = status[one.status]
-					one.type = type[one.typeId]
 					one.content = JSON.parse(one.content)
 				}
 				that.dataList = page.list
