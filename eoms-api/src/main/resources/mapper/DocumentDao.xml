@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tx.eoms.dao.DocumentDao">
+
+    <select id="searchDocumentByPage" parameterType="HashMap" resultType="HashMap">
+      select
+          d.id,
+          d.document_name as documentName,
+          u.name as userName,
+          d.is_public as isPublic,
+          d.url as url,
+          DATE_FORMAT(d.upload_date, '%Y-%m-%d') as uploadDate,
+          DATE_FORMAT(d.upload_time, '%Y-%m-%d %H:%i') as uploadTime,
+          IF(d.upload_user_id = #{userId}, "true", "false") AS mine
+      from tb_document as d join tb_user as u
+      on u.id = d.upload_user_id
+      where 1 = 1
+      <if test="isPublic == 1">
+        and d.is_public = #{isPublic}
+      </if>
+      <if test="isPublic == 0">
+        and d.is_public = #{isPublic} and d.upload_user_id = #{userId}
+      </if>
+      <if test="documentName != null">
+        and d.document_name like '%${documentName}%'
+      </if>
+      <if test="uploadDate != null">
+        and d.upload_date = #{uploadDate}
+      </if>
+      order by d.upload_time desc
+      limit #{start}, #{length}
+    </select>
+
+    <select id="searchDocumentCount" parameterType="HashMap" resultType="long">
+      select count(*)
+      from tb_document as d join tb_user as u
+      on u.id = d.upload_user_id
+      where 1 = 1
+      <if test="isPublic == 1">
+        and d.is_public = #{isPublic}
+      </if>
+      <if test="isPublic == 0">
+        and d.is_public = #{isPublic} and d.upload_user_id = #{userId}
+      </if>
+      <if test="documentName != null">
+        and d.document_name like '"%${documentName}%"'
+      </if>
+      <if test="uploadDate != null">
+        and d.upload_date = #{uploadDate}
+      </if>
+    </select>
+
+    <insert id="addDocument" parameterType="com.tx.eoms.pojo.Document" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_document
+        set
+            document_name = #{documentName},
+            upload_user_id = #{uploadUserId},
+            url = #{url},
+            path = #{path},
+            upload_date = #{uploadDate},
+            upload_time = #{uploadTime},
+            is_public = #{isPublic}
+    </insert>
+
+    <select id="searchPathById" parameterType="Integer" resultType="String">
+        select path
+        from tb_document
+        where id = #{id}
+    </select>
+
+    <delete id="deleteDocument">
+        delete from tb_document
+        where id = #{id}
+    </delete>
+</mapper>
