@@ -123,10 +123,6 @@
 									<td>{{ content.balance }}元</td>
 								</tr>
 								<tr>
-									<th><span>报销类型</span></th>
-									<td>{{ content.type }}</td>
-								</tr>
-								<tr>
 									<th><span>审批结果</span></th>
 									<td>
 										<span v-if="scope.row.status!=='已结束'">审批中</span>

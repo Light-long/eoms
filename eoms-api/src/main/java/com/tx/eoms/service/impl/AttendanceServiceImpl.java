@@ -143,4 +143,16 @@ public class AttendanceServiceImpl implements AttendanceService {
         int length = MapUtil.getInt(params, "length");
         return new PageUtils(record, count, start, length);
     }
+
+    /**
+     * 查询考勤统计
+     */
+//    @Override
+//    public PageUtils searchAttendanceStatistic(Map<String, Object> params) {
+//        List<Map<String,Object>> statistic =  attendanceDao.searchAttendanceStatistic(params);
+//        long count = attendanceDao.searchAttendanceStatisticCount(params);
+//        int start = MapUtil.getInt(params, "start");
+//        int length = MapUtil.getInt(params, "length");
+//        return new PageUtils(statistic, count, start, length);
+//    }
 }

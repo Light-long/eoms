@@ -71,6 +71,15 @@ public class ExcelController {
         return CommonResult.ok().put("path", fileName);
     }
 
+    @PostMapping("/exportAttendanceStatistic")
+    public CommonResult exportAttendanceStatistic(@Valid @RequestBody ExcelExportForm form) {
+        String fileName = PATH +form.getTitle() + IdUtil.simpleUUID() +".xlsx";
+        String data = form.getData().replaceAll("&quot;", "\"");
+        List<AttendanceStatisticExcel> attendanceList = JSONUtil.parseArray(data).toList(AttendanceStatisticExcel.class);
+        EasyExcel.write(fileName, AttendanceStatisticExcel.class).registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).sheet("模板").doWrite(attendanceList);
+        return CommonResult.ok().put("path", fileName);
+    }
+
     @PostMapping("/exportAmectExcel")
     public CommonResult exportAmectExcel(@Valid @RequestBody ExcelExportForm form) {
         String fileName = PATH +form.getTitle() + IdUtil.simpleUUID() +".xlsx";

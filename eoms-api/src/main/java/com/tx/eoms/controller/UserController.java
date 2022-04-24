@@ -92,7 +92,7 @@ public class UserController {
                 .setWidth(120)   //设置图片的宽度
                 .setHeight(35)   //设置图片的高度
                 .setSize(4)      //设置字符的个数
-                .setLines(5)    //设置干扰线的条数
+                .setLines(2)    //设置干扰线的条数
                 .setFontSize(25) //设置字体的大小
                 .setTilt(true)   //设置是否需要倾斜
                 .setBackgroundColor(Color.LIGHT_GRAY) //设置验证码的背景颜色
@@ -309,5 +309,14 @@ public class UserController {
         params.put("status", form.getStatus());
         int rows = userService.updateUserStatus(params);
         return CommonResult.ok().put("rows", rows);
+    }
+
+    @GetMapping("/searchUserByDeptId")
+    @Operation(summary = "根据部门id查询该部门用户")
+    @SaCheckLogin
+    public CommonResult searchUserByDeptId() {
+        int deptId = userService.searchDeptIdByUid(StpUtil.getLoginIdAsInt());
+        List<Map<String, Object>> list = userService.searchUserByDeptId(deptId);
+        return CommonResult.ok().put("list", list);
     }
 }

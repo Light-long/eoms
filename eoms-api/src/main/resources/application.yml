@@ -107,8 +107,8 @@ wx:
   cert-path: E:/apiclient_cert.p12
 
 eoms:
-  code: 62338DECF3CA18B0
-  tcode: "070333"
+  code: 79EB1E0F5E4DE9CF
+  tcode: "154544"
   receiveNotify: http://localhost:8090/eoms-api/meeting/receiveNotify
   email:
     system: 2201673330@qq.com
@@ -117,4 +117,4 @@ workflow:
   url: http://localhost:9090/emos-workflow
 
 pay:
-  receive-url: http://7t96zi.natappfree.cc
+  receive-url:  http://6hhnay.natappfree.cc

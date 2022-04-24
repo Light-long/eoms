@@ -28,6 +28,7 @@ import MailList from "../views/info/mail-list.vue"
 import Meeting from "../views/meeting/meeting.vue"
 import Attendance from "../views/attendance/attendance.vue"
 import AttendanceRecord from '../views/attendance/attendanceRecord.vue'
+import AttendanceStatistic from "../views/attendance/attendanceStatistic.vue";
 
 const routes = [
 	{
@@ -201,7 +202,16 @@ const routes = [
 				name: 'AttendanceRecord',
 				component: AttendanceRecord,
 				meta: {
-					title: '考勤记录',
+					title: '我的考勤',
+					isTab: true
+				}
+			},
+			{
+				path: '/attendanceStatistic',
+				name: 'AttendanceStatistic',
+				component: AttendanceStatistic,
+				meta: {
+					title: '考勤统计',
 					isTab: true
 				}
 			},

@@ -1,6 +1,8 @@
 package com.tx.eoms.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
@@ -10,6 +12,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import com.tx.eoms.config.init.SystemConstants;
 import com.tx.eoms.controller.attendance.SearchAttendanceRecordForm;
+import com.tx.eoms.controller.attendance.SearchAttendanceStatisticForm;
 import com.tx.eoms.exception.EomsException;
 import com.tx.eoms.pojo.Attendance;
 import com.tx.eoms.service.AttendanceService;
@@ -212,6 +215,14 @@ public class AttendanceController {
         long absence = DateUtil.between(startDate, endDate, DateUnit.DAY) + 1
                 - MapUtil.getInt(attendanceInfo, "successSignIn")
                 - MapUtil.getInt(attendanceInfo, "late");
+        int holiday = 0;
+        for (;startDate.isBefore(endDate);startDate.offset(DateField.DAY_OF_MONTH, 1)) {
+            if (startDate.isWeekend()) {
+                holiday++;
+            }
+        }
+        // 还要减去周末天数
+        absence -= holiday;
         attendanceInfo.put("absence", absence);
         return CommonResult.ok().put("attendanceInfo", attendanceInfo);
     }
@@ -226,5 +237,76 @@ public class AttendanceController {
         params.put("userId", StpUtil.getLoginIdAsInt());
         PageUtils page = attendanceService.searchAttendanceRecord(params);
         return CommonResult.ok().put("page", page);
+    }
+
+//    @PostMapping("/searchAttendanceStatistic")
+//    @Operation(summary = "考勤统计")
+//    @SaCheckPermission(value = {"ROOT", "ATTENDANCE:LIST"}, mode = SaMode.OR)
+//    public CommonResult searchAttendanceStatistic(@Valid @RequestBody SearchAttendanceStatisticForm form) {
+//        int start = (form.getPage() - 1) * form.getLength();
+//        Map<String, Object> params = JSONUtil.parse(form).toBean(Map.class);
+//        params.put("start", start);
+//        // ROOT能查到所有人的考勤记录
+//        // 部门经理（ATTENDANCE:LIST）只能查到自己部门员工的考勤记录
+//        if (StpUtil.hasPermission("ATTENDANCE:LIST") && !StpUtil.hasPermission("ROOT")) {
+//            int deptId = userService.searchDeptIdByUid(StpUtil.getLoginIdAsInt());
+//            params.put("deptId", deptId);
+//        }
+//        PageUtils page = attendanceService.searchAttendanceStatistic(params);
+//        return CommonResult.ok().put("page", page);
+//    }
+
+    @PostMapping("/searchAttendanceStatistic")
+    @Operation(summary = "查询考勤统计图")
+    @SaCheckPermission(value = {"ROOT", "ATTENDANCE:LIST"}, mode = SaMode.OR)
+    public CommonResult searchAttendanceStatistic(@Valid @RequestBody SearchAttendanceStatisticForm form) {
+        // 默认查询当前用户，当前年月
+        int userId = StpUtil.getLoginIdAsInt();
+        // 如果前端传值了，覆盖
+        if (form.getUserId() != null) {
+            userId = form.getUserId();
+        }
+        Map<String, Object> user = userService.searchUserById(userId);
+        String month = form.getMonth();
+        // 查询入职日期
+        DateTime hiredate = DateUtil.parse(userService.searchHiredate(userId));
+        // 查询这个月的第一天
+        DateTime startDate = DateUtil.parse(month + "-01");
+        // 如果查询的这个月，早于入职当月，抛异常
+        if (startDate.isBefore(DateUtil.beginOfMonth(hiredate))) {
+            return CommonResult.ok().put("attendanceInfo", null).put("message", "还没入职，没有签到数据");
+        }
+        // 如果查的这个月份还没到
+        if (startDate.isAfterOrEquals(DateUtil.date())) {
+            return CommonResult.ok().put("attendanceInfo", null).put("message", "暂无数据");
+        }
+        // 从入职月的入职日期开始算
+        if (startDate.isBefore(hiredate)) {
+            startDate = hiredate;
+        }
+        // 查询今天的前一天
+        DateTime endDate = DateUtil.endOfMonth(startDate);
+        if (DateUtil.date().isBefore(endDate)) {
+            endDate = DateUtil.date().offset(DateField.DAY_OF_MONTH, -1);
+        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        params.put("startDate", DateUtil.formatDate(startDate));
+        params.put("endDate", DateUtil.formatDate(endDate));
+        Map<String, Object> attendanceInfo =  attendanceService.searchAttendanceInMonth(params);
+        long absence = DateUtil.between(startDate, endDate, DateUnit.DAY) + 1
+                - MapUtil.getInt(attendanceInfo, "successSignIn")
+                - MapUtil.getInt(attendanceInfo, "late");
+        int holiday = 0;
+        for (;startDate.isBefore(endDate);startDate.offset(DateField.DAY_OF_MONTH, 1)) {
+            if (startDate.isWeekend()) {
+                holiday++;
+            }
+        }
+        // 还要减去周末天数
+        absence -= holiday;
+        attendanceInfo.put("absence", absence);
+        return CommonResult.ok().put("attendanceInfo", attendanceInfo)
+                .put("user", user).put("month", month);
     }
 }

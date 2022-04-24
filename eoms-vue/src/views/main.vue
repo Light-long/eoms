@@ -91,15 +91,6 @@
 							<span slot="title">个人中心</span>
 						</el-menu-item>
 						<el-menu-item
-								index="attendanceRecord"
-								@click="$router.push({ name: 'AttendanceRecord' })"
-						>
-							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
-								<path fill="currentColor" d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64H128zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0v32zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64zm0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64zm192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64zm0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64zm192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64zm0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64z"></path>
-							</svg>
-							<span slot="title">考勤记录</span>
-						</el-menu-item>
-						<el-menu-item
 								index="mailList"
 								@click="$router.push({ name: 'MailList' })"
 						>
@@ -110,17 +101,52 @@
 							<span slot="title">企业通讯录</span>
 						</el-menu-item>
 					</el-submenu>
-					<!--今日事项-->
+					<!--组织管理-->
 					<el-submenu
-							index="今日事项"
+							index="组织管理"
+							:popper-class="'site-sidebar--' + sidebarLayoutSkin + '-popper'"
+							v-if="isAuth(['ROOT', 'USER:SELECT'])"
+					>
+						<template #title>
+							<SvgIcon name="users_fill" class="icon-svg" />
+							<span slot="title">组织管理</span>
+						</template>
+						<el-menu-item
+								index="user"
+								v-if="isAuth(['ROOT', 'USER:SELECT'])"
+								@click="$router.push({ name: 'User' })"
+						>
+							<SvgIcon name="user_fill" class="icon-svg" />
+							<span slot="title">用户管理</span>
+						</el-menu-item>
+						<el-menu-item
+								index="role"
+								v-if="isAuth(['ROOT'])"
+								@click="$router.push({ name: 'Role' })"
+						>
+							<SvgIcon name="role_fill" class="icon-svg" />
+							<span slot="title">角色管理</span>
+						</el-menu-item>
+						<el-menu-item
+								index="dept"
+								v-if="isAuth(['ROOT'])"
+								@click="$router.push({ name: 'Dept' })"
+								ref="ABC"
+						>
+							<SvgIcon name="company_fill" class="icon-svg" />
+							<span slot="title">部门管理</span>
+						</el-menu-item>
+					</el-submenu>
+					<!--考勤管理-->
+					<el-submenu
+							index="考勤管理"
 							:popper-class="'site-sidebar--' + sidebarLayoutSkin + '-popper'"
 					>
 						<template #title>
 							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
-								<path fill="currentColor" d="M192 128v768h640V128H192zm-32-64h704a32 32 0 0 1 32 32v832a32 32 0 0 1-32 32H160a32 32 0 0 1-32-32V96a32 32 0 0 1 32-32z"></path>
-								<path fill="currentColor" d="M672 128h64v768h-64zM96 192h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zm0 192h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zm0 192h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32zm0 192h128q32 0 32 32t-32 32H96q-32 0-32-32t32-32z"></path>
+								<path fill="currentColor" d="M128 384v512h768V192H768v32a32 32 0 1 1-64 0v-32H320v32a32 32 0 0 1-64 0v-32H128v128h768v64H128zm192-256h384V96a32 32 0 1 1 64 0v32h160a32 32 0 0 1 32 32v768a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h160V96a32 32 0 0 1 64 0v32zm-32 384h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64zm0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64zm192-192h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64zm0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64zm192-192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64zm0 192h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64z"></path>
 							</svg>
-							<span slot="title">今日事项</span>
+							<span slot="title">考勤管理</span>
 						</template>
 						<el-menu-item
 								index="attendance"
@@ -132,6 +158,37 @@
 							</svg>
 							<span slot="title">在线考勤</span>
 						</el-menu-item>
+						<el-menu-item
+								index="attendanceRecord"
+								@click="$router.push({ name: 'AttendanceRecord' })"
+						>
+							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
+								<path fill="currentColor" d="M288 320a224 224 0 1 0 448 0 224 224 0 1 0-448 0zm544 608H160a32 32 0 0 1-32-32v-96a160 160 0 0 1 160-160h448a160 160 0 0 1 160 160v96a32 32 0 0 1-32 32z"></path>
+							</svg>
+							<span slot="title">我的考勤</span>
+						</el-menu-item>
+						<el-menu-item
+								index="attendanceRecord"
+								@click="$router.push({ name: 'AttendanceStatistic' })"
+								v-if="isAuth(['ROOT', 'ATTENDANCE:LIST'])"
+						>
+							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
+								<path fill="currentColor" d="M128 896V128h768v768H128zm291.712-327.296 128 102.4 180.16-201.792-47.744-42.624-139.84 156.608-128-102.4-180.16 201.792 47.744 42.624 139.84-156.608zM816 352a48 48 0 1 0-96 0 48 48 0 0 0 96 0z"></path>
+							</svg>
+							<span slot="title">考勤统计</span>
+						</el-menu-item>
+					</el-submenu>
+					<!--今日事项-->
+					<el-submenu
+							index="工作台"
+							:popper-class="'site-sidebar--' + sidebarLayoutSkin + '-popper'"
+					>
+						<template #title>
+							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
+								<path fill="currentColor" d="M448 832v-64h128v64h192v64H256v-64h192zM128 704V128h768v576H128z"></path>
+							</svg>
+							<span slot="title">工作台</span>
+						</template>
 						<el-menu-item index="todo" @click="$router.push({ name: 'Todo' })">
 							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
 								<path fill="currentColor" d="M704 192h160v736H160V192h160.064v64H704v-64zM311.616 537.28l-45.312 45.248L447.36 763.52l316.8-316.8-45.312-45.184L447.36 673.024 311.616 537.28zM384 192V96h256v96H384z">
@@ -139,15 +196,34 @@
 							</svg>
 							<span slot="title">我的待办</span>
 						</el-menu-item>
+						<el-menu-item index="task" @click="$router.push({ name: '' })">
+							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
+								<path fill="currentColor" d="M512 896a384 384 0 1 0 0-768 384 384 0 0 0 0 768zm0 64a448 448 0 1 1 0-896 448 448 0 0 1 0 896z"></path><path fill="currentColor" d="M512 96a32 32 0 0 1 32 32v192a32 32 0 0 1-64 0V128a32 32 0 0 1 32-32zm0 576a32 32 0 0 1 32 32v192a32 32 0 1 1-64 0V704a32 32 0 0 1 32-32zM96 512a32 32 0 0 1 32-32h192a32 32 0 0 1 0 64H128a32 32 0 0 1-32-32zm576 0a32 32 0 0 1 32-32h192a32 32 0 1 1 0 64H704a32 32 0 0 1-32-32z"></path>
+							</svg>
+							<span slot="title">我的任务</span>
+						</el-menu-item>
+						<el-menu-item index="taskList" @click="$router.push({ name: '' })" v-if="isAuth(['ROOT', 'TASK:LIST'])">
+							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
+								<path fill="currentColor" d="M832 384H576V128H192v768h640V384zm-26.496-64L640 154.496V320h165.504zM160 64h480l256 256v608a32 32 0 0 1-32 32H160a32 32 0 0 1-32-32V96a32 32 0 0 1 32-32zm160 448h384v64H320v-64zm0-192h160v64H320v-64zm0 384h384v64H320v-64z"></path>
+							</svg>
+							<span slot="title">任务管理</span>
+						</el-menu-item>
 					</el-submenu>
+					<!--文件管理-->
+					<el-menu-item index="file" @click="$router.push({ name: '' })">
+						<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
+							<path fill="currentColor" d="M128 192v640h768V320H485.76L357.504 192H128zm-32-64h287.872l128.384 128H928a32 32 0 0 1 32 32v576a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32z"></path>
+						</svg>
+						<span slot="title">文件管理</span>
+					</el-menu-item>
 					<!--在线办公-->
 					<el-submenu
-						index="在线办公"
+						index="行政办公"
 						:popper-class="'site-sidebar--' + sidebarLayoutSkin + '-popper'"
 					>
 						<template #title>
 							<SvgIcon name="meeting_fill" class="icon-svg" />
-							<span slot="title">在线办公</span>
+							<span slot="title">行政办公</span>
 						</template>
 						<el-menu-item
 							index="approval"
@@ -226,42 +302,6 @@
 <!--							<span slot="title">线上会议</span>-->
 <!--						</el-menu-item>-->
 					</el-submenu>
-					<!--组织管理-->
-					<el-submenu
-							index="组织管理"
-							:popper-class="'site-sidebar--' + sidebarLayoutSkin + '-popper'"
-							v-if="isAuth(['ROOT', 'USER:SELECT'])"
-					>
-						<template #title>
-							<SvgIcon name="users_fill" class="icon-svg" />
-							<span slot="title">组织管理</span>
-						</template>
-						<el-menu-item
-								index="user"
-								v-if="isAuth(['ROOT', 'USER:SELECT'])"
-								@click="$router.push({ name: 'User' })"
-						>
-							<SvgIcon name="user_fill" class="icon-svg" />
-							<span slot="title">用户管理</span>
-						</el-menu-item>
-						<el-menu-item
-								index="role"
-								v-if="isAuth(['ROOT'])"
-								@click="$router.push({ name: 'Role' })"
-						>
-							<SvgIcon name="role_fill" class="icon-svg" />
-							<span slot="title">角色管理</span>
-						</el-menu-item>
-						<el-menu-item
-								index="dept"
-								v-if="isAuth(['ROOT'])"
-								@click="$router.push({ name: 'Dept' })"
-								ref="ABC"
-						>
-							<SvgIcon name="company_fill" class="icon-svg" />
-							<span slot="title">部门管理</span>
-						</el-menu-item>
-					</el-submenu>
 					<!--系统设置-->
 					<el-submenu
 						index="系统管理"
@@ -274,13 +314,6 @@
 							</svg>
 							<span slot="title">系统管理</span>
 						</template>
-						<el-menu-item
-							index="amect-type"
-							@click="$router.push({ name: 'AmectType' })"
-						>
-							<SvgIcon name="tool_fill" class="icon-svg" />
-							<span slot="title">罚款类型</span>
-						</el-menu-item>
 						<el-menu-item
 								index="amect-type"
 								@click="$router.push({ name: 'Notice' })"

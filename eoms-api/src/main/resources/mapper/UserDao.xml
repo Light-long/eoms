@@ -355,4 +355,12 @@
         from tb_user
         where id = #{userId} and status = 1
     </select>
+
+    <select id="searchUserByDeptId" parameterType="int" resultType="HashMap">
+        select
+            id,
+            `name`
+        from tb_user
+        where dept_id = #{deptId} and status = 1
+    </select>
 </mapper>

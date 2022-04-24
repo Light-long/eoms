@@ -47,4 +47,9 @@ public interface AttendanceService {
      * 查询个人考勤记录
      */
     PageUtils searchAttendanceRecord(Map<String, Object> params);
+
+//    /**
+//     * 查询考勤统计
+//     */
+//    PageUtils searchAttendanceStatistic(Map<String, Object> params);
 }

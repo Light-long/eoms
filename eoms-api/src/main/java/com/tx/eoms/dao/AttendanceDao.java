@@ -58,4 +58,8 @@ public interface AttendanceDao {
     List<Map<String, Object>> searchAttendanceRecord(Map<String, Object> params);
 
     long searchAttendanceRecordCount(Map<String, Object> params);
+
+//    List<Map<String, Object>> searchAttendanceStatistic(Map<String, Object> params);
+//
+//    long searchAttendanceStatisticCount(Map<String, Object> params);
 }

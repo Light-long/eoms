@@ -47,7 +47,7 @@
 					<span v-if="!loading">登 录 系 统</span>
 					<span v-else>登 录 中...</span>
 				</el-button>
-				<div style="float: right;">
+				<div style="float: right;" v-if="openRegister">
 					<router-link class="link-type" :to="'/register'">立即注册</router-link>
 <!--					<el-button type="text" size="medium" @click="$router.push({name: 'Register'})">-->
 <!--						立即注册-->
@@ -74,7 +74,8 @@ export default {
 			codeUrl: "",
 			username: null,
 			password: null,
-			code: null
+			code: null,
+			openRegister: false
 		};
 	},
 	created: function() {

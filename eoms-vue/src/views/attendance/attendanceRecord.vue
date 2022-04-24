@@ -27,7 +27,7 @@
 		<el-row :gutter="15" class="mb8" style="margin-bottom: 10px">
 			<el-col :span="1.5">
 				<el-button
-						type="warning"
+						type="common"
 						plain
 						icon="el-icon-download"
 						size="mini"

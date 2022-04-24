@@ -186,6 +186,11 @@ public class UserServiceImpl implements UserService {
         return userDao.searchHiredate(userId);
     }
 
+    @Override
+    public List<Map<String, Object>> searchUserByDeptId(int deptId) {
+        return userDao.searchUserByDeptId(deptId);
+    }
+
 
     /**
      * 登录

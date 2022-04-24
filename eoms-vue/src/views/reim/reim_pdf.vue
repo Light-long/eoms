@@ -43,10 +43,10 @@
 			</div>
 			<div class="bottom-info-container"></div>
 			<div class="bottom-info-container">
-				<span class="sig">会计主管：</span>
-				<span class="sig">复核：</span>
-				<span class="sig">出纳：</span>
-				<span class="sig">报销人：</span>
+				<span class="sig"></span>
+				<span class="sig"></span>
+				<span class="sig">财务签名：</span>
+				<span class="sig">盖章处：</span>
 			</div>
 		</div>
 		<template #footer>

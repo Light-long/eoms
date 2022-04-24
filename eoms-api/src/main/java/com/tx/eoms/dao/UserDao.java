@@ -148,4 +148,6 @@ public interface UserDao {
      * 查询用户入职日期
      */
     String searchHiredate(int userId);
+
+    List<Map<String, Object>> searchUserByDeptId(int deptId);
 }
