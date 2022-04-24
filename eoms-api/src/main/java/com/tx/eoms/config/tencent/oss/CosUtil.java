@@ -59,6 +59,9 @@ public class CosUtil {
             path = "/archive/" + IdUtil.simpleUUID() + fileName.substring(fileName.lastIndexOf("."));
         } else if (typeEnum == CosTypeEnum.AVATAR){
             path = "/avatar/" + IdUtil.simpleUUID() + fileName.substring(fileName.lastIndexOf("."));
+        } else if (typeEnum == CosTypeEnum.DOCUMENT) {
+            path = "/document/" + fileName.substring(0, fileName.lastIndexOf("."))
+                    + "-" +IdUtil.simpleUUID().substring(0,2) + fileName.substring(fileName.lastIndexOf("."));
         }
         // 元数据信息
         ObjectMetadata meta = new ObjectMetadata();

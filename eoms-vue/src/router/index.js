@@ -29,6 +29,7 @@ import Meeting from "../views/meeting/meeting.vue"
 import Attendance from "../views/attendance/attendance.vue"
 import AttendanceRecord from '../views/attendance/attendanceRecord.vue'
 import AttendanceStatistic from "../views/attendance/attendanceStatistic.vue";
+import Document from "../views/document/document.vue";
 
 const routes = [
 	{
@@ -185,6 +186,15 @@ const routes = [
 				component: Todo,
 				meta: {
 					title: '我的待办',
+					isTab: true
+				}
+			},
+			{
+				path: '/document',
+				name: 'Document',
+				component: Document,
+				meta: {
+					title: '文件管理',
 					isTab: true
 				}
 			},

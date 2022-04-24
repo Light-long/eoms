@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public enum CosTypeEnum {
 
-    ARCHIVE("archive"), AVATAR("avatar");
+    ARCHIVE("archive"), AVATAR("avatar"),DOCUMENT("document");
 
     private final String key;
 
