@@ -196,13 +196,13 @@
 							</svg>
 							<span slot="title">我的待办</span>
 						</el-menu-item>
-						<el-menu-item index="task" @click="$router.push({ name: '' })">
+						<el-menu-item index="task" @click="$router.push({ name: 'MyTask' })">
 							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
 								<path fill="currentColor" d="M512 896a384 384 0 1 0 0-768 384 384 0 0 0 0 768zm0 64a448 448 0 1 1 0-896 448 448 0 0 1 0 896z"></path><path fill="currentColor" d="M512 96a32 32 0 0 1 32 32v192a32 32 0 0 1-64 0V128a32 32 0 0 1 32-32zm0 576a32 32 0 0 1 32 32v192a32 32 0 1 1-64 0V704a32 32 0 0 1 32-32zM96 512a32 32 0 0 1 32-32h192a32 32 0 0 1 0 64H128a32 32 0 0 1-32-32zm576 0a32 32 0 0 1 32-32h192a32 32 0 1 1 0 64H704a32 32 0 0 1-32-32z"></path>
 							</svg>
 							<span slot="title">我的任务</span>
 						</el-menu-item>
-						<el-menu-item index="taskList" @click="$router.push({ name: '' })" v-if="isAuth(['ROOT', 'TASK:LIST'])">
+						<el-menu-item index="taskList" @click="$router.push({ name: 'TaskAdmin' })" v-if="isAuth(['ROOT', 'TASK:LIST'])">
 							<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ba633cb8="" class="icon-svg-2">
 								<path fill="currentColor" d="M832 384H576V128H192v768h640V384zm-26.496-64L640 154.496V320h165.504zM160 64h480l256 256v608a32 32 0 0 1-32 32H160a32 32 0 0 1-32-32V96a32 32 0 0 1 32-32zm160 448h384v64H320v-64zm0-192h160v64H320v-64zm0 384h384v64H320v-64z"></path>
 							</svg>

@@ -30,6 +30,8 @@ import Attendance from "../views/attendance/attendance.vue"
 import AttendanceRecord from '../views/attendance/attendanceRecord.vue'
 import AttendanceStatistic from "../views/attendance/attendanceStatistic.vue";
 import Document from "../views/document/document.vue";
+import TaskAdmin from "../views/task/task-admin.vue"
+import MyTask from "../views/task/my-task.vue"
 
 const routes = [
 	{
@@ -249,6 +251,24 @@ const routes = [
 				component: MailList,
 				meta: {
 					title: '通讯录',
+					isTab: true
+				}
+			},
+			{
+				path: '/myTask',
+				name: 'MyTask',
+				component: MyTask,
+				meta: {
+					title: '我的任务',
+					isTab: true
+				}
+			},
+			{
+				path: '/taskAdmin',
+				name: 'TaskAdmin',
+				component: TaskAdmin,
+				meta: {
+					title: '任务管理',
 					isTab: true
 				}
 			}

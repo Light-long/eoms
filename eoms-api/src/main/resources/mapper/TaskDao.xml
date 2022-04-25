@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tx.eoms.dao.TaskDao">
+
+    <select id="searchTaskAdminListByPage" parameterType="HashMap" resultType="HashMap">
+        select
+            t.id,
+            t.theme,
+            t.desc,
+            u1.name as publisherName,
+            u2.name as executorName,
+            DATE_FORMAT(t.publish_time, '%Y-%m-%d %H:%i') as publishTime,
+            DATE_FORMAT(t.start_time, '%Y-%m-%d %H:%i') as startTime,
+            DATE_FORMAT(t.end_time, '%Y-%m-%d %H:%i') as endTime,
+            t.task_status as taskStatus
+        from tb_task as t
+        inner join tb_user as u1 on t.publisher_id = u1.id
+        inner join tb_user as u2 on t.executor_id = u2.id
+        where 1 = 1
+        <if test="publisherId != null">
+            and t.publisher_id = #{publisherId}
+        </if>
+        <if test="executorId != null">
+            and t.executor_id = #{executorId}
+        </if>
+        <if test="taskStatus != null">
+            and t.task_status = #{taskStatus}
+        </if>
+        <if test="publishTime != null">
+            and DATE_FORMAT(t.publish_time,'%Y-%m-%d') = #{publishTime}
+        </if>
+        order by t.start_time desc
+        limit #{start}, #{length}
+    </select>
+
+    <select id="searchTaskAdminListCount" parameterType="HashMap" resultType="long">
+        select count(*)
+        from tb_task as t
+        inner join tb_user as u1 on t.publisher_id = u1.id
+        inner join tb_user as u2 on t.executor_id = u2.id
+        where 1 = 1
+        <if test="publisherId != null">
+            and t.publisher_id = #{publisherId}
+        </if>
+        <if test="executorId != null">
+            and t.executor_id = #{executorId}
+        </if>
+        <if test="taskStatus != null">
+            and t.task_status = #{taskStatus}
+        </if>
+        <if test="publishTime != null">
+            and DATE_FORMAT(t.publish_time,'%Y-%m-%d') = #{publishTime}
+        </if>
+    </select>
+
+    <insert id="publishTask" parameterType="com.tx.eoms.pojo.Task" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_task
+        set
+            theme = #{theme},
+            `desc` = #{desc},
+            publisher_id = #{publisherId},
+            executor_id = #{executorId},
+            publish_time = #{publishTime},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            task_status = #{taskStatus}
+    </insert>
+
+    <update id="cancelTask" parameterType="HashMap">
+        update tb_task
+        set task_status = #{taskStatus}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTask">
+        delete from tb_task
+        where id in
+        <foreach collection="array" open="(" separator="," close=")" item="one">
+            #{one}
+        </foreach>
+    </delete>
+
+    <select id="searchTaskInfo" parameterType="Integer" resultType="HashMap">
+        select
+            t.id,
+            t.theme,
+            t.desc,
+            u1.name as publisherName,
+            u2.name as executorName,
+            DATE_FORMAT(t.publish_time, '%Y-%m-%d %H:%i') as publishTime,
+            DATE_FORMAT(t.start_time, '%Y-%m-%d %H:%i') as startTime,
+            DATE_FORMAT(t.end_time, '%Y-%m-%d %H:%i') as endTime,
+            t.task_status as taskStatus,
+            t.rate,
+            t.percent
+        from tb_task as t
+        inner join tb_user as u1 on t.publisher_id = u1.id
+        inner join tb_user as u2 on t.executor_id = u2.id
+        where t.id = #{id}
+    </select>
+
+    <update id="taskRate" parameterType="HashMap">
+        update tb_task
+        set
+            task_status = #{taskStatus},
+            rate = #{rate}
+        where id = #{id}
+    </update>
+
+    <select id="searchMyTaskList" parameterType="HashMap" resultType="HashMap">
+        select
+            t.id,
+            t.theme,
+            t.desc,
+            u1.name as publisherName,
+            DATE_FORMAT(t.publish_time, '%Y-%m-%d %H:%i') as publishTime,
+            DATE_FORMAT(t.start_time, '%Y-%m-%d %H:%i') as startTime,
+            DATE_FORMAT(t.end_time, '%Y-%m-%d %H:%i') as endTime,
+            t.task_status as taskStatus
+        from tb_task as t
+        inner join tb_user as u1 on t.publisher_id = u1.id
+        inner join tb_user as u2 on t.executor_id = u2.id
+        where t.executor_id = #{executorId}
+        <if test="publisherId != null">
+            and t.publisher_id = #{publisherId}
+        </if>
+        <if test="taskStatus != null">
+            and t.task_status = #{taskStatus}
+        </if>
+        <if test="publishTime != null">
+            and DATE_FORMAT(t.publish_time,'%Y-%m-%d') = #{publishTime}
+        </if>
+        order by t.start_time desc
+        limit #{start}, #{length}
+    </select>
+
+    <select id="searchMyTaskListCount" parameterType="HashMap" resultType="long">
+        select count(*)
+        from tb_task as t
+        inner join tb_user as u1 on t.publisher_id = u1.id
+        inner join tb_user as u2 on t.executor_id = u2.id
+        where t.executor_id = #{executorId}
+        <if test="publisherId != null">
+            and t.publisher_id = #{publisherId}
+        </if>
+        <if test="taskStatus != null">
+            and t.task_status = #{taskStatus}
+        </if>
+        <if test="publishTime != null">
+            and DATE_FORMAT(t.publish_time,'%Y-%m-%d') = #{publishTime}
+        </if>
+    </select>
+    
+    <update id="updateTaskDegree" parameterType="HashMap">
+        update tb_task
+        set
+            percent = #{percent},
+            task_status = #{taskStatus}
+        where id = #{id}
+    </update>
+</mapper>
