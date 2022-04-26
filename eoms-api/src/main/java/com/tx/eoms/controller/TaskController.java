@@ -110,7 +110,7 @@ public class TaskController {
 
     @PostMapping("/searchMyTaskList")
     @Operation(summary = "查询我的任务列表")
-    @SaCheckPermission(value = {"ROOT", "TASK:LIST"}, mode = SaMode.OR)
+    @SaCheckLogin
     public CommonResult searchMyTaskList(@Valid @RequestBody SearchMyTaskListForm form) {
         int start = (form.getPage() - 1) * form.getLength();
         Map<String, Object> condition = JSONUtil.parse(form).toBean(Map.class);

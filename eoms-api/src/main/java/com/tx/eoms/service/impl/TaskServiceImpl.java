@@ -2,9 +2,13 @@ package com.tx.eoms.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import com.tx.eoms.dao.TaskDao;
+import com.tx.eoms.dao.UserDao;
 import com.tx.eoms.pojo.Task;
 import com.tx.eoms.service.TaskService;
+import com.tx.eoms.task.MailTask;
 import com.tx.eoms.util.PageUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -12,10 +16,17 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class TaskServiceImpl implements TaskService {
 
     @Resource
     private TaskDao taskDao;
+
+    @Resource
+    private MailTask mailTask;
+
+    @Resource
+    private UserDao userDao;
 
     /**
      * 查询任务管理界面任务列表
@@ -34,7 +45,20 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public int publishTask(Task task) {
-        return taskDao.publishTask(task);
+        // 创建任务记录
+        int i = taskDao.publishTask(task);
+        // 接收邮件的邮箱
+        String email = userDao.searchEmailById(task.getExecutorId());
+        Map<String, Object> publisher = userDao.searchUserInfo(task.getPublisherId());
+        // 发送邮件
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(email);
+        mailMessage.setSubject("有新任务了");
+        mailMessage.setText(MapUtil.getStr(publisher, "name") + "给你发布了主题为:" + task.getTheme() + "的任务,"
+                + "规定时间为" + task.getStartTime() + "~" + task.getEndTime() + "，请您尽快完成。");
+        mailTask.sendMailAsync(mailMessage);
+        log.info("已经发送通知");
+        return i;
     }
 
     /**
