@@ -158,4 +158,18 @@
             task_status = #{taskStatus}
         where id = #{id}
     </update>
+
+    <select id="searchTaskEndTime" resultType="java.util.Map">
+        select
+            id,
+            DATE_FORMAT(`end_time`,'%Y-%m-%d %H:%i') as `end`
+        from tb_task
+        where task_status = 1 or task_status = 3
+    </select>
+
+    <update id="updateStatusToExpire" parameterType="int">
+        update tb_task
+        set task_status = 0
+        where id = #{id}
+    </update>
 </mapper>

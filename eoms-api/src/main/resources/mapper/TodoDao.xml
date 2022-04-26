@@ -90,9 +90,9 @@
     <select id="searchAllEndTime" resultType="java.util.Map">
         select
             id,
-            DATE_FORMAT(`end`,'%Y-%m-%d %H:%i') AS `end`,
-            status
+            DATE_FORMAT(`end`,'%Y-%m-%d %H:%i') AS `end`
         from tb_todo
+        where status = 1
     </select>
 
     <update id="updateStatusById" parameterType="int">
@@ -109,6 +109,7 @@
             user_id as userId,
             is_notify as isNotify
         from tb_todo
+        where status = 1
     </select>
 
     <update id="updateNotifyStatus" parameterType="int">

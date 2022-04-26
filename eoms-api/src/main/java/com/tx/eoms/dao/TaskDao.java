@@ -52,4 +52,15 @@ public interface TaskDao {
      * 更新任务进度
      */
     int updateTaskDegree(Map<String, Object> params);
+
+    /**
+     * 查询所有新任务，和进行中的任务的结束时间
+     * 如果过了结束时间还有有完成，则改为已过期
+     */
+    List<Map<String, Object>> searchTaskEndTime();
+
+    /**
+     * 把任务状态改为已过期
+     */
+    int updateStatusToExpire(Integer id);
 }

@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.date.DateTime;
 import com.tx.eoms.dao.AttendanceDao;
+import com.tx.eoms.dao.TaskDao;
 import com.tx.eoms.dao.TodoDao;
 import com.tx.eoms.dao.UserDao;
 import com.tx.eoms.exception.EomsException;
@@ -35,24 +36,27 @@ public class ScheduleTask {
     @Resource
     private AttendanceDao attendanceDao;
 
+    @Resource
+    private TaskDao taskDao;
+
     /**
+     * 待办过期
      * 没分钟执行一次
      * 判断如果有待办过期了，改变待办的状态
      */
     @Scheduled(cron = "0 0/1 * * * ?")
     public void autoExpireTodoList() {
-        // 查询出所有的结束时间
+        // 查询出所有待完成待办结束时间
         List<Map<String, Object>> endTimeList = todoDao.searchAllEndTime();
         // 现在的时间
         DateTime now = new DateTime();
         // 判断是否超过截止时间
         for (Map<String, Object> task : endTimeList) {
             DateTime endTime = DateUtil.parse(MapUtil.getStr(task, "end"));
-            Integer status = MapUtil.getInt(task, "status");
             // 如果超过截止时间，并且装填还是待完成，则自动修改为 已过期
-            if (now.isAfterOrEquals(endTime) && status == 1) {
+            if (now.isAfterOrEquals(endTime)) {
                 todoDao.updateStatusById(MapUtil.getInt(task, "id"));
-                log.info("修改状态成功");
+                log.info("修改待办状态成功");
             } else {
                 log.info("暂无需要修改的待办");
             }
@@ -65,7 +69,7 @@ public class ScheduleTask {
      */
     @Scheduled(cron = "0 0/1 * * * ?")
     public void sendStartEmail() {
-        // 查询所有的开始时间
+        // 查询所有待完成待办的开始时间
         List<Map<String, Object>> startTimeList = todoDao.searchAllStartTime();
         // 现在的时间
         DateTime now = new DateTime();
@@ -130,6 +134,28 @@ public class ScheduleTask {
                 }
             } else {
                 log.info("id为" + id + "的用户已经完成了签到和签退");
+            }
+        }
+    }
+
+    /**
+     * 自动过期任务
+     */
+    @Scheduled(cron = "0 0/1 * * * ?")
+    public void autoExpireTask() {
+        // 查询出新任务，进行中的结束时间
+        List<Map<String, Object>> endTimeList = taskDao.searchTaskEndTime();
+        // 现在的时间
+        DateTime now = new DateTime();
+        // 判断是否超过截止时间
+        for (Map<String, Object> task : endTimeList) {
+            DateTime endTime = DateUtil.parse(MapUtil.getStr(task, "end"));
+            // 如果超过截止时间则自动修改为 已过期
+            if (now.isAfterOrEquals(endTime)) {
+                taskDao.updateStatusToExpire(MapUtil.getInt(task, "id"));
+                log.info("修改任务状态成功");
+            } else {
+                log.info("暂无需要修改状态的任务");
             }
         }
     }
